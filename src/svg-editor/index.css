@@ -1,0 +1,31 @@
+
+.seg-point {
+  cursor: pointer;
+}
+
+.grabbable {
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
+.grabbable:active {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+
+.grabbable + .move-icon {
+  opacity: 0.4;
+}
+
+.grabbable:hover + .move-icon{
+  opacity: 0.9;
+}
+
+.class-names {
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
