@@ -60,11 +60,6 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
       let [director] = getDirector(shape.id);
       director!.updateClasses(shape);
     },
-    drag(id: number) {
-      stopAll();
-      let [director] = getDirector(id);
-      director.drag(id);
-    },
     zoom(factor: number) {
       zoom(factor);
     },
@@ -112,7 +107,7 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
     svgContainer.current.container.height *= factor;
     svgContainer.current.container.width *= factor;
     getDirectors().forEach(director => { 
-      director.stopDrag();
+      director.stopEdit(false);
       director.zoom(factor);
      });
   }
@@ -124,7 +119,6 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
 
   const stopAll = () => {
     getDirectors().forEach(director => {
-      director.stopDrag();
       director.stopDraw();
       director.stopEdit(false);
     })

@@ -15,34 +15,60 @@ export class IlPolyline extends Polyline implements IlElementExtra {
 }
 
 export abstract class AngledBuilder<T extends AngledShape> extends ShapeBuilder<T> {
-	polyline?: IlPolyline;
+	element?: IlPolyline;
 	dragPointIndex?: number;
+	abstract editShapeMouseMove(event: MouseEvent): void;
 
 	newAngledShape(shape: T): void {
-		this.polyline = Object.assign(this.svg.polyline([]), {
+		this.element = Object.assign(this.svg.polyline([]), {
 			shape,
 			shadow: this.svg.polyline([]),
 			discs: [],
 			hasConnector: false,
 			editing: false
 		});
-		this.polyline.fill(Color.ShapeFill)
-		this.polyline.stroke({ color: Color.RedLine, width: 2, opacity: 0.7 });
+		this.element.fill(Color.ShapeFill)
+		this.element.stroke({ color: Color.RedLine, width: 2, opacity: 0.7 });
 
-		this.polyline.shadow.fill('none')
-		this.polyline.shadow.stroke({ color: Color.BlackLine, width: 4, opacity: 0.4 });
+		this.element.shadow.fill('none')
+		this.element.shadow.stroke({ color: Color.BlackLine, width: 4, opacity: 0.4 });
 
 		if (shape.points) {
 			shape.points.forEach((point, index) => {
 				if (index < shape.points.length - 1) {
 					let circle = this.drawDisc(point[0], point[1], 2, Color.BlackDisc);
-					this.polyline!.discs!.push(circle);
+					this.element!.discs!.push(circle);
 				}
 			});
 		}
 	}
+
+	editShape(): void {
+		let polyline = this.element!;
+		if (polyline.classNames) polyline.classNames.clear();
+		if (polyline.classNamesWrapper) polyline.classNamesWrapper.remove();
+		polyline.discs?.forEach((_disc, index) => {
+			_disc.fill(Color.GreenDisc);
+			_disc.size(10);
+			_disc.addClass('seg-point');
+			_disc.mousedown((event: MouseEvent) => {
+				if (event.button === 0 && this.dragPointIndex === undefined) {
+					this.dragPointIndex = index;
+					this.moveIconPath!.remove();
+					this.svg.mousemove((event: MouseEvent) => this.editShapeMouseMove(event));
+				}
+			});
+			_disc.mouseup((event: MouseEvent) => {
+				if (this.dragPointIndex !== undefined) {
+      		this.addMoveIcon();
+					this.dragPointIndex = undefined;
+					this.svg.off('mousemove');
+				}
+			})
+		});
+	}
 	plotAngledShape(): void {
-		if (this.polyline) this.plot(this.polyline);
+		if (this.element) this.plot(this.element);
 	}
 
 	plot(polyline: IlPolyline): void {
@@ -53,8 +79,6 @@ export abstract class AngledBuilder<T extends AngledShape> extends ShapeBuilder<
 
 export abstract class AngledDirector<T extends AngledShape> extends Director<T> {
 	abstract builder: AngledBuilder<T>;
-	abstract innerEdit(): void;
-	abstract innerStopEdit(): void;
 
 	getElement(id: number): ElementWithExtra {
 		return Director.elements.find(p => p.shape.id === id)!;
@@ -71,31 +95,24 @@ export abstract class AngledDirector<T extends AngledShape> extends Director<T> 
 	}
 
 	edit(shape: AngledShape): void {
-		let polyline = this.builder.polyline = AngledDirector.elements.find(p => p.shape.id === shape.id)! as IlPolyline;
+		let polyline = this.builder.element = AngledDirector.elements.find(p => p.shape.id === shape.id)! as IlPolyline;
 		ShapeBuilder.editing = true;
 		polyline.editing = true;
-		if (polyline.classNames) polyline.classNames.clear();
-		if (polyline.classNamesWrapper) polyline.classNamesWrapper.remove();
-		polyline.discs?.forEach((_disc, index) => {
-			_disc.fill(Color.GreenDisc);
-			_disc.size(10);
-			_disc.addClass('seg-point');
-			_disc.mousedown((event: MouseEvent) => {
-				if (event.button === 0 && this.builder.dragPointIndex === undefined)
-					this.builder.dragPointIndex = index;
-			});
-			_disc.mouseup((event: MouseEvent) => {
-				if (this.builder.dragPointIndex !== undefined)
-					this.builder.dragPointIndex = undefined;
-			})
-		});
-		this.innerEdit();
+    this.builder.initDrag();
+		this.builder.editShape();
 	}
 
 	stopEdit(callOnEdited: boolean): void {
-		if (ShapeBuilder.editing && this.builder.polyline && this.builder.polyline.editing) {
-			ShapeBuilder.editing = this.builder.polyline.editing = false;
-			this.builder.polyline.discs?.forEach((_disc, index) => {
+		if (ShapeBuilder.editing && this.builder.element && this.builder.element.editing) {
+			ShapeBuilder.editing = this.builder.element.editing = false;
+			this.builder.stopDrag();
+			this.stopEditShape(this.builder.element);
+			if (callOnEdited) Director.onAddedOrEdited?.(this.builder.element.shape);
+		}
+	}
+
+	stopEditShape(polyline: IlPolyline): void {
+			polyline.discs?.forEach((_disc, index) => {
 				_disc.fill(Color.BlackDisc);
 				_disc.size(4);
 				_disc.removeClass('seg-point');
@@ -103,11 +120,8 @@ export abstract class AngledDirector<T extends AngledShape> extends Director<T> 
 				_disc.off('mousedown');
 				_disc.off('mouseup')
 			});
-			let shape = this.builder.polyline.shape;
-			if (shape.classes.length > 0) this.setOptions(this.builder.polyline, shape.classes);
-			this.innerStopEdit();
-			if(callOnEdited) Director.onAddedOrEdited?.(this.builder.polyline.shape);
-		}
+			let shape = polyline.shape;
+			if (shape.classes.length > 0) this.setOptions(polyline, shape.classes);
 	}
 
 	innerPlot(shape: T): void {
@@ -116,20 +130,20 @@ export abstract class AngledDirector<T extends AngledShape> extends Director<T> 
 		this.builder.newAngledShape(shape);
 		this.builder.plotAngledShape();
 		this.addAngledShape(false);
-		if (!this.builder.polyline) throw new Error();
-		let classes = this.builder.polyline.shape.classes;
-		if (classes.length > 0) this.setOptions(this.builder.polyline, classes);
+		if (!this.builder.element) throw new Error();
+		let classes = this.builder.element.shape.classes;
+		if (classes.length > 0) this.setOptions(this.builder.element, classes);
 	}
 
 	addAngledShape(isNew: boolean = true) {
-		if (!this.builder.polyline) return;
-		if (this.builder.polyline.shape.id === 0) {
-			this.builder.polyline.shape.id = ++Util.maxId;
+		if (!this.builder.element) return;
+		if (this.builder.element.shape.id === 0) {
+			this.builder.element.shape.id = ++Util.maxId;
 		}
-		let id = this.builder.polyline.shape.id;
-		AngledDirector.elements.push(this.builder.polyline);
-		if(isNew) Director.onAddedOrEdited?.(this.builder.polyline.shape);
-		this.builder.polyline.node.addEventListener('contextmenu', ev => {
+		let id = this.builder.element.shape.id;
+		AngledDirector.elements.push(this.builder.element);
+		if (isNew) Director.onAddedOrEdited?.(this.builder.element.shape);
+		this.builder.element.node.addEventListener('contextmenu', ev => {
 			if (ShapeBuilder.editing) return;
 			ev.preventDefault();
 			let elem = AngledDirector.elements.find(p => p.shape.id === id)!;

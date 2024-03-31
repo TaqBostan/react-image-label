@@ -58,14 +58,13 @@ export const SvgEditorPrimary: FC = () => {
       <button onClick={() => { svgEditor.current.newRectangle() }}>Add Rectangle</button>
       <button onClick={() => { svgEditor.current.newPolygon() }}>Add Polygon</button>
       <button onClick={() => { svgEditor.current.stop() }}>stop</button>
-      <button onClick={() => { svgEditor.current.stopEdit(true) }}>Edit Done</button>
+      <button onClick={() => { svgEditor.current.stopEdit(false) }}>Edit Done</button>
       <button onClick={() => { svgEditor.current.zoom(1.25) }}>zoom in</button>
       <button onClick={() => { svgEditor.current.zoom(0.8) }}>zoom out</button>
       {dialog.show &&
         <div className='dialog'
           style={{ left: dialog.shape!.getCenterWithOffset()[0], top: dialog.shape!.getCenterWithOffset()[1] }}>
           <button onClick={() => { svgEditor.current.editShape(dialog.shape!.id); setDialog({ show: false, shape: undefined }); }}>editShape</button>
-          <button onClick={() => { svgEditor.current.drag(dialog.shape!.id); setDialog({ show: false, shape: undefined }); }}>drag</button>
           {classes.map((_class, index) => (
             <div key={index}>
               <input id={'checkbox' + index} value={_class} type="checkbox" onChange={handleCheck}

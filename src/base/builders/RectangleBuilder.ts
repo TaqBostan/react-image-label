@@ -40,30 +40,30 @@ class RectangleBuilder extends AngledBuilder<Rectangle> {
         points.push([event.offsetX, this.rectOrigin.Y]);
       }
       points.push([this.rectOrigin.X, this.rectOrigin.Y]);
-      this.polyline!.shape.points = points;
+      this.element!.shape.points = points;
       this.plotAngledShape();
     }
   }
 
-  editRectangleMouseMove(event: MouseEvent) {
+  editShapeMouseMove(event: MouseEvent) {
     // Moves a vertex of the polyline
     if (this.dragPointIndex !== undefined) {
-      this.polyline!.shape.points[this.dragPointIndex] = [event.offsetX, event.offsetY];
-      this.polyline!.discs[this.dragPointIndex].move(event.offsetX - 5, event.offsetY - 5);
+      this.element!.shape.points[this.dragPointIndex] = [event.offsetX, event.offsetY];
+      this.element!.discs[this.dragPointIndex].move(event.offsetX - 5, event.offsetY - 5);
       let prevIndex = this.dragPointIndex === 0 ? 3 : this.dragPointIndex - 1,
         nextIndex = this.dragPointIndex === 3 ? 0 : this.dragPointIndex + 1;
       if (this.dragPointIndex % 2 === 0) {
-        this.polyline!.shape.points[prevIndex][1] = event.offsetY;
-        this.polyline!.shape.points[nextIndex][0] = event.offsetX;
-        this.polyline!.discs[prevIndex].move(this.polyline!.shape.points[prevIndex][0] - 5, event.offsetY - 5);
-        this.polyline!.discs[nextIndex].move(event.offsetX - 5, this.polyline!.shape.points[nextIndex][1] - 5);
+        this.element!.shape.points[prevIndex][1] = event.offsetY;
+        this.element!.shape.points[nextIndex][0] = event.offsetX;
+        this.element!.discs[prevIndex].move(this.element!.shape.points[prevIndex][0] - 5, event.offsetY - 5);
+        this.element!.discs[nextIndex].move(event.offsetX - 5, this.element!.shape.points[nextIndex][1] - 5);
       } else {
-        this.polyline!.shape.points[prevIndex][0] = event.offsetX;
-        this.polyline!.shape.points[nextIndex][1] = event.offsetY;
-        this.polyline!.discs[prevIndex].move(event.offsetX - 5, this.polyline!.shape.points[prevIndex][1] - 5);
-        this.polyline!.discs[nextIndex].move(this.polyline!.shape.points[nextIndex][0] - 5, event.offsetY - 5);
+        this.element!.shape.points[prevIndex][0] = event.offsetX;
+        this.element!.shape.points[nextIndex][1] = event.offsetY;
+        this.element!.discs[prevIndex].move(event.offsetX - 5, this.element!.shape.points[prevIndex][1] - 5);
+        this.element!.discs[nextIndex].move(this.element!.shape.points[nextIndex][0] - 5, event.offsetY - 5);
       }
-      this.polyline!.shape.points[this.polyline!.shape.points.length - 1] = [...this.polyline!.shape.points[0]];
+      this.element!.shape.points[this.element!.shape.points.length - 1] = [...this.element!.shape.points[0]];
       this.plotAngledShape();
     }
   }
@@ -76,10 +76,10 @@ class RectangleBuilder extends AngledBuilder<Rectangle> {
         return;
       }
       //this.mouseMove(event);
-      if (!this.polyline) throw new Error();
-      this.polyline.shape.points.filter((point, index) => index < this.polyline!.shape.points.length - 1)
+      if (!this.element) throw new Error();
+      this.element.shape.points.filter((point, index) => index < this.element!.shape.points.length - 1)
         .forEach(point => {
-          this.polyline!.discs.push(this.drawDisc(point[0], point[1], 2, '#000'))
+          this.element!.discs.push(this.drawDisc(point[0], point[1], 2, '#000'))
         });
       addPolyline();
       //segmentor.sendPolyline(id);
@@ -123,12 +123,5 @@ export class RectangleDirector extends AngledDirector<Rectangle>{
 
   stopDraw(): void {
     this.builder.stopDraw();
-  }
-
-  innerEdit(): void {
-    this.builder.svg.mousemove((event: MouseEvent) => this.builder.editRectangleMouseMove(event));
-  }
-  innerStopEdit(): void {
-    this.builder.svg.off('mousemove');
   }
 }

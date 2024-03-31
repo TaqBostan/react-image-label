@@ -5,6 +5,7 @@ import Util from './util'
 export abstract class ShapeBuilder<Shape extends IlShape> {
   static _svg: Svg;
   svg: Svg = ShapeBuilder._svg;
+	abstract element?: ElementWithExtra;
   //#region static data
   static editing: boolean = false;
   static width: number;
@@ -12,10 +13,9 @@ export abstract class ShapeBuilder<Shape extends IlShape> {
   static ratio: number = 1;
   //#endregion
   //#region drag
-  private dragElem?: ElementWithExtra;
   private lastPoint?: Point;
   private originPoint?: Point;
-  private moveIconPath?: Element;
+  protected moveIconPath?: Element;
   //#endregion
   constructor() {
   }
@@ -44,32 +44,29 @@ export abstract class ShapeBuilder<Shape extends IlShape> {
   }
 
   addMoveIcon(): void {
-    let center = this.dragElem!.shape.getCenter();
+    let center = this.element!.shape.getCenter();
     let str = `M${center[0] + 11.3},${center[1]}l-4.6-4.6v2.4h-4.5v-4.5h2.4l-4.6,-4.6l-4.6,4.6h2.4v4.5h-4.5v-2.4l-4.6,4.6l4.6,4.6v-2.4h4.5v4.5h-2.4l4.6,4.6
 		l4.6-4.6h-2.4v-4.5h4.5v2.4l4.6-4.6z`;
     this.moveIconPath = this.svg.path(str);
-    this.dragElem!.after(this.moveIconPath);
+    this.element!.after(this.moveIconPath);
     this.moveIconPath.attr('class', 'move-icon grabbable');
     this.moveIconPath.mousedown((event: MouseEvent) => this.mouseDown(event));
   }
 
-  initDrag(elem: ElementWithExtra) {
-    this.dragElem = elem;
-    this.dragElem.addClass('grabbable');
+  initDrag() {
+    this.element!.addClass('grabbable');
     this.addMoveIcon();
-    this.dragElem.mousedown((event: MouseEvent) => this.mouseDown(event));
-    this.svg.mousemove((event: MouseEvent) => this.mouseMove(event));
+    this.element!.mousedown((event: MouseEvent) => this.mouseDown(event));
     this.svg.mouseup(() => this.mouseUp());
   }
   
   stopDrag() {
-    if(this.dragElem) {
-      this.dragElem.removeClass('grabbable');
-      this.dragElem.off('mousedown');
+    if(this.element) {
+      this.element.removeClass('grabbable');
+      this.element.off('mousedown');
       this.svg.off('mousemove');
       this.svg.off('mouseup');
       if(this.moveIconPath) this.moveIconPath.remove();
-      this.dragElem = undefined;
       this.lastPoint = undefined;
       this.originPoint = undefined;
       this.moveIconPath = undefined;
@@ -81,26 +78,19 @@ export abstract class ShapeBuilder<Shape extends IlShape> {
       this.lastPoint = { X: event.offsetX, Y: event.offsetY };
       this.originPoint = { X: event.offsetX, Y: event.offsetY };
       this.moveIconPath!.remove();
+      this.svg.mousemove((event: MouseEvent) => this.mouseMove(event));
     }
   }
   
   mouseMove(event: MouseEvent) {
     if (this.lastPoint) {
-      if(!this.dragElem) return;
+      if(!this.element) return;
       let dx = event.offsetX - this.lastPoint.X, dy = event.offsetY - this.lastPoint.Y;
-      this.dragElem.cx(this.dragElem.cx() + dx);
-      this.dragElem.cy(this.dragElem.cy() + dy);
-      this.dragElem.shadow.cx(this.dragElem.shadow.cx() + dx);
-      this.dragElem.shadow.cy(this.dragElem.shadow.cy() + dy);
-      if (this.dragElem.classNames) { 
-        this.dragElem.classNames.cx(this.dragElem.classNames.cx() + dx); 
-        this.dragElem.classNames.cy(this.dragElem.classNames.cy() + dy); 
-      }
-      if (this.dragElem.classNamesWrapper) { 
-        this.dragElem.classNamesWrapper.cx(this.dragElem.classNamesWrapper.cx() + dx); 
-        this.dragElem.classNamesWrapper.cy(this.dragElem.classNamesWrapper.cy() + dy); 
-      }
-      this.dragElem.discs.forEach(disc => {
+      this.element.cx(this.element.cx() + dx);
+      this.element.cy(this.element.cy() + dy);
+      this.element.shadow.cx(this.element.shadow.cx() + dx);
+      this.element.shadow.cy(this.element.shadow.cy() + dy);
+      this.element.discs.forEach(disc => {
         disc.cx(disc.cx() + dx);
         disc.cy(disc.cy() + dy);
       })
@@ -110,13 +100,14 @@ export abstract class ShapeBuilder<Shape extends IlShape> {
   
   mouseUp() {
     if(this.lastPoint) {
-      if(!this.dragElem) return;
-      let x = this.lastPoint.X - this.originPoint!.X + this.dragElem.shape.getCenter()[0];
-      let y = this.lastPoint.Y - this.originPoint!.Y + this.dragElem.shape.getCenter()[1];
-      this.dragElem.shape.centerChanged([x, y]);
+      if(!this.element) return;
+      let x = this.lastPoint.X - this.originPoint!.X + this.element.shape.getCenter()[0];
+      let y = this.lastPoint.Y - this.originPoint!.Y + this.element.shape.getCenter()[1];
+      this.element.shape.centerChanged([x, y]);
       this.addMoveIcon();
       this.lastPoint = undefined;
       this.originPoint = undefined;
+      this.svg.off('mousemove');
     }
   }
 }
@@ -153,13 +144,6 @@ export abstract class Director<Shape extends IlShape> {
   updateClasses(shape: Shape) {
     let elem = this.getElement(shape.id);
     this.builder.setOptions(elem, shape.classes);
-  }
-  drag(id: number) {
-    let elem = this.getElement(id);
-    this.builder.initDrag(elem);
-  }
-  stopDrag() {
-    this.builder.stopDrag();
   }
   
   static init(svg: Svg, width: number, height: number, ratio: number, container: HTMLDivElement, onAddedOrEdited?: (shape: IlShape) => void) {
