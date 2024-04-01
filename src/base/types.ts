@@ -1,4 +1,4 @@
-import { ArrayXY, PointArray, Rect, Text, Element, Circle as Circ } from '@svgdotjs/svg.js'
+import { ArrayXY, PointArray, Rect, Text, Element, Circle as Circ, Polyline } from '@svgdotjs/svg.js'
 import Util from './util';
 
 
@@ -26,6 +26,7 @@ export interface IlElementExtra {
   shadow: Element;
   discs: Circ[];
   editing: boolean;
+  connector?: Polyline;
 }
 
 export type ElementWithExtra = Element & IlElementExtra;
@@ -89,5 +90,21 @@ export class Polygon extends AngledShape {
     let obj = new Polygon(this.points.filter((p, i) => i < this.points.length - 1, this.classes), this.classes);
     obj.id = this.id;
     return obj;
+  }
+}
+
+export class Circle extends IlShape {
+  type: string = 'circle';
+  constructor(public centre: ArrayXY = [0, 0], public radius: number = 0, public classes: string[] = []) {
+    super(classes);
+  }
+  labelPosition(): ArrayXY {
+    return [this.centre[0], this.centre[1] - this.radius - 24];
+  }
+  getCenter(): ArrayXY {
+    return this.centre;
+  }
+  centerChanged(newCenter: ArrayXY): void {
+    this.centre = newCenter;
   }
 }

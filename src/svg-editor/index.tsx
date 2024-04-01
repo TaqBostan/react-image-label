@@ -3,8 +3,9 @@ import { SvgContainer, Svg } from 'react-svgdotjs';
 import { RectangleDirector } from '../base/builders/RectangleBuilder';
 import { PolygonDirector } from '../base/builders/PolygonBuilder';
 import { Director } from '../base/base';
-import { IlShape, Polygon, Rectangle } from '../base/types';
+import { Circle, IlShape, Polygon, Rectangle } from '../base/types';
 import './index.css';
+import { CircleDirector } from '../base/builders/CircleBuilder';
 
 interface SvgEditorProps {
   onReady?: () => void;
@@ -17,9 +18,9 @@ interface SvgEditorProps {
 }
 
 export default React.forwardRef((props: SvgEditorProps, ref) => {
-  const [size, setSize] = React.useState({width: 0, height: 0});
+  const [size, setSize] = React.useState({ width: 0, height: 0 });
   const svgContainer = React.useRef<any>();
-  const getDirectors = (): Director<IlShape>[] => [RectangleDirector.getInstance(), PolygonDirector.getInstance()];
+  const getDirectors = (): Director<IlShape>[] => [RectangleDirector.getInstance(), PolygonDirector.getInstance(), CircleDirector.getInstance()];
 
 
   const getDirector = (id: number): [Director<IlShape>, IlShape] => {
@@ -29,6 +30,8 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
       director = PolygonDirector.getInstance();
     else if (shape instanceof Rectangle)
       director = RectangleDirector.getInstance();
+    else if (shape instanceof Circle)
+      director = CircleDirector.getInstance();
     return [director!, shape];
   }
 
@@ -43,6 +46,11 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
       stopAll();
       let x = PolygonDirector.getInstance();
       x.startDraw();
+    },
+    newCircle() {
+      stopAll();
+      let director = CircleDirector.getInstance();
+      director.startDraw();
     },
     stop() {
       stopAll();
@@ -74,9 +82,11 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
 
   const drawShapes = (shapes: IlShape[] | any[]) => {
     let rectangles = shapes.filter(s => s instanceof Rectangle || s.type === 'rectangle')
-    .map(s => new Rectangle(s.points, s.classes));
+      .map(s => new Rectangle(s.points, s.classes));
     let polygons = shapes.filter(s => s instanceof Polygon || s.type === 'polygon')
-    .map(s => new Polygon(s.points, s.classes));
+      .map(s => new Polygon(s.points, s.classes));
+    let circles = shapes.filter(s => s instanceof Circle || s.type === 'circle')
+      .map(s => new Circle(s.centre, s.radius, s.classes));
     if (rectangles.length > 0) {
       let director = RectangleDirector.getInstance();
       director.plot(rectangles.map(p => new Rectangle(p.points, p.classes)));
@@ -84,6 +94,10 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
     if (polygons) {
       let x = PolygonDirector.getInstance();
       x.plot(polygons);
+    }
+    if (circles) {
+      let x = CircleDirector.getInstance();
+      x.plot(circles);
     }
   }
 
@@ -106,23 +120,23 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
         }
       }
       Director.init(svg, width, height, width / ev.target.naturalWidth, svgContainer.current.container, props.onAddedOrEdited);
-      setSize({width, height});
-      if(props.shapes) drawShapes(props.shapes);
+      setSize({ width, height });
+      if (props.shapes) drawShapes(props.shapes);
     }).size('100%', '100%').attr('onmousedown', 'return false').attr('oncontextmenu', 'return false');
-  },[props.imageUrl]);
+  }, [props.imageUrl]);
 
   const zoom = (factor: number) => {
     Director.setSizeAndRatio(factor);
     svgContainer.current.container.height *= factor;
     svgContainer.current.container.width *= factor;
-    getDirectors().forEach(director => { 
+    getDirectors().forEach(director => {
       director.stopEdit(false);
       director.zoom(factor);
-     });
+    });
   }
 
   useEffect(() => {
-    if(svgContainer.current) onload(svgContainer.current.svg);
+    if (svgContainer.current) onload(svgContainer.current.svg);
     return () => { svgContainer.current?.svg.clear(); }
   }, [svgContainer, onload, props.imageUrl]);
 

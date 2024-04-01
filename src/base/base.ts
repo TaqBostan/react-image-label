@@ -102,6 +102,10 @@ export abstract class ShapeBuilder<Shape extends IlShape> {
         disc.cx(disc.cx() + dx);
         disc.cy(disc.cy() + dy);
       })
+      if(this.element!.connector){        
+      this.element.connector.cx(this.element.connector.cx() + dx);
+      this.element.connector.cy(this.element.connector.cy() + dy);
+      }
       this.lastPoint = { X: event.offsetX, Y: event.offsetY };
     }
   }

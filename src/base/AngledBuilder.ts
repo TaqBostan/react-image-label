@@ -60,7 +60,7 @@ export abstract class AngledBuilder<T extends AngledShape> extends ShapeBuilder<
 			});
 			_disc.mouseup((event: MouseEvent) => {
 				if (this.dragPointIndex !== undefined) {
-      		this.addMoveIcon();
+					this.addMoveIcon();
 					this.dragPointIndex = undefined;
 					this.svg.off('mousemove');
 				}
@@ -94,7 +94,7 @@ export abstract class AngledDirector<T extends AngledShape> extends Director<T> 
 		let polyline = this.builder.element = AngledDirector.elements.find(p => p.shape.id === shape.id)! as IlPolyline;
 		ShapeBuilder.editing = true;
 		polyline.editing = true;
-    this.builder.initDrag();
+		this.builder.initDrag();
 		this.builder.editShape();
 	}
 
@@ -108,16 +108,16 @@ export abstract class AngledDirector<T extends AngledShape> extends Director<T> 
 	}
 
 	stopEditShape(polyline: IlPolyline): void {
-			polyline.discs?.forEach((_disc, index) => {
-				_disc.fill(Color.BlackDisc);
-				_disc.size(4);
-				_disc.removeClass('seg-point');
-				this.builder.dragPointIndex = undefined;
-				_disc.off('mousedown');
-				_disc.off('mouseup')
-			});
-			let shape = polyline.shape;
-			if (shape.classes.length > 0) this.setOptions(polyline, shape.classes);
+		polyline.discs?.forEach((_disc, index) => {
+			_disc.fill(Color.BlackDisc);
+			_disc.size(4);
+			_disc.removeClass('seg-point');
+			this.builder.dragPointIndex = undefined;
+			_disc.off('mousedown');
+			_disc.off('mouseup')
+		});
+		let shape = polyline.shape;
+		if (shape.classes.length > 0) this.setOptions(polyline, shape.classes);
 	}
 
 	innerPlot(shape: T): void {
