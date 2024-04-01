@@ -43,6 +43,14 @@ export abstract class ShapeBuilder<Shape extends IlShape> {
     }
   }
 
+  removeElement(element: ElementWithExtra) {
+    if (element.classNames) element.classNames.remove();
+    if (element.classNamesWrapper) element.classNamesWrapper.remove();
+    element.discs.forEach(disc => disc.remove());
+    element.shadow.remove();
+    element.remove();
+  }
+
   addMoveIcon(): void {
     let center = this.element!.shape.getCenter();
     let str = `M${center[0] + 11.3},${center[1]}l-4.6-4.6v2.4h-4.5v-4.5h2.4l-4.6,-4.6l-4.6,4.6h2.4v4.5h-4.5v-2.4l-4.6,4.6l4.6,4.6v-2.4h4.5v4.5h-2.4l4.6,4.6
@@ -122,9 +130,9 @@ export abstract class Director<Shape extends IlShape> {
   abstract stopDraw(): void;
   abstract edit(shape: Shape): void;
   abstract stopEdit(callOnEdited: boolean): void;
-  abstract getElement(id: number): ElementWithExtra;
   abstract zoom(factor: number): void;
-  
+
+  getElement = (id: number) => Director.elements.find(p => p.shape.id === id)!;
   setOptions = (element: ElementWithExtra, classes: string[]) => this.builder.setOptions(element, classes);
 
   plot(shapes: Shape[]): void {
@@ -134,10 +142,15 @@ export abstract class Director<Shape extends IlShape> {
     });
   }
   
-
   updateClasses(shape: Shape) {
     let elem = this.getElement(shape.id);
     this.builder.setOptions(elem, shape.classes);
+  }
+  
+  removeElement(id: number) {
+    let elem = this.getElement(id);
+    this.builder.removeElement(elem);
+    Director.elements.splice(Director.elements.indexOf(elem), 1);
   }
 
   static getShapes = () => Director.elements.map(el => el.shape.getOutput());

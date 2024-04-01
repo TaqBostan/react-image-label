@@ -50,10 +50,14 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
     stopEdit(callOnEdited: boolean) {
       getDirectors().forEach(director => director.stopEdit(callOnEdited));
     },
-    editShape(id: number) {
+    edit(id: number) {
       stopAll();
       let [director, shape] = getDirector(id);
       director!.edit(shape);
+    },
+    delete(id: number) {
+      let [director] = getDirector(id);
+      director!.removeElement(id);
     },
     updateClasses(shape: IlShape) {
       let [director] = getDirector(shape.id);

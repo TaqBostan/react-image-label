@@ -80,10 +80,6 @@ export abstract class AngledBuilder<T extends AngledShape> extends ShapeBuilder<
 export abstract class AngledDirector<T extends AngledShape> extends Director<T> {
 	abstract builder: AngledBuilder<T>;
 
-	getElement(id: number): ElementWithExtra {
-		return Director.elements.find(p => p.shape.id === id)!;
-	}
-
 	zoomAngledShape(elem: IlPolyline, factor: number): void {
 		elem.shape.points = elem.shape.points.map(p => [p[0] * factor, p[1] * factor]);
 		this.builder.plot(elem as IlPolyline);

@@ -17,7 +17,6 @@ export const SvgEditorPrimary: FC = () => {
   const [dialog, setDialog] = React.useState<{ show: boolean, shape: IlShape | undefined }>({ show: false, shape: undefined });
   const svgEditor = React.useRef<any>();
 
-  // Add/Remove checked item from list
   const handleCheck = (event: any) => {
     if (event.target.checked) dialog.shape!.classes = [...dialog.shape!.classes, event.target.value];
     else dialog.shape!.classes.splice(dialog.shape!.classes.indexOf(event.target.value), 1);
@@ -25,17 +24,13 @@ export const SvgEditorPrimary: FC = () => {
     setDialog({ ...dialog });
   };
 
-  const mousedown = React.useCallback((ev: MouseEvent) => {
+  const hideDialog = () => setDialog({ show: false, shape: undefined });
+  const hideAndUpdateClasses = () => {
     if (dialog.show) {
       svgEditor.current.updateClasses(dialog.shape);
-      setDialog({ show: false, shape: undefined });
+      hideDialog();
     }
-  }, [setDialog, svgEditor, dialog]);
-
-  React.useEffect(() => {
-    svgEditor.current.container.addEventListener('mousedown', mousedown);
-    return () => { svgEditor.current.container.removeEventListener("mousedown", mousedown); }
-  }, [svgEditor.current?.container, mousedown])
+  }
 
   return (
     <div>
@@ -48,16 +43,19 @@ export const SvgEditorPrimary: FC = () => {
       <button onClick={() => { svgEditor.current.zoom(0.8) }}>zoom out</button>
       <button onClick={() => { setShapes(svgEditor.current.getShapes()) }}>get shapes</button>
       {dialog.show &&
-        <div className='dialog'
-          style={{ left: dialog.shape!.getCenterWithOffset()[0], top: dialog.shape!.getCenterWithOffset()[1] }}>
-          <button onClick={() => { svgEditor.current.editShape(dialog.shape!.id); setDialog({ show: false, shape: undefined }); }}>editShape</button>
-          {classes.map((_class, index) => (
-            <div key={index}>
-              <input id={'checkbox' + index} value={_class} type="checkbox" onChange={handleCheck}
-                checked={dialog.shape!.classes.includes(_class)} />
-              <label htmlFor={'checkbox' + index}>{_class}</label>
-            </div>
-          ))}
+        <div className='dialog-bg' onClick={hideAndUpdateClasses}>
+          <div className='dialog' onClick={e => e.stopPropagation()}
+            style={{ left: dialog.shape!.getCenterWithOffset()[0], top: dialog.shape!.getCenterWithOffset()[1] }}>
+            <button onClick={() => { svgEditor.current.edit(dialog.shape!.id); hideDialog(); }}>edit</button>
+            <button onClick={() => { svgEditor.current.delete(dialog.shape!.id); hideDialog(); }}>delete</button>
+            {classes.map((_class, index) => (
+              <div key={index}>
+                <input id={'checkbox' + index} value={_class} type="checkbox" onChange={handleCheck}
+                  checked={dialog.shape!.classes.includes(_class)} />
+                <label htmlFor={'checkbox' + index}>{_class}</label>
+              </div>
+            ))}
+          </div>
         </div>
       }
       <SvgEditor
