@@ -124,10 +124,8 @@ export abstract class Director<Shape extends IlShape> {
   abstract stopEdit(callOnEdited: boolean): void;
   abstract getElement(id: number): ElementWithExtra;
   abstract zoom(factor: number): void;
-
-  static getInstance(): Director<IlShape> {
-    throw new Error('Method not implemented! Use derived class');
-  }
+  
+  setOptions = (element: ElementWithExtra, classes: string[]) => this.builder.setOptions(element, classes);
 
   plot(shapes: Shape[]): void {
     shapes.forEach(shape => {
@@ -135,15 +133,18 @@ export abstract class Director<Shape extends IlShape> {
       this.innerPlot(shape);
     });
   }
-  static findShape(id: number): IlShape {
-    return Director.elements.find(el => el.shape.id === id)!.shape;
-  }
-  setOptions(element: ElementWithExtra, classes: string[]): void {
-    this.builder.setOptions(element, classes);
-  }
+  
+
   updateClasses(shape: Shape) {
     let elem = this.getElement(shape.id);
     this.builder.setOptions(elem, shape.classes);
+  }
+
+  static getShapes = () => Director.elements.map(el => el.shape.getOutput());
+  static findShape = (id: number) => Director.elements.find(el => el.shape.id === id)!.shape;
+
+  static getInstance(): Director<IlShape> {
+    throw new Error('Method not implemented! Use derived class');
   }
   
   static init(svg: Svg, width: number, height: number, ratio: number, container: HTMLDivElement, onAddedOrEdited?: (shape: IlShape) => void) {

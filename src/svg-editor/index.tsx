@@ -10,8 +10,7 @@ interface SvgEditorProps {
   onReady?: () => void;
   onAddedOrEdited?: (shape: IlShape) => void;
   imageUrl?: string;
-  polygons?: Polygon[];
-  rectangles?: Rectangle[];
+  shapes?: IlShape[] | any[];
   naturalSize?: boolean;
   width?: number;
   height?: number;
@@ -63,18 +62,24 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
     zoom(factor: number) {
       zoom(factor);
     },
+    getShapes() {
+      return Director.getShapes();
+    },
     container: HTMLDivElement = svgContainer.current.container
   }));
 
-  const drawShapes = () => {
-    if (props.rectangles) {
-      let x = RectangleDirector.getInstance();
-      x.plot(props.rectangles);
+  const drawShapes = (shapes: IlShape[] | any[]) => {
+    let rectangles = shapes.filter(s => s instanceof Rectangle || s.type === 'rectangle')
+    .map(s => new Rectangle(s.points, s.classes));
+    let polygons = shapes.filter(s => s instanceof Polygon || s.type === 'polygon')
+    .map(s => new Polygon(s.points, s.classes));
+    if (rectangles.length > 0) {
+      let director = RectangleDirector.getInstance();
+      director.plot(rectangles.map(p => new Rectangle(p.points, p.classes)));
     }
-
-    if (props.polygons) {
+    if (polygons) {
       let x = PolygonDirector.getInstance();
-      x.plot(props.polygons);
+      x.plot(polygons);
     }
   }
 
@@ -98,7 +103,7 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
       }
       Director.init(svg, width, height, width / ev.target.naturalWidth, svgContainer.current.container, props.onAddedOrEdited);
       setSize({width, height});
-      drawShapes();
+      if(props.shapes) drawShapes(props.shapes);
     }).size('100%', '100%').attr('onmousedown', 'return false').attr('oncontextmenu', 'return false');
   },[props.imageUrl]);
 

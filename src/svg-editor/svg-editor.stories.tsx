@@ -7,9 +7,13 @@ const imgUrl = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_
 const img1 = 'https://svgjs.dev/docs/3.0/assets/images/logo-svg-js-01d-128.png';
 const img2 = 'https://en.systemgroup.net/wp-content/themes/sg/dist/images/logo.png';
 const classes = ['class 1', 'class 2', 'class 3', 'class 4', 'class 5'];
+let p: Polygon = new Polygon([[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]], ['class 1', 'class 2']);
+let r: Rectangle = new Rectangle([[150, 50], [200, 50], [200, 100], [150, 100]], ['class 3']);
+let rawShapes = [{ type: 'rectangle', classes: ["class 3"], points: [[150, 50], [200, 50], [200, 100], [150, 100]] }, { type: 'polygon', classes: ["class 1", "class 2"], points: [[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]] }]
 
 export const SvgEditorPrimary: FC = () => {
   const [img, setImg] = React.useState(imgUrl);
+  const [shapes, setShapes] = React.useState<IlShape[]>([r, p]);
   const [dialog, setDialog] = React.useState<{ show: boolean, shape: IlShape | undefined }>({ show: false, shape: undefined });
   const svgEditor = React.useRef<any>();
 
@@ -20,25 +24,6 @@ export const SvgEditorPrimary: FC = () => {
     dialog.shape!.classes.sort((c1, c2) => classes.indexOf(c1) - classes.indexOf(c2));
     setDialog({ ...dialog });
   };
-
-  let p: Polygon = new Polygon(
-    [
-      [50, 50]
-      , [50, 100]
-      , [75, 100]
-      , [75, 120]
-      , [90, 120]
-      , [90, 150]
-      , [120, 150]
-      , [120, 50]
-    ], ['class 1', 'class 2']);
-  let r: Rectangle = new Rectangle(
-    [
-      [150, 50]
-      , [200, 50]
-      , [200, 100]
-      , [150, 100]
-    ], ['class 3']);
 
   const mousedown = React.useCallback((ev: MouseEvent) => {
     if (dialog.show) {
@@ -61,6 +46,7 @@ export const SvgEditorPrimary: FC = () => {
       <button onClick={() => { svgEditor.current.stopEdit(false) }}>Edit Done</button>
       <button onClick={() => { svgEditor.current.zoom(1.25) }}>zoom in</button>
       <button onClick={() => { svgEditor.current.zoom(0.8) }}>zoom out</button>
+      <button onClick={() => { setShapes(svgEditor.current.getShapes()) }}>get shapes</button>
       {dialog.show &&
         <div className='dialog'
           style={{ left: dialog.shape!.getCenterWithOffset()[0], top: dialog.shape!.getCenterWithOffset()[1] }}>
@@ -78,9 +64,9 @@ export const SvgEditorPrimary: FC = () => {
         ref={svgEditor}
         naturalSize={true}
         imageUrl={img}
-        polygons={[p]}
-        rectangles={[r]}
+        shapes={shapes}
         onAddedOrEdited={shape => setDialog({ show: true, shape })} />
+      <div>{JSON.stringify(shapes, null, 2)}</div>
     </div>
   );
 }

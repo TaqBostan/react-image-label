@@ -7,9 +7,11 @@ export type Point = { X: number, Y: number }
 export abstract class IlShape {
   id: number;
   static containerOffset: ArrayXY;
+  abstract type: string;
   abstract labelPosition(): ArrayXY;
   abstract getCenter(): ArrayXY;
   getCenterWithOffset = (): ArrayXY => Util.ArrayXYSum(this.getCenter(), IlShape.containerOffset);
+  getOutput = (): IlShape => JSON.parse(JSON.stringify(this));
   abstract centerChanged(newCenter: ArrayXY): void;
 
   constructor(public classes: string[] = []) {
@@ -28,7 +30,7 @@ export interface IlElementExtra {
 
 export type ElementWithExtra = Element & IlElementExtra;
 
-export class AngledShape extends IlShape {
+export abstract class AngledShape extends IlShape {
   constructor(public points: ArrayXY[] | PointArray = [], public classes: string[] = []) {
     super(classes);
   }
@@ -73,10 +75,19 @@ export enum Color {
 }
 
 export class Rectangle extends AngledShape {
-}
-
-export class Square extends AngledShape {
+  type: string = 'rectangle';
+  override getOutput = () => {
+    let obj = new Rectangle(this.points.filter((p, i) => i < this.points.length - 1, this.classes), this.classes);
+    obj.id = this.id;
+    return obj;
+  }
 }
 
 export class Polygon extends AngledShape {
+  type: string = 'polygon';
+  override getOutput = () => {
+    let obj = new Polygon(this.points.filter((p, i) => i < this.points.length - 1, this.classes), this.classes);
+    obj.id = this.id;
+    return obj;
+  }
 }
