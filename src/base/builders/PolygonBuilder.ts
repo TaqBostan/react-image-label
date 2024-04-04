@@ -1,9 +1,22 @@
-import { AngledBuilder, AngledDirector, IlPolyline } from "../AngledBuilder";
-import { Director } from "../base";
+import { AngledBuilder } from "../AngledBuilder";
+import { ShapeBuilder } from "../ShapeBuilder";
 import { Polygon, Color } from "../types";
 
-class PolygonBuilder extends AngledBuilder<Polygon> {
+export default class PolygonBuilder extends AngledBuilder<Polygon> {
   startClicked: boolean = false;
+	shape?: Polygon;
+  newShape = () => new Polygon();
+
+  ofType<T>(shape: T): boolean {
+    return shape instanceof Polygon;
+  }
+
+  startDraw(addPolyline: () => void): void {
+    this.svg.click((event: MouseEvent) => this.addPoint(event, () => addPolyline()));
+    this.svg.mousemove((event: MouseEvent) => this.newPolygonMouseMove(event));
+    this.svg.dblclick((event: MouseEvent) => this.addPointAndClose(event, () => addPolyline()));
+  }
+
   addPoint(event: MouseEvent, addAngledShape: () => void) {
     if (event.ctrlKey || event.shiftKey || event.altKey) return;
     if (!this.element) throw new Error();
@@ -17,8 +30,7 @@ class PolygonBuilder extends AngledBuilder<Polygon> {
       });
       this.startClicked = false;
       addAngledShape();
-      this.newAngledShape(new Polygon());
-      //segmentor.sendPolyline(id);
+      this.createElement(new Polygon());
     }
     else {
       if (this.element.hasConnector) {
@@ -63,6 +75,7 @@ class PolygonBuilder extends AngledBuilder<Polygon> {
 
     }
   }
+
   newPolygonMouseMove(event: MouseEvent) {
     if (this.element!.shape.points.length) {
       if (!this.element) return;
@@ -75,6 +88,7 @@ class PolygonBuilder extends AngledBuilder<Polygon> {
       this.plotAngledShape();
     }
   }
+
   editShapeMouseMove(event: MouseEvent) {
     // Moves a vertex of the polyline
     if (this.dragPointIndex !== undefined) {
@@ -85,6 +99,7 @@ class PolygonBuilder extends AngledBuilder<Polygon> {
       this.plotAngledShape();
     }
   }
+
   addPointAndClose(event: MouseEvent, addAngledShape: () => void) {
     if (event.ctrlKey || event.shiftKey || event.altKey) return;
     if (!this.element) throw new Error();
@@ -105,44 +120,15 @@ class PolygonBuilder extends AngledBuilder<Polygon> {
     this.element.discs[0].attr('class', '');
     this.addPoint({ ...event, offsetX: x, offsetY: y }, addAngledShape);
   }
-}
-
-export class PolygonDirector extends AngledDirector<Polygon>{
-  private static instance?: PolygonDirector;
-	
-  constructor(public builder = new PolygonBuilder()) {
-    super();
-  }
-
-  static override getInstance(): PolygonDirector {
-    if (!PolygonDirector.instance) PolygonDirector.instance = new PolygonDirector();
-    return PolygonDirector.instance;
-  }
-
-  startDraw(): void {
-    this.builder.newAngledShape(new Polygon());
-    this.builder.svg.click((event: MouseEvent) => this.builder.addPoint(event, () => this.addAngledShape()));
-    this.builder.svg.mousemove((event: MouseEvent) => this.builder.newPolygonMouseMove(event));
-    this.builder.svg.dblclick((event: MouseEvent) => this.builder.addPointAndClose(event, () => this.addAngledShape()));
-  }
-
-  zoom(factor: number): void {
-    Director.elements.forEach(elem => (elem.shape instanceof Polygon) && this.zoomAngledShape(elem as IlPolyline, factor));
-    if (this.builder.element && this.builder.element.shape.id === 0) {
-      if (this.builder.element.shape instanceof Polygon) {
-        this.zoomAngledShape(this.builder.element, factor);
-      }
-    }
-  }
 
   stopDraw(): void {
-    if (this.builder.element && this.builder.element.shape.id === 0) {
-      this.builder.element.remove();
-      this.builder.element.shadow.remove();
-      this.builder.element.discs.forEach(disc => disc.remove());
+    if (this.element && this.element.shape.id === 0) {
+      this.element.remove();
+      this.element.shadow.remove();
+      this.element.discs.forEach(disc => disc.remove());
     }
-    this.builder.svg.off('click');
-    this.builder.svg.off('mousemove');
-    this.builder.svg.off('dblclick');
+    this.svg.off('click');
+    this.svg.off('mousemove');
+    this.svg.off('dblclick');
   }
 }

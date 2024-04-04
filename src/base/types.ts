@@ -10,6 +10,7 @@ export abstract class IlShape {
   abstract type: string;
   abstract labelPosition(): ArrayXY;
   abstract getCenter(): ArrayXY;
+  abstract zoom(factor: number): void;
   getCenterWithOffset = (): ArrayXY => Util.ArrayXYSum(this.getCenter(), IlShape.containerOffset);
   getOutput = (): IlShape => JSON.parse(JSON.stringify(this));
   abstract centerChanged(newCenter: ArrayXY): void;
@@ -61,6 +62,10 @@ export abstract class AngledShape extends IlShape {
       point[1] += dy;
     })
   }
+
+  zoom(factor: number): void {
+    this.points = this.points.map(p => [p[0] * factor, p[1] * factor]);
+  }
 }
 
 export enum Color {
@@ -106,5 +111,10 @@ export class Circle extends IlShape {
   }
   centerChanged(newCenter: ArrayXY): void {
     this.centre = newCenter;
+  }
+
+  zoom(factor: number): void {
+    this.centre = [this.centre[0] * factor, this.centre[1] * factor];
+    this.radius *= factor;
   }
 }

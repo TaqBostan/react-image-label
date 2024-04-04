@@ -1,11 +1,8 @@
 import React, { useEffect } from 'react';
 import { SvgContainer, Svg } from 'react-svgdotjs';
-import { RectangleDirector } from '../base/builders/RectangleBuilder';
-import { PolygonDirector } from '../base/builders/PolygonBuilder';
 import { Director } from '../base/base';
 import { Circle, IlShape, Polygon, Rectangle } from '../base/types';
 import './index.css';
-import { CircleDirector } from '../base/builders/CircleBuilder';
 
 interface SvgEditorProps {
   onReady?: () => void;
@@ -20,56 +17,42 @@ interface SvgEditorProps {
 export default React.forwardRef((props: SvgEditorProps, ref) => {
   const [size, setSize] = React.useState({ width: 0, height: 0 });
   const svgContainer = React.useRef<any>();
-  const getDirectors = (): Director<IlShape>[] => [RectangleDirector.getInstance(), PolygonDirector.getInstance(), CircleDirector.getInstance()];
-
-
-  const getDirector = (id: number): [Director<IlShape>, IlShape] => {
-    let shape = Director.findShape(id);
-    let director: Director<IlShape>;
-    if (shape instanceof Polygon)
-      director = PolygonDirector.getInstance();
-    else if (shape instanceof Rectangle)
-      director = RectangleDirector.getInstance();
-    else if (shape instanceof Circle)
-      director = CircleDirector.getInstance();
-    return [director!, shape];
-  }
 
   React.useImperativeHandle(ref, () => ({
-
     newRectangle() {
       stopAll();
-      let x = RectangleDirector.getInstance();
-      x.startDraw();
+      let director = new Director();
+      director.startDraw(new Rectangle());
     },
     newPolygon() {
       stopAll();
-      let x = PolygonDirector.getInstance();
-      x.startDraw();
+      let director = new Director();
+      director.startDraw(new Polygon());
     },
     newCircle() {
       stopAll();
-      let director = CircleDirector.getInstance();
-      director.startDraw();
+      let director = new Director();
+      director.startDraw(new Circle());
     },
     stop() {
       stopAll();
     },
     stopEdit(callOnEdited: boolean) {
-      getDirectors().forEach(director => director.stopEdit(callOnEdited));
+      let director = new Director();
+      director.stopEdit(callOnEdited);
     },
     edit(id: number) {
       stopAll();
-      let [director, shape] = getDirector(id);
-      director!.edit(shape);
+      let director = new Director();
+      director!.edit(id);
     },
     delete(id: number) {
-      let [director] = getDirector(id);
+      let director = new Director();
       director!.removeElement(id);
     },
     updateClasses(shape: IlShape) {
-      let [director] = getDirector(shape.id);
-      director!.updateClasses(shape);
+      let director = new Director();
+      director.updateClasses(shape);
     },
     zoom(factor: number) {
       zoom(factor);
@@ -80,25 +63,19 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
     container: HTMLDivElement = svgContainer.current.container
   }));
 
-  const drawShapes = (shapes: IlShape[] | any[]) => {
+  const drawShapes = (shapes?: IlShape[] | any[]) => {
+    // let q = new PolygonBuilder();
+    let director = new Director();
+    if(!shapes) return;
     let rectangles = shapes.filter(s => s instanceof Rectangle || s.type === 'rectangle')
       .map(s => new Rectangle(s.points, s.classes));
     let polygons = shapes.filter(s => s instanceof Polygon || s.type === 'polygon')
       .map(s => new Polygon(s.points, s.classes));
     let circles = shapes.filter(s => s instanceof Circle || s.type === 'circle')
       .map(s => new Circle(s.centre, s.radius, s.classes));
-    if (rectangles.length > 0) {
-      let director = RectangleDirector.getInstance();
-      director.plot(rectangles.map(p => new Rectangle(p.points, p.classes)));
-    }
-    if (polygons) {
-      let x = PolygonDirector.getInstance();
-      x.plot(polygons);
-    }
-    if (circles) {
-      let x = CircleDirector.getInstance();
-      x.plot(circles);
-    }
+    if (rectangles.length > 0) director.plot(rectangles);
+    if (polygons.length > 0) director.plot(polygons);
+    if (circles.length > 0) director.plot(circles);
   }
 
   const onload = React.useCallback((svg: Svg) => {
@@ -121,18 +98,17 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
       }
       Director.init(svg, width, height, width / ev.target.naturalWidth, svgContainer.current.container, props.onAddedOrEdited);
       setSize({ width, height });
-      if (props.shapes) drawShapes(props.shapes);
+      drawShapes(props.shapes);
     }).size('100%', '100%').attr('onmousedown', 'return false').attr('oncontextmenu', 'return false');
   }, [props.imageUrl]);
 
   const zoom = (factor: number) => {
+    let director = new Director();
     Director.setSizeAndRatio(factor);
     svgContainer.current.container.height *= factor;
     svgContainer.current.container.width *= factor;
-    getDirectors().forEach(director => {
-      director.stopEdit(false);
-      director.zoom(factor);
-    });
+    director.stopEdit(false);
+    director.zoom(factor);
   }
 
   useEffect(() => {
@@ -141,10 +117,9 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
   }, [svgContainer, onload, props.imageUrl]);
 
   const stopAll = () => {
-    getDirectors().forEach(director => {
-      director.stopDraw();
-      director.stopEdit(false);
-    })
+    let director = new Director();
+    director.stopDraw();
+    director.stopEdit(false);
   }
 
   return (<SvgContainer ref={svgContainer} width={size.width + 'px'} height={size.height + 'px'} />);

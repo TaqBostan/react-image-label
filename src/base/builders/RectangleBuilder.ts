@@ -1,10 +1,16 @@
 import { ArrayXY, PointArray } from '@svgdotjs/svg.js'
-import { AngledBuilder, AngledDirector, IlPolyline } from "../AngledBuilder";
+import { AngledBuilder } from "../AngledBuilder";
 import { Rectangle, Point } from "../types";
-import { Director } from '../base';
+import { ShapeBuilder } from '../ShapeBuilder';
 
-class RectangleBuilder extends AngledBuilder<Rectangle> {
+export default class RectangleBuilder extends AngledBuilder<Rectangle> {
   rectOrigin?: Point;
+	shape?: Rectangle;
+  newShape = () => new Rectangle();
+
+  ofType<T>(shape: T): boolean {
+    return shape instanceof Rectangle;
+  }
 
   rectangleMouseDown(event: MouseEvent) {
     if (event.button === 0 && !this.rectOrigin) this.rectOrigin = { X: event.offsetX, Y: event.offsetY };
@@ -75,53 +81,23 @@ class RectangleBuilder extends AngledBuilder<Rectangle> {
         this.rectOrigin = undefined;
         return;
       }
-      //this.mouseMove(event);
       if (!this.element) throw new Error();
       this.element.shape.points.filter((point, index) => index < this.element!.shape.points.length - 1)
         .forEach(point => {
           this.element!.discs.push(this.drawDisc(point[0], point[1], 2, '#000'))
         });
       addPolyline();
-      //segmentor.sendPolyline(id);
-      this.newAngledShape(new Rectangle());
+      this.createElement(new Rectangle());
       this.rectOrigin = undefined;
     }
   }
-}
 
-export class RectangleDirector extends AngledDirector<Rectangle>{
-  private static instance?: RectangleDirector;
-	
-  constructor(public builder = new RectangleBuilder()) {
-    super();
-  }
-
-  static override getInstance(): RectangleDirector {
-    if (!RectangleDirector.instance) RectangleDirector.instance = new RectangleDirector();
-    return RectangleDirector.instance;
-  }
-
-  override plot(shapes: Rectangle[]): void {
-    shapes.forEach(shape => {
-      if (shape.points[0][0] != shape.points[1][0]) {
-        let p = shape.points[1];
-        shape.points[1] = [...shape.points[3]];
-        shape.points[3] = [...p];
-      }
-    });
-    super.plot(shapes);
-  }
-
-  zoom(factor: number): void {
-		Director.elements.forEach(elem => (elem.shape instanceof Rectangle) && this.zoomAngledShape(elem as IlPolyline, factor));
-  }
-
-  startDraw(): void {
-    this.builder.newAngledShape(new Rectangle());
-    this.builder.startDraw(() => this.addAngledShape());
-  }
-
-  stopDraw(): void {
-    this.builder.stopDraw();
+  override processShape(): void {
+    let shape = this.shape!;
+    if (shape.points[0][0] != shape.points[1][0]) {
+      let p = shape.points[1];
+      shape.points[1] = [...shape.points[3]];
+      shape.points[3] = [...p];
+    }
   }
 }

@@ -1,8 +1,9 @@
 import { Text, Rect, Circle as Circ, Polyline } from "@svgdotjs/svg.js";
-import { Director, ShapeBuilder } from "../base";
-import { Circle, Color, ElementWithExtra, IlElementExtra, Point } from "../types";
+import { Director } from "../base";
+import { Circle, Color, ElementWithExtra, IlElementExtra, IlShape, Point } from "../types";
 import { ArrayXY } from '@svgdotjs/svg.js'
 import Util from "../util";
+import { ShapeBuilder } from "../ShapeBuilder";
 
 class IlCircle extends Circ implements IlElementExtra {
   discs!: Circ[];
@@ -14,13 +15,53 @@ class IlCircle extends Circ implements IlElementExtra {
   connector?: Polyline;
 }
 
-class CircleBuilder extends ShapeBuilder<Circle> {
+export default class CircleBuilder extends ShapeBuilder<Circle> {
   element?: IlCircle;
+  shape?: Circle;
   circleOrigin?: Point;
   dragPointIndex?: number;
+  
+  newShape = () => new Circle();
+  ofType<T>(shape: T): boolean { return shape instanceof Circle; }
+
+  plotShape(): void {
+		let shape = this.shape!;
+    shape.centre = [shape.centre[0] * ShapeBuilder.ratio, shape.centre[1] * ShapeBuilder.ratio];
+    shape.radius = shape.radius * ShapeBuilder.ratio;
+    this.createElement(shape);
+  }
+
+  createElement(shape: Circle): void {
+    this.element = Object.assign(this.svg.circle(2 * shape.radius),
+      {
+        shape,
+        shadow: this.svg.circle(2 * shape.radius),
+        discs: [],
+        editing: false
+      });
+    this.element.fill(Color.ShapeFill).move(shape.centre[0] - shape.radius, shape.centre[1] - shape.radius);
+    this.element.stroke({ color: Color.RedLine, width: 2, opacity: 0.7 });
+
+    this.element.shadow.fill('none').move(shape.centre[0] - shape.radius, shape.centre[1] - shape.radius);
+    this.element.shadow.stroke({ color: Color.BlackLine, width: 4, opacity: 0.4 });
+  }
+
+  startDraw(addShape: () => void): void {
+    this.svg.mousedown((event: MouseEvent) => this.circleMouseDown(event));
+    this.svg.mousemove((event: MouseEvent) => this.circleMouseMove(event));
+    this.svg.mouseup((event: MouseEvent) => this.circleMouseUp(event, () => addShape()));
+  }
+
+  stopDraw(): void {
+    this.svg.off('mousedown');
+    this.svg.off('mousemove');
+    this.svg.off('mouseup');
+  }
+
   circleMouseDown(event: MouseEvent) {
     if (event.button === 0 && !this.circleOrigin) this.circleOrigin = { X: event.offsetX, Y: event.offsetY };
   }
+
   circleMouseMove(event: MouseEvent) {
     if (this.circleOrigin) {
       let centre: ArrayXY = [(this.circleOrigin.X + event.offsetX) / 2, (this.circleOrigin.Y + event.offsetY) / 2];
@@ -38,24 +79,9 @@ class CircleBuilder extends ShapeBuilder<Circle> {
       this.element!.shape.radius = radius;
       if (radius > 10)
         addCircle();
-      this.newCircle(new Circle());
+      this.createElement(new Circle());
       this.circleOrigin = undefined;
     }
-  }
-
-  newCircle(shape: Circle): void {
-    this.element = Object.assign(this.svg.circle(2 * shape.radius),
-      {
-        shape,
-        shadow: this.svg.circle(2 * shape.radius),
-        discs: [],
-        editing: false
-      });
-    this.element.fill(Color.ShapeFill).move(shape.centre[0] - shape.radius, shape.centre[1] - shape.radius);
-    this.element.stroke({ color: Color.RedLine, width: 2, opacity: 0.7 });
-
-    this.element.shadow.fill('none').move(shape.centre[0] - shape.radius, shape.centre[1] - shape.radius);
-    this.element.shadow.stroke({ color: Color.BlackLine, width: 4, opacity: 0.4 });
   }
 
   plot(circle: IlCircle): void {
@@ -136,84 +162,4 @@ class CircleBuilder extends ShapeBuilder<Circle> {
     let shape = circle.shape;
     if (shape.classes.length > 0) this.setOptions(circle, shape.classes);
   }
-}
-
-export class CircleDirector extends Director<Circle>{
-  private static instance?: CircleDirector;
-
-  constructor(public builder = new CircleBuilder()) {
-    super();
-  }
-
-  static override getInstance(): CircleDirector {
-    if (!CircleDirector.instance) CircleDirector.instance = new CircleDirector();
-    return CircleDirector.instance;
-  }
-
-  zoom(factor: number): void {
-    Director.elements.forEach(elem => {
-      if (elem.shape instanceof Circle) {
-        elem.shape.centre = [elem.shape.centre[0] * factor, elem.shape.centre[1] * factor];
-        elem.shape.radius = elem.shape.radius * factor;
-        this.builder.plot(elem as IlCircle);
-        if (elem.shape.classes.length > 0) this.setOptions(elem, elem.shape.classes);
-      }
-    });
-  }
-
-  innerPlot(shape: Circle): void {
-    shape.centre = [shape.centre[0] * ShapeBuilder.ratio, shape.centre[1] * ShapeBuilder.ratio];
-    shape.radius = shape.radius * ShapeBuilder.ratio;
-    this.builder.newCircle(shape);
-    this.addCircle(false);
-  }
-  startDraw(): void {
-    this.builder.newCircle(new Circle());
-    this.builder.svg.mousedown((event: MouseEvent) => this.builder.circleMouseDown(event));
-    this.builder.svg.mousemove((event: MouseEvent) => this.builder.circleMouseMove(event));
-    this.builder.svg.mouseup((event: MouseEvent) => this.builder.circleMouseUp(event, () => this.addCircle()));
-  }
-
-  addCircle(isNew: boolean = true): void {
-    if (!this.builder.element) return;
-    if (this.builder.element.shape.id === 0) {
-      this.builder.element.shape.id = ++Util.maxId;
-    }
-    let id = this.builder.element.shape.id;
-    let classes = this.builder.element.shape.classes;
-    if (classes.length > 0) this.setOptions(this.builder.element, classes);
-    Director.elements.push(this.builder.element);
-    if (isNew) Director.onAddedOrEdited?.(this.builder.element.shape);
-    this.builder.element.node.addEventListener('contextmenu', ev => {
-      if (ShapeBuilder.editing) return;
-      ev.preventDefault();
-      let elem = Director.elements.find(p => p.shape.id === id)!;
-      elem.stroke({ color: Color.GreenLine });
-      Director.onAddedOrEdited?.(elem.shape);
-      return false;
-    }, false);
-  }
-
-  stopDraw(): void {
-    this.builder.svg.off('mousedown');
-    this.builder.svg.off('mousemove');
-    this.builder.svg.off('mouseup');
-  }
-
-  edit(shape: Circle): void {
-    this.builder.element = Director.elements.find(p => p.shape.id === shape.id)! as IlCircle;
-    ShapeBuilder.editing = true;
-    this.builder.initDrag();
-    this.builder.editShape();
-  }
-
-  stopEdit(callOnEdited: boolean): void {
-    if (ShapeBuilder.editing && this.builder.element && this.builder.element.editing) {
-      ShapeBuilder.editing = this.builder.element.editing = false;
-      this.builder.stopDrag();
-      this.builder.stopEditShape(this.builder.element);
-      if (callOnEdited) Director.onAddedOrEdited?.(this.builder.element.shape);
-    }
-  }
-
 }
