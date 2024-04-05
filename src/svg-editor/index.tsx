@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { SvgContainer, Svg } from 'react-svgdotjs';
-import { Director } from '../base/base';
+import { Director } from '../base/Director';
 import { Circle, IlShape, Polygon, Rectangle } from '../base/types';
 import './index.css';
 

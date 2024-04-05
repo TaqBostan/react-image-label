@@ -1,8 +1,6 @@
 import { Text, Rect, Circle as Circ, Polyline } from "@svgdotjs/svg.js";
-import { Director } from "../base";
-import { Circle, Color, ElementWithExtra, IlElementExtra, IlShape, Point } from "../types";
+import { Circle, Color, IlElementExtra, Point } from "../types";
 import { ArrayXY } from '@svgdotjs/svg.js'
-import Util from "../util";
 import { ShapeBuilder } from "../ShapeBuilder";
 
 class IlCircle extends Circ implements IlElementExtra {
