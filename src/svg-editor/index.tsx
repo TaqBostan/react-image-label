@@ -42,7 +42,6 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
       director.stopEdit(callOnEdited);
     },
     edit(id: number) {
-      stopAll();
       let director = new Director();
       director!.edit(id);
     },
@@ -64,7 +63,6 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
   }));
 
   const drawShapes = (shapes?: IlShape[] | any[]) => {
-    // let q = new PolygonBuilder();
     let director = new Director();
     if(!shapes) return;
     let rectangles = shapes.filter(s => s instanceof Rectangle || s.type === 'rectangle')
@@ -122,5 +120,5 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
     director.stopEdit(false);
   }
 
-  return (<SvgContainer ref={svgContainer} width={size.width + 'px'} height={size.height + 'px'} />);
+  return (<SvgContainer ref={svgContainer} width='fit-content' height='fit-content' />);
 });

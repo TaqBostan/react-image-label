@@ -38,6 +38,6 @@
     "dist"
   ],
   "dependencies": {
-    "react-svgdotjs": "^1.0.2"
+    "react-svgdotjs": "^1.0.4"
   }
 }

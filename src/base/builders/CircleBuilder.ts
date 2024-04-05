@@ -18,12 +18,12 @@ export default class CircleBuilder extends ShapeBuilder<Circle> {
   shape?: Circle;
   circleOrigin?: Point;
   dragPointIndex?: number;
-  
+
   newShape = () => new Circle();
   ofType<T>(shape: T): boolean { return shape instanceof Circle; }
 
   plotShape(): void {
-		let shape = this.shape!;
+    let shape = this.shape!;
     shape.centre = [shape.centre[0] * ShapeBuilder.ratio, shape.centre[1] * ShapeBuilder.ratio];
     shape.radius = shape.radius * ShapeBuilder.ratio;
     this.createElement(shape);
@@ -45,19 +45,21 @@ export default class CircleBuilder extends ShapeBuilder<Circle> {
   }
 
   startDraw(addShape: () => void): void {
-    this.svg.mousedown((event: MouseEvent) => this.circleMouseDown(event));
-    this.svg.mousemove((event: MouseEvent) => this.circleMouseMove(event));
-    this.svg.mouseup((event: MouseEvent) => this.circleMouseUp(event, () => addShape()));
+    this.svg.mousedown((event: MouseEvent) => this.circleMouseDown(event, addShape));
   }
 
   stopDraw(): void {
-    this.svg.off('mousedown');
-    this.svg.off('mousemove');
-    this.svg.off('mouseup');
+    this.svg.off('mousedown').off('mouseup');
   }
 
-  circleMouseDown(event: MouseEvent) {
-    if (event.button === 0 && !this.circleOrigin) this.circleOrigin = { X: event.offsetX, Y: event.offsetY };
+  circleMouseDown(event: MouseEvent, addCircle: () => void) {
+    if (event.button === 0 && !this.circleOrigin) {
+      if (this.element?.editing) this.stopEdit()
+      this.circleOrigin = { X: event.offsetX, Y: event.offsetY };
+      this.createElement(new Circle());
+      this.svg.mousemove((event: MouseEvent) => this.circleMouseMove(event))
+        .mouseup((event: MouseEvent) => this.circleMouseUp(event, addCircle));
+    }
   }
 
   circleMouseMove(event: MouseEvent) {
@@ -70,16 +72,13 @@ export default class CircleBuilder extends ShapeBuilder<Circle> {
   }
 
   circleMouseUp(event: MouseEvent, addCircle: () => void) {
-    if (this.circleOrigin) {
-      let centre: ArrayXY = [(this.circleOrigin.X + event.offsetX) / 2, (this.circleOrigin.Y + event.offsetY) / 2];
-      let radius = Math.sqrt(Math.pow(this.circleOrigin.X - event.offsetX, 2) + Math.pow(this.circleOrigin.Y - event.offsetY, 2)) / 2;
-      this.element!.shape.centre = centre;
-      this.element!.shape.radius = radius;
-      if (radius > 10)
-        addCircle();
-      this.createElement(new Circle());
-      this.circleOrigin = undefined;
-    }
+    let centre: ArrayXY = [(this.circleOrigin!.X + event.offsetX) / 2, (this.circleOrigin!.Y + event.offsetY) / 2];
+    let radius = Math.sqrt(Math.pow(this.circleOrigin!.X - event.offsetX, 2) + Math.pow(this.circleOrigin!.Y - event.offsetY, 2)) / 2;
+    this.element!.shape.centre = centre;
+    this.element!.shape.radius = radius;
+    this.svg.off('mousemove').off('mouseup');
+    if (radius > 10) addCircle();
+    this.circleOrigin = undefined;
   }
 
   plot(circle: IlCircle): void {
@@ -93,24 +92,24 @@ export default class CircleBuilder extends ShapeBuilder<Circle> {
     if (this.element!.classNamesWrapper) this.element!.classNamesWrapper.remove();
     this.addEditingPoints();
     this.element!.discs?.forEach((_disc, index) => {
-      _disc.addClass('seg-point');
-      _disc.mousedown((event: MouseEvent) => {
-        if (event.button === 0 && this.dragPointIndex === undefined) {
-          let oppositIndex = index + 2 <= 3 ? index + 2 : index - 2;
-          this.circleOrigin = { X: this.element!.discs[oppositIndex].cx(), Y: this.element!.discs[oppositIndex].cy() }
-          this.dragPointIndex = index;
-          this.moveIconPath!.remove();
-          this.svg.mousemove((event: MouseEvent) => this.editCircleMouseMove(event));
-        }
-      });
-    });
-    this.svg.mouseup((event: MouseEvent) => {
-      if (this.dragPointIndex !== undefined) {
-        this.addMoveIcon();
-        this.circleOrigin = undefined;
-        this.dragPointIndex = undefined;
-        this.svg.off("mousemove");
-      }
+      _disc.addClass('seg-point')
+        .click((event: MouseEvent) => { event.stopPropagation(); })
+        .mousedown((event: MouseEvent) => {
+          if (event.button === 0 && this.dragPointIndex === undefined) {
+            let oppositIndex = index + 2 <= 3 ? index + 2 : index - 2;
+            this.circleOrigin = { X: this.element!.discs[oppositIndex].cx(), Y: this.element!.discs[oppositIndex].cy() }
+            this.dragPointIndex = index;
+            this.moveIconPath!.remove();
+            event.stopPropagation();
+            this.svg.mousemove((event: MouseEvent) => this.editCircleMouseMove(event));
+            this.svg.mouseup((event: MouseEvent) => {
+              this.addMoveIcon();
+              this.circleOrigin = undefined;
+              this.dragPointIndex = undefined;
+              this.svg.off("mousemove").off("mouseup");
+            });
+          }
+        });
     });
   }
 
@@ -121,9 +120,10 @@ export default class CircleBuilder extends ShapeBuilder<Circle> {
     this.element!.discs.push(this.drawDisc(x + radius, y + radius, 4, Color.GreenDisc));
     this.element!.discs.push(this.drawDisc(x + radius, y - radius, 4, Color.GreenDisc));
     let points: ArrayXY[] = this.element!.discs.map(disc => [disc.cx(), disc.cy()]);
-    let polyline = this.svg.polyline([...points, points[0]]);
-    this.element!.connector = polyline.fill(Color.ShapeFill)
-      .stroke({ color: Color.BlackLine, width: 1, opacity: 0.8, dasharray: "3,3" });
+    this.element!.connector = this.svg.polyline([...points, points[0]])
+      .fill(Color.ShapeFill)
+      .stroke({ color: Color.BlackLine, width: 1, opacity: 0.8, dasharray: "3,3" })
+      .mousedown((event: MouseEvent) => { event.stopPropagation(); });
     this.element!.before(this.element!.connector);
   }
 
@@ -157,7 +157,6 @@ export default class CircleBuilder extends ShapeBuilder<Circle> {
     });
     circle.discs = [];
     circle.connector!.remove();
-    let shape = circle.shape;
-    if (shape.classes.length > 0) this.setOptions(circle, shape.classes);
+    this.setOptions(circle, circle.shape.classes);
   }
 }

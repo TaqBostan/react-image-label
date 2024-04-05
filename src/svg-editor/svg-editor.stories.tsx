@@ -4,6 +4,7 @@ import { Circle, IlShape, Polygon, Rectangle } from '../base/types';
 import './svg-editor.stories.css';
 
 const imgUrl = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
+// const imgUrl = '/logo512.png';
 const img1 = 'https://svgjs.dev/docs/3.0/assets/images/logo-svg-js-01d-128.png';
 const img2 = 'https://en.systemgroup.net/wp-content/themes/sg/dist/images/logo.png';
 const classes = ['class 1', 'class 2', 'class 3', 'class 4', 'class 5'];

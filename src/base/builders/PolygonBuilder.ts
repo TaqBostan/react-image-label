@@ -1,10 +1,9 @@
 import { AngledBuilder } from "../AngledBuilder";
-import { ShapeBuilder } from "../ShapeBuilder";
 import { Polygon, Color } from "../types";
 
 export default class PolygonBuilder extends AngledBuilder<Polygon> {
   startClicked: boolean = false;
-	shape?: Polygon;
+  shape?: Polygon;
   newShape = () => new Polygon();
 
   ofType<T>(shape: T): boolean {
@@ -13,7 +12,6 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
 
   startDraw(addPolyline: () => void): void {
     this.svg.click((event: MouseEvent) => this.addPoint(event, () => addPolyline()));
-    this.svg.mousemove((event: MouseEvent) => this.newPolygonMouseMove(event));
     this.svg.dblclick((event: MouseEvent) => this.addPointAndClose(event, () => addPolyline()));
   }
 
@@ -25,17 +23,20 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
       let origin = this.element.shape.points[0];
       this.element.discs[0] = this.drawDisc(origin[0], origin[1], 4, Color.BlackDisc);
       this.element.discs.forEach(_circle => {
-        _circle.fill(Color.BlackDisc);
-        _circle.size(4);
+        _circle.fill(Color.BlackDisc).size(4);
       });
       this.startClicked = false;
+      this.svg.off('mousemove');
       addAngledShape();
-      this.createElement(new Polygon());
     }
     else {
       if (this.element.hasConnector) {
         this.element.shape.points.pop();
         this.element.hasConnector = false;
+      }
+      if (this.element?.editing) {
+        this.stopEdit()
+        this.createElement(new Polygon());
       }
       let x = event.offsetX, y = event.offsetY;
       let radius = 5 + PolygonBuilder.width / 150;
@@ -52,6 +53,7 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
       let _radius = this.element.shape.points.length === 1 ? 5 : 3;
 
       if (this.element.shape.points.length === 1) {
+        this.svg.mousemove((event: MouseEvent) => this.newPolygonMouseMove(event));
         let disc = this.drawDisc(x, y, _radius, Color.GreenDisc);
         this.element.discs = [disc];
         disc.mouseover(() => {
@@ -77,16 +79,14 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
   }
 
   newPolygonMouseMove(event: MouseEvent) {
-    if (this.element!.shape.points.length) {
-      if (!this.element) return;
-      // Draws a line from the last point to the mouse location
-      if (this.element.hasConnector)
-        this.element.shape.points.pop();
-      else
-        this.element.hasConnector = true;
-      this.element.shape.points.push([event.offsetX, event.offsetY]);
-      this.plotAngledShape();
-    }
+    if (!this.element) return;
+    // Draws a line from the last point to the mouse location
+    if (this.element.hasConnector)
+      this.element.shape.points.pop();
+    else
+      this.element.hasConnector = true;
+    this.element.shape.points.push([event.offsetX, event.offsetY]);
+    this.plotAngledShape();
   }
 
   editShapeMouseMove(event: MouseEvent) {
@@ -127,8 +127,6 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
       this.element.shadow.remove();
       this.element.discs.forEach(disc => disc.remove());
     }
-    this.svg.off('click');
-    this.svg.off('mousemove');
-    this.svg.off('dblclick');
+    this.svg.off('click').off('mousemove').off('dblclick');
   }
 }

@@ -1,31 +1,32 @@
 import { ArrayXY, PointArray } from '@svgdotjs/svg.js'
 import { AngledBuilder } from "../AngledBuilder";
 import { Rectangle, Point } from "../types";
-import { ShapeBuilder } from '../ShapeBuilder';
 
 export default class RectangleBuilder extends AngledBuilder<Rectangle> {
   rectOrigin?: Point;
-	shape?: Rectangle;
+  shape?: Rectangle;
   newShape = () => new Rectangle();
 
   ofType<T>(shape: T): boolean {
     return shape instanceof Rectangle;
   }
 
-  rectangleMouseDown(event: MouseEvent) {
-    if (event.button === 0 && !this.rectOrigin) this.rectOrigin = { X: event.offsetX, Y: event.offsetY };
+  rectangleMouseDown(event: MouseEvent, addPolyline: () => void) {
+    if (event.button === 0 && !this.rectOrigin) {
+      if (this.element?.editing) this.stopEdit()
+      this.rectOrigin = { X: event.offsetX, Y: event.offsetY };
+      this.createElement(new Rectangle());
+      this.svg.mousemove((event: any) => this.newRectangleMouseMove(event));
+    this.svg.mouseup((event: MouseEvent) => this.rectangleMouseUp(event, addPolyline));
+    }
   }
 
   startDraw(addPolyline: () => void) {
-    this.svg.mousedown((event: MouseEvent) => this.rectangleMouseDown(event));
-    this.svg.mousemove((event: MouseEvent) => this.newRectangleMouseMove(event));
-    this.svg.mouseup((event: MouseEvent) => this.rectangleMouseUp(event, addPolyline));
+    this.svg.mousedown((event: MouseEvent) => this.rectangleMouseDown(event, addPolyline));
   }
 
   stopDraw() {
-    this.svg.off('mousedown');
-    this.svg.off('mousemove');
-    this.svg.off('mouseup');
+    this.svg.off('mousedown').off('mouseup');
   }
 
   newRectangleMouseMove(event: MouseEvent) {
@@ -86,8 +87,8 @@ export default class RectangleBuilder extends AngledBuilder<Rectangle> {
         .forEach(point => {
           this.element!.discs.push(this.drawDisc(point[0], point[1], 2, '#000'))
         });
+      this.svg.off('mousemove').off('mouseup');
       addPolyline();
-      this.createElement(new Rectangle());
       this.rectOrigin = undefined;
     }
   }

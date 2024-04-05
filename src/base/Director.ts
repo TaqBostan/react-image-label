@@ -1,4 +1,4 @@
-import { Svg, Element } from "react-svgdotjs";
+import { Svg } from "react-svgdotjs";
 import { IlShape, ElementWithExtra, Color } from "./types";
 import Util from './util'
 import PolygonBuilder from "./builders/PolygonBuilder";
@@ -26,6 +26,7 @@ export class Director {
   }
 
   edit(id: number): void {
+    if(ShapeBuilder.editing) return;
     let elem = this.getElement(id);
     let builder = this.getBuilder(elem.shape);
     builder.element = elem;
@@ -47,7 +48,7 @@ export class Director {
   plot(shapes: IlShape[]): void {
     shapes.forEach(shape => {
       shape.id = ++Util.maxId;
-      this.getBuilder(shape).plotShape();
+      this.getBuilder(shape).basePlotShape();
       this.addShape(shape, false);
     });
   }
@@ -67,7 +68,7 @@ export class Director {
     }
   }
 
-  addShape<Shape extends IlShape>(shape: IlShape, isNew: boolean = true) {
+  addShape(shape: IlShape, isNew: boolean = true) {
     let builder = this.getBuilder(shape);
     if (!builder.element) return;
     if (builder.element.shape.id === 0) {
@@ -75,7 +76,6 @@ export class Director {
     }
     let id = builder.element.shape.id;
     Director.elements.push(builder.element);
-    if (isNew) Director.onAddedOrEdited?.(builder.element.shape);
     builder.element.node.addEventListener('contextmenu', (ev: MouseEvent) => {
       if (ShapeBuilder.editing) return;
       ev.preventDefault();
@@ -84,17 +84,23 @@ export class Director {
       Director.onAddedOrEdited?.(elem.shape);
       return false;
     }, false);
-    return id;
+    if (isNew) {
+      if(!builder.element!.editing) builder.edit();
+      Director.onAddedOrEdited?.(builder.element.shape);
+    }
   }
 
-  updateClasses<Shape extends IlShape>(shape: Shape) {
+  updateClasses(shape: IlShape) {
     let elem = this.getElement(shape.id);
-    this.getBuilder<Shape>(shape).setOptions(elem, shape.classes);
+    let builder = this.getBuilder(shape);
+    if(!builder.drawing) builder.setOptions(elem, shape.classes);
   }
 
   removeElement(id: number) {
     let elem = this.getElement(id);
-    this.getBuilder(elem.shape).removeElement(elem);
+    let builder = this.getBuilder(elem.shape);
+    builder.element = elem;
+    builder.removeElement();
     Director.elements.splice(Director.elements.indexOf(elem), 1);
   }
 
