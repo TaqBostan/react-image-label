@@ -1,5 +1,6 @@
-import { Svg, Element } from "react-svgdotjs";
+import { Svg } from "react-svgdotjs";
 import { IlShape, ElementWithExtra, Color, Point, Polygon } from "./types";
+import { ArrayXY, Path } from '@svgdotjs/svg.js'
 
 export abstract class ShapeBuilder<Shape extends IlShape> {
   static _svg: Svg;
@@ -15,7 +16,9 @@ export abstract class ShapeBuilder<Shape extends IlShape> {
   //#region drag
   private lastPoint?: Point;
   private originPoint?: Point;
-  protected moveIconPath?: Element;
+  private moveIcon = (center: ArrayXY) => `M${center[0] + 11.3},${center[1]}l-4.6-4.6v2.4h-4.5v-4.5h2.4l-4.6,-4.6l-4.6,4.6h2.4v4.5h-4.5v-2.4l-4.6,4.6l4.6,4.6v-2.4h4.5v4.5h-2.4l4.6,4.6
+  l4.6-4.6h-2.4v-4.5h4.5v2.4l4.6-4.6z`;
+  protected moveIconPath?: Path;
   drawing: boolean = false;
   //#endregion
   abstract plotShape(): void;
@@ -71,9 +74,7 @@ export abstract class ShapeBuilder<Shape extends IlShape> {
   }
 
   addMoveIcon(): void {
-    let center = this.element!.shape.getCenter();
-    let str = `M${center[0] + 11.3},${center[1]}l-4.6-4.6v2.4h-4.5v-4.5h2.4l-4.6,-4.6l-4.6,4.6h2.4v4.5h-4.5v-2.4l-4.6,4.6l4.6,4.6v-2.4h4.5v4.5h-2.4l4.6,4.6
-          l4.6-4.6h-2.4v-4.5h4.5v2.4l4.6-4.6z`;
+    let str = this.moveIcon(this.element!.shape.getCenter());
     this.moveIconPath = this.svg.path(str);
     this.element!.after(this.moveIconPath);
     this.moveIconPath.attr('class', 'move-icon grabbable');
@@ -139,12 +140,9 @@ export abstract class ShapeBuilder<Shape extends IlShape> {
   zoom(elem: ElementWithExtra, factor: number): void {
     elem.shape.zoom(factor);
     this.plot(elem);
-    elem.discs?.forEach(_disc => {
-      _disc.cx(_disc.cx() * factor).cy(_disc.cy() * factor);
-    });
-    if (this.element && this.element.shape.id === 0) {
-      this.zoom(this.element, factor);
-    }
+    elem.discs?.forEach(_disc => _disc.cx(_disc.cx() * factor).cy(_disc.cy() * factor));
+    elem.connector?.plot(elem.connector.array().map(p => [p[0] * factor, p[1] * factor] as ArrayXY));
+    this.moveIconPath?.plot(this.moveIcon(elem.shape.getCenter()))
     this.setOptions(elem, elem.shape.classes);
   }
 

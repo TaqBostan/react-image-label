@@ -26,7 +26,7 @@ export class Director {
   }
 
   edit(id: number): void {
-    if(ShapeBuilder.editing) return;
+    if(ShapeBuilder.editing) this.stopEdit(false);
     let elem = this.getElement(id);
     let builder = this.getBuilder(elem.shape);
     builder.element = elem;
@@ -34,9 +34,9 @@ export class Director {
   }
 
   zoom(factor: number) {
-    Director.elements.forEach(elem => {
-      this.getBuilder(elem.shape).zoom(elem, factor)
-    })
+    let builderInDraw = Director.builders.find(b => b.drawing);
+    if(builderInDraw?.element?.shape.id === 0) builderInDraw.zoom(builderInDraw.element, factor);
+    Director.elements.forEach(elem => this.getBuilder(elem.shape).zoom(elem, factor));
   }
 
   getElement = (id: number) => Director.elements.find(p => p.shape.id === id)!;
@@ -77,7 +77,6 @@ export class Director {
     let id = builder.element.shape.id;
     Director.elements.push(builder.element);
     builder.element.node.addEventListener('contextmenu', (ev: MouseEvent) => {
-      if (ShapeBuilder.editing) return;
       ev.preventDefault();
       let elem = Director.elements.find(p => p.shape.id === id)!;
       elem.stroke({ color: Color.GreenLine });
@@ -92,8 +91,9 @@ export class Director {
 
   updateClasses(shape: IlShape) {
     let elem = this.getElement(shape.id);
-    let builder = this.getBuilder(shape);
-    if(!builder.drawing) builder.setOptions(elem, shape.classes);
+    elem.shape.classes = shape.classes;
+    let builder = this.getBuilder(elem.shape);
+    if(!elem.editing) builder.setOptions(elem, shape.classes);
   }
 
   removeElement(id: number) {
@@ -104,7 +104,7 @@ export class Director {
     Director.elements.splice(Director.elements.indexOf(elem), 1);
   }
 
-  static getShapes = () => Director.elements.map(el => el.shape.getOutput());
+  static getShapes = () => Director.elements.map(el => el.shape.getOutput(ShapeBuilder.ratio));
   static findShape = (id: number) => Director.elements.find(el => el.shape.id === id)!.shape;
 
   static init(svg: Svg, width: number, height: number, ratio: number, container: HTMLDivElement, onAddedOrEdited?: (shape: IlShape) => void) {
@@ -114,7 +114,7 @@ export class Director {
     ShapeBuilder.ratio = ratio;
     ShapeBuilder.width = width;
     ShapeBuilder.height = height;
-    Director.onAddedOrEdited = onAddedOrEdited;
+    Director.onAddedOrEdited = shape => onAddedOrEdited?.(shape.getOutput(ShapeBuilder.ratio));
     Director.builders = [new PolygonBuilder(), new RectangleBuilder(), new CircleBuilder()];
   }
 

@@ -103,9 +103,6 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
   const zoom = (factor: number) => {
     let director = new Director();
     Director.setSizeAndRatio(factor);
-    svgContainer.current.container.height *= factor;
-    svgContainer.current.container.width *= factor;
-    director.stopEdit(false);
     director.zoom(factor);
   }
 
