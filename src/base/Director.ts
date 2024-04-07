@@ -1,5 +1,5 @@
 import { Svg } from "react-svgdotjs";
-import { IlShape, ElementWithExtra, Color } from "./types";
+import { IlShape, ElementWithExtra } from "./types";
 import Util from './util'
 import PolygonBuilder from "./builders/PolygonBuilder";
 import { ShapeBuilder } from "./ShapeBuilder";
@@ -9,7 +9,8 @@ import CircleBuilder from "./builders/CircleBuilder";
 export class Director {
   static builders: ShapeBuilder<IlShape>[];
   static elements: ElementWithExtra[] = [];
-  static onAddedOrEdited: ((shape: IlShape) => void) | undefined;
+  static onAdded: ((shape: IlShape) => void) | undefined;
+  static onContextMenu: ((shape: IlShape) => void) | undefined;
 
   getBuilder<Shape extends IlShape>(shape: Shape): ShapeBuilder<Shape> {
     let builder = Director.builders.find(b => b.ofType(shape))! as ShapeBuilder<Shape>;
@@ -17,16 +18,10 @@ export class Director {
     return builder
   }
 
-  stopEdit(callOnEdited: boolean): void {
-    let builder = Director.builders.find(b => b.element?.editing);
-    if(builder) {
-      builder.stopEdit();
-      if (callOnEdited) Director.onAddedOrEdited?.(builder.element!.shape);
-    }
-  }
+  stopEdit = (): void => Director.builders.find(b => b.element?.editing)?.stopEdit()
 
   edit(id: number): void {
-    if(ShapeBuilder.editing) this.stopEdit(false);
+    if(ShapeBuilder.editing) this.stopEdit();
     let elem = this.getElement(id);
     let builder = this.getBuilder(elem.shape);
     builder.element = elem;
@@ -79,13 +74,12 @@ export class Director {
     builder.element.node.addEventListener('contextmenu', (ev: MouseEvent) => {
       ev.preventDefault();
       let elem = Director.elements.find(p => p.shape.id === id)!;
-      elem.stroke({ color: Color.GreenLine });
-      Director.onAddedOrEdited?.(elem.shape);
+      Director.onContextMenu?.(elem.shape);
       return false;
     }, false);
     if (isNew) {
       if(!builder.element!.editing) builder.edit();
-      Director.onAddedOrEdited?.(builder.element.shape);
+      Director.onAdded?.(builder.element.shape);
     }
   }
 
@@ -107,14 +101,16 @@ export class Director {
   static getShapes = () => Director.elements.map(el => el.shape.getOutput(ShapeBuilder.ratio));
   static findShape = (id: number) => Director.elements.find(el => el.shape.id === id)!.shape;
 
-  static init(svg: Svg, width: number, height: number, ratio: number, container: HTMLDivElement, onAddedOrEdited?: (shape: IlShape) => void) {
+  static init(svg: Svg, width: number, height: number, ratio: number, container: HTMLDivElement, 
+      onAdded?: (shape: IlShape) => void, onContextMenu?: (shape: IlShape) => void) {
     svg.size(width, height);
     IlShape.containerOffset = [container.offsetLeft, container.offsetTop];
     ShapeBuilder._svg = svg;
     ShapeBuilder.ratio = ratio;
     ShapeBuilder.width = width;
     ShapeBuilder.height = height;
-    Director.onAddedOrEdited = shape => onAddedOrEdited?.(shape.getOutput(ShapeBuilder.ratio));
+    Director.onAdded = shape => onAdded?.(shape.getOutput(ShapeBuilder.ratio));
+    Director.onContextMenu = shape => onContextMenu?.(shape.getOutput(ShapeBuilder.ratio));
     Director.builders = [new PolygonBuilder(), new RectangleBuilder(), new CircleBuilder()];
   }
 

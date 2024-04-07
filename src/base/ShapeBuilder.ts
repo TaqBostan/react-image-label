@@ -62,7 +62,7 @@ export abstract class ShapeBuilder<Shape extends IlShape> {
 
   removeElement() {
     let elem = this.element!;
-    if(elem.editing) ShapeBuilder.editing = false;
+    if (elem.editing) ShapeBuilder.editing = false;
     this.moveIconPath?.remove();
     elem.classNames?.remove();
     elem.classNamesWrapper?.remove();
@@ -78,7 +78,11 @@ export abstract class ShapeBuilder<Shape extends IlShape> {
     this.moveIconPath = this.svg.path(str);
     this.element!.after(this.moveIconPath);
     this.moveIconPath.attr('class', 'move-icon grabbable');
-    this.moveIconPath.mousedown((event: MouseEvent) => this.mouseDown(event));
+    this.moveIconPath.mousedown((ev: MouseEvent) => this.mouseDown(ev));
+    this.moveIconPath.on('contextmenu', (ev: any) => { 
+      ev.preventDefault(); 
+      this.element!.node.dispatchEvent!(new Event('contextmenu', ev)); 
+    })
   }
 
   initDrag() {

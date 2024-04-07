@@ -1,6 +1,14 @@
 A comprehensive package for tagging images.
 
-## Getting started
+## Features
+
+- Bounding Box, Circle, and Polygon Tag
+- Add, Edit, Drag, and Delete Tags
+- Zoom and Scale
+- Changing image on the fly
+- Raw or typed input/output
+
+## Usage
 
 Install `react-image-label` using npm.
 
@@ -8,10 +16,39 @@ Install `react-image-label` using npm.
 npm install react-image-label
 ```
 
-Then you can just import and use like so:
+Then you can just import the component:
 
 ```js
+import { SvgEditor } from 'react-image-label';
 ```
+
+and use it like so:
+
+```js
+const svgEditor = React.useRef<any>();
+
+<SvgEditor
+  ref={svgEditor}
+  naturalSize={true}
+  imageUrl={'your-image-url'}
+  onReady={() => {svgEditor.current.newRectangle();}} />
+```
+
+Now you can draw, edit, and drag rectangles on the image.
+
+## Props
+
+All of the following properties can be defined on the Annotator...
+
+| Prop | Type | Description | Default |
+|---|---|---|---|
+| `imageUrl` \* | `string` | Use a state for image url if you want to change it on the fly |   |
+| `naturalSize` | `boolean` | Show image in its natural size | `false` |
+| `shapes` | `IlShape[] \| any[]` | Tags being displayed on load |   |
+| `onAdded` | `IlShape => any` | After a tag is added  |  |
+| `onContextMenu` | `IlShape => any` | When a tag is right-clicked |   |
+| `onReady` | `IlShape => any` | When SvgEditor is mounted |   |
+(\*) required props
 
 ## Contributing
 

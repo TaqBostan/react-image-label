@@ -42,7 +42,7 @@ export const SvgEditorPrimary: FC = () => {
       <button onClick={() => { svgEditor.current.newPolygon() }}>Add Polygon</button>
       <button onClick={() => { svgEditor.current.newCircle() }}>Add Circle</button>
       <button onClick={() => { svgEditor.current.stop() }}>stop</button>
-      <button onClick={() => { svgEditor.current.stopEdit(false) }}>Edit Done</button>
+      <button onClick={() => { svgEditor.current.stopEdit() }}>Edit Done</button>
       <button onClick={() => { svgEditor.current.zoom(1.25) }}>zoom in</button>
       <button onClick={() => { svgEditor.current.zoom(0.8) }}>zoom out</button>
       <button onClick={() => { setShapes(svgEditor.current.getShapes()) }}>get shapes</button>
@@ -58,7 +58,8 @@ export const SvgEditorPrimary: FC = () => {
         naturalSize={true}
         imageUrl={img}
         shapes={shapes}
-        onAddedOrEdited={shape => setDialog({ show: true, shape })} />
+        onAdded={shape => setDialog({ show: true, shape })}
+        onContextMenu={shape => setDialog({ show: true, shape })} />
       <div>{JSON.stringify(shapes, null, 2)}</div>
     </div>
   );

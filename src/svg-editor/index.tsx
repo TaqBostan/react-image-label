@@ -5,8 +5,9 @@ import { Circle, IlShape, Polygon, Rectangle } from '../base/types';
 import './index.css';
 
 interface SvgEditorProps {
-  onReady?: () => void;
-  onAddedOrEdited?: (shape: IlShape) => void;
+  onReady?: () => any;
+  onAdded?: (shape: IlShape) => any;
+  onContextMenu?: (shape: IlShape) => any;
   imageUrl?: string;
   shapes?: IlShape[] | any[];
   naturalSize?: boolean;
@@ -21,44 +22,23 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
   React.useImperativeHandle(ref, () => ({
     newRectangle() {
       stopAll();
-      let director = new Director();
-      director.startDraw(new Rectangle());
+      new Director().startDraw(new Rectangle());
     },
     newPolygon() {
       stopAll();
-      let director = new Director();
-      director.startDraw(new Polygon());
+      new Director().startDraw(new Polygon());
     },
     newCircle() {
       stopAll();
-      let director = new Director();
-      director.startDraw(new Circle());
+      new Director().startDraw(new Circle());
     },
-    stop() {
-      stopAll();
-    },
-    stopEdit(callOnEdited: boolean) {
-      let director = new Director();
-      director.stopEdit(callOnEdited);
-    },
-    edit(id: number) {
-      let director = new Director();
-      director!.edit(id);
-    },
-    delete(id: number) {
-      let director = new Director();
-      director!.removeElement(id);
-    },
-    updateClasses(shape: IlShape) {
-      let director = new Director();
-      director.updateClasses(shape);
-    },
-    zoom(factor: number) {
-      zoom(factor);
-    },
-    getShapes() {
-      return Director.getShapes();
-    },
+    stop: stopAll,
+    stopEdit: () => new Director().stopEdit(),
+    edit: (id: number) => new Director().edit(id),
+    delete: (id: number) => new Director().removeElement(id),
+    updateClasses: (shape: IlShape) => new Director().updateClasses(shape),
+    zoom,
+    getShapes: Director.getShapes,
     container: HTMLDivElement = svgContainer.current.container
   }));
 
@@ -76,10 +56,8 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
     if (circles.length > 0) director.plot(circles);
   }
 
-  const onload = React.useCallback((svg: Svg) => {
-    props.onReady?.();
-
-    let _img = svg.image(props.imageUrl, (ev: any) => {
+  const onload = React.useCallback((svg: Svg, imageUrl: string) => {
+    let _img = svg.image(imageUrl, (ev: any) => {
       if (!ev?.target) return;
       let width = ev.target.naturalWidth, height = ev.target.naturalHeight, maxWidth = props.width, maxHeight = props.height;
       if (!props.naturalSize) {
@@ -94,11 +72,13 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
           height = width * ev.target.naturalHeight / ev.target.naturalWidth;
         }
       }
-      Director.init(svg, width, height, width / ev.target.naturalWidth, svgContainer.current.container, props.onAddedOrEdited);
+      Director.init(svg, width, height, width / ev.target.naturalWidth, svgContainer.current.container, 
+        props.onAdded, props.onContextMenu);
       setSize({ width, height });
       drawShapes(props.shapes);
+      props.onReady?.();
     }).size('100%', '100%').attr('onmousedown', 'return false').attr('oncontextmenu', 'return false');
-  }, [props.imageUrl]);
+  }, []);
 
   const zoom = (factor: number) => {
     let director = new Director();
@@ -107,14 +87,14 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
   }
 
   useEffect(() => {
-    if (svgContainer.current) onload(svgContainer.current.svg);
+    if (svgContainer.current && props.imageUrl) onload(svgContainer.current.svg, props.imageUrl);
     return () => { Director.clear(); }
   }, [svgContainer, onload, props.imageUrl]);
 
   const stopAll = () => {
     let director = new Director();
     director.stopDraw();
-    director.stopEdit(false);
+    director.stopEdit();
   }
 
   return (<SvgContainer ref={svgContainer} width='fit-content' height='fit-content' />);
