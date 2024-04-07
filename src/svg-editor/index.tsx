@@ -108,7 +108,7 @@ export default React.forwardRef((props: SvgEditorProps, ref) => {
 
   useEffect(() => {
     if (svgContainer.current) onload(svgContainer.current.svg);
-    return () => { svgContainer.current?.svg.clear(); }
+    return () => { Director.clear(); }
   }, [svgContainer, onload, props.imageUrl]);
 
   const stopAll = () => {

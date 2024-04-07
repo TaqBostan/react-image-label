@@ -6,7 +6,7 @@ export type Point = { X: number, Y: number }
 
 export abstract class IlShape {
   id: number;
-  getCenterWithOffset = (): ArrayXY => [0,0];
+  getCenterWithOffset = (): Point => ({ X: 0, Y: 0 });
   static containerOffset: ArrayXY;
   abstract type: string;
   abstract labelPosition(): ArrayXY;
@@ -21,8 +21,9 @@ export abstract class IlShape {
 
   getOutput(ratio: number): IlShape {
     let obj = this.output(ratio);
+    let center = Util.ArrayXYSum(this.getCenter(), IlShape.containerOffset)
     obj.id = this.id;
-    obj.getCenterWithOffset = () => Util.ArrayXYSum(this.getCenter(), IlShape.containerOffset)
+    obj.getCenterWithOffset = () => ({ X: center[0], Y: center[1] })
     return obj;
   }
 }
@@ -73,7 +74,7 @@ export abstract class AngledShape extends IlShape {
   zoom(factor: number): void {
     this.points = this.points.map(p => [p[0] * factor, p[1] * factor]);
   }
-  
+
   output(ratio: number) {
     let points: ArrayXY[] = this.points.filter((p, i) => i < this.points.length - 1)
       .map(p => [Math.round(p[0] / ratio), Math.round(p[1] / ratio)]);
@@ -121,7 +122,7 @@ export class Circle extends IlShape {
     this.radius *= factor;
   }
 
-  output = (ratio: number): IlShape => 
-    new Circle([Math.round(this.centre[0]/ratio), Math.round(this.centre[1]/ratio)], Math.round(this.radius/ratio), this.classes);
+  output = (ratio: number): IlShape =>
+    new Circle([Math.round(this.centre[0] / ratio), Math.round(this.centre[1] / ratio)], Math.round(this.radius / ratio), this.classes);
 
 }
