@@ -3,7 +3,8 @@
     "sourcemap": true,
     "clean": true,
     "minify": true,
+    "injectStyle": true,
     "entry": [
-      "src/index.ts", "!src/**/*.stories.tsx"
+      "src/index.ts", "!src/**/*.stories.tsx", "!src/**/*.stories.css"
     ]
    }

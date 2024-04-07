@@ -1,7 +1,7 @@
 {
   "name": "react-image-label",
-  "version": "0.0.1",
-  "description": "A lightweight component to use SVG.js library in React. Custom hooks are provided for automatically re-rendering when the underlying data changes.",
+  "version": "0.0.4",
+  "description": "A comprehensive package for tagging images.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "TaqBostan",
@@ -26,9 +26,9 @@
   },
   "keywords": [
     "react",
-    "svg",
-    "svg.js",
-    "svgdotjs"
+    "labeling",
+    "tag",
+    "image"
   ],
   "repository": {
     "type": "git",

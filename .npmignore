@@ -1,1 +1,3 @@
 *.stories.tsx
+*.stories.css
+/public
