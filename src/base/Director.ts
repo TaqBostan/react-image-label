@@ -1,5 +1,5 @@
 import { Svg } from "react-svgdotjs";
-import { IlShape, ElementWithExtra } from "./types";
+import { Shape, ElementWithExtra } from "./types";
 import Util from './util'
 import PolygonBuilder from "./builders/PolygonBuilder";
 import { ShapeBuilder } from "./ShapeBuilder";
@@ -7,12 +7,12 @@ import RectangleBuilder from "./builders/RectangleBuilder";
 import CircleBuilder from "./builders/CircleBuilder";
 
 export class Director {
-  static builders: ShapeBuilder<IlShape>[];
+  static builders: ShapeBuilder<Shape>[];
   static elements: ElementWithExtra[] = [];
-  static onAdded: ((shape: IlShape) => void) | undefined;
-  static onContextMenu: ((shape: IlShape) => void) | undefined;
+  static onAdded: ((shape: Shape) => void) | undefined;
+  static onContextMenu: ((shape: Shape) => void) | undefined;
 
-  getBuilder<Shape extends IlShape>(shape: Shape): ShapeBuilder<Shape> {
+  getBuilder<Shape extends Shape>(shape: Shape): ShapeBuilder<Shape> {
     let builder = Director.builders.find(b => b.ofType(shape))! as ShapeBuilder<Shape>;
     builder.shape = shape;
     return builder
@@ -40,7 +40,7 @@ export class Director {
     this.getBuilder(element.shape).setOptions(element, classes);
   }
 
-  plot(shapes: IlShape[]): void {
+  plot(shapes: Shape[]): void {
     shapes.forEach(shape => {
       shape.id = ++Util.maxId;
       this.getBuilder(shape).basePlotShape();
@@ -48,7 +48,7 @@ export class Director {
     });
   }
 
-  startDraw(shape: IlShape): void {
+  startDraw(shape: Shape): void {
     let builder = this.getBuilder(shape);
     builder.drawing = true;
     builder.createElement(shape);
@@ -63,7 +63,7 @@ export class Director {
     }
   }
 
-  addShape(shape: IlShape, isNew: boolean = true) {
+  addShape(shape: Shape, isNew: boolean = true) {
     let builder = this.getBuilder(shape);
     if (!builder.element) return;
     if (builder.element.shape.id === 0) {
@@ -83,7 +83,7 @@ export class Director {
     }
   }
 
-  updateClasses(shape: IlShape) {
+  updateClasses(shape: Shape) {
     let elem = this.getElement(shape.id);
     elem.shape.classes = shape.classes;
     let builder = this.getBuilder(elem.shape);
@@ -102,9 +102,9 @@ export class Director {
   static findShape = (id: number) => Director.elements.find(el => el.shape.id === id)!.shape;
 
   static init(svg: Svg, width: number, height: number, ratio: number, container: HTMLDivElement, 
-      onAdded?: (shape: IlShape) => void, onContextMenu?: (shape: IlShape) => void) {
+      onAdded?: (shape: Shape) => void, onContextMenu?: (shape: Shape) => void) {
     svg.size(width, height);
-    IlShape.containerOffset = [container.offsetLeft, container.offsetTop];
+    Shape.containerOffset = [container.offsetLeft, container.offsetTop];
     ShapeBuilder._svg = svg;
     ShapeBuilder.ratio = ratio;
     ShapeBuilder.width = width;

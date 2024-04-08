@@ -44,10 +44,10 @@ All of the following properties can be defined on the Annotator...
 |---|---|---|---|
 | `imageUrl` \* | `string` | Use a state for image url if you want to change it on the fly |   |
 | `naturalSize` | `boolean` | Show image in its natural size | `false` |
-| `shapes` | `IlShape[] \| any[]` | Tags being displayed on load |   |
-| `onAdded` | `IlShape => any` | After a tag is added  |  |
-| `onContextMenu` | `IlShape => any` | When a tag is right-clicked |   |
-| `onReady` | `IlShape => any` | When SvgEditor is mounted |   |
+| `shapes` | `Shape[] \| any[]` | Tags being displayed on load |   |
+| `onAdded` | `Shape => any` | After a tag is added  |  |
+| `onContextMenu` | `Shape => any` | When a tag is right-clicked |   |
+| `onReady` | `Shape => any` | When SvgEditor is mounted |   |
 (\*) required props
 
 ## Contributing

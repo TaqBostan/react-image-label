@@ -4,7 +4,7 @@ import Util from './util';
 
 export type Point = { X: number, Y: number }
 
-export abstract class IlShape {
+export abstract class Shape {
   id: number;
   getCenterWithOffset = (): Point => ({ X: 0, Y: 0 });
   static containerOffset: ArrayXY;
@@ -12,16 +12,16 @@ export abstract class IlShape {
   abstract labelPosition(): ArrayXY;
   abstract getCenter(): ArrayXY;
   abstract zoom(factor: number): void;
-  abstract output(ratio: number): IlShape;
+  abstract output(ratio: number): Shape;
   abstract centerChanged(newCenter: ArrayXY): void;
 
   constructor(public classes: string[] = []) {
     this.id = 0;
   }
 
-  getOutput(ratio: number): IlShape {
+  getOutput(ratio: number): Shape {
     let obj = this.output(ratio);
-    let center = Util.ArrayXYSum(this.getCenter(), IlShape.containerOffset)
+    let center = Util.ArrayXYSum(this.getCenter(), Shape.containerOffset)
     obj.id = this.id;
     obj.getCenterWithOffset = () => ({ X: center[0], Y: center[1] })
     return obj;
@@ -31,7 +31,7 @@ export abstract class IlShape {
 export interface IlElementExtra {
   classNames?: Text;
   classNamesWrapper?: Rect;
-  shape: IlShape;
+  shape: Shape;
   shadow: Element;
   discs: Circ[];
   editing: boolean;
@@ -40,7 +40,7 @@ export interface IlElementExtra {
 
 export type ElementWithExtra = Element & IlElementExtra;
 
-export abstract class AngledShape extends IlShape {
+export abstract class AngledShape extends Shape {
   constructor(public points: ArrayXY[] | PointArray = [], public classes: string[] = []) {
     super(classes);
   }
@@ -102,7 +102,7 @@ export class Polygon extends AngledShape {
   type: string = 'polygon';
 }
 
-export class Circle extends IlShape {
+export class Circle extends Shape {
   type: string = 'circle';
   constructor(public centre: ArrayXY = [0, 0], public radius: number = 0, public classes: string[] = []) {
     super(classes);
@@ -122,7 +122,7 @@ export class Circle extends IlShape {
     this.radius *= factor;
   }
 
-  output = (ratio: number): IlShape =>
+  output = (ratio: number): Shape =>
     new Circle([Math.round(this.centre[0] / ratio), Math.round(this.centre[1] / ratio)], Math.round(this.radius / ratio), this.classes);
 
 }

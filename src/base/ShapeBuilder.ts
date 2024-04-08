@@ -1,12 +1,12 @@
 import { Svg } from "react-svgdotjs";
-import { IlShape, ElementWithExtra, Color, Point, Polygon } from "./types";
+import { Shape, ElementWithExtra, Color, Point, Polygon } from "./types";
 import { ArrayXY, Path } from '@svgdotjs/svg.js'
 
-export abstract class ShapeBuilder<Shape extends IlShape> {
+export abstract class ShapeBuilder<T extends Shape> {
   static _svg: Svg;
   svg: Svg = ShapeBuilder._svg;
   abstract element?: ElementWithExtra;
-  abstract shape?: Shape;
+  abstract shape?: T;
   //#region static data
   static editing: boolean = false;
   static width: number;
@@ -22,8 +22,8 @@ export abstract class ShapeBuilder<Shape extends IlShape> {
   drawing: boolean = false;
   //#endregion
   abstract plotShape(): void;
-  abstract createElement(shape: Shape): void;
-  abstract newShape(): Shape;
+  abstract createElement(shape: T): void;
+  abstract newShape(): T;
   abstract startDraw(addShape: () => void): void;
   abstract plot(element: ElementWithExtra): void;
   abstract stopDraw(): void;
@@ -34,7 +34,7 @@ export abstract class ShapeBuilder<Shape extends IlShape> {
     return this.svg.circle(2 * radius).fill(color).move(x - radius, y - radius);
   }
 
-  abstract ofType<T extends IlShape>(shape: T): boolean;
+  abstract ofType<S extends Shape>(shape: S): boolean;
 
   basePlotShape() {
     this.plotShape();

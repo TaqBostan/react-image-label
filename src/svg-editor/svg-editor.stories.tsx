@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
-import SvgEditor from './';
-import { Circle, IlShape, Point, Polygon, Rectangle } from '../base/types';
+import SvgEditor, { useSvgEditor } from './';
+import { Circle, Shape, Point, Polygon, Rectangle } from '../base/types';
 import './svg-editor.stories.css';
 
 //const imgUrl = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
@@ -17,20 +17,20 @@ let rawShapes = [{ type: 'rectangle', classes: ["class 3"], points: [[150, 50], 
 { type: 'circle', classes: ["class 4"], centre: [250, 100], radius: 40 }]
 
 export const SvgEditorPrimary: FC = () => {
+  const { setHandles, svgEditor } = useSvgEditor();
   const [img, setImg] = React.useState(imgUrl);
-  const [shapes, setShapes] = React.useState<IlShape[]>([r, p, c]);
-  const [dialog, setDialog] = React.useState<{ show: boolean, shape: IlShape | undefined }>({ show: false, shape: undefined });
-  const svgEditor = React.useRef<any>();
+  const [shapes, setShapes] = React.useState<Shape[]>([r, p, c]);
+  const [dialog, setDialog] = React.useState<{ show: boolean, shape: Shape | undefined }>({ show: false, shape: undefined });
 
   const selectedClassesChanged = (items: string[]) => {
     dialog.shape!.classes = items;
-    setDialog({...dialog});
+    setDialog({ ...dialog });
   }
 
   const hideDialog = () => setDialog({ show: false, shape: undefined });
   const hideAndUpdateClasses = () => {
     if (dialog.show) {
-      svgEditor.current.updateClasses(dialog.shape);
+      svgEditor!.updateClasses(dialog.shape!);
       hideDialog();
     }
   }
@@ -38,23 +38,23 @@ export const SvgEditorPrimary: FC = () => {
   return (
     <div>
       <button onClick={() => { setImg(img2); }}>change image</button>
-      <button onClick={() => { svgEditor.current.newRectangle() }}>Add Rectangle</button>
-      <button onClick={() => { svgEditor.current.newPolygon() }}>Add Polygon</button>
-      <button onClick={() => { svgEditor.current.newCircle() }}>Add Circle</button>
-      <button onClick={() => { svgEditor.current.stop() }}>stop</button>
-      <button onClick={() => { svgEditor.current.stopEdit() }}>Edit Done</button>
-      <button onClick={() => { svgEditor.current.zoom(1.25) }}>zoom in</button>
-      <button onClick={() => { svgEditor.current.zoom(0.8) }}>zoom out</button>
-      <button onClick={() => { setShapes(svgEditor.current.getShapes()) }}>get shapes</button>
+      <button onClick={() => { svgEditor!.newRectangle() }}>Add Rectangle</button>
+      <button onClick={() => { svgEditor!.newPolygon() }}>Add Polygon</button>
+      <button onClick={() => { svgEditor!.newCircle() }}>Add Circle</button>
+      <button onClick={() => { svgEditor!.stop() }}>stop</button>
+      <button onClick={() => { svgEditor!.stopEdit() }}>Edit Done</button>
+      <button onClick={() => { svgEditor!.zoom(1.25) }}>zoom in</button>
+      <button onClick={() => { svgEditor!.zoom(0.8) }}>zoom out</button>
+      <button onClick={() => { setShapes(svgEditor!.getShapes()) }}>get shapes</button>
       {dialog.show &&
         <Dialog items={dialog.shape!.classes} itemsChanged={selectedClassesChanged}
-          onEdit={() => { svgEditor.current.edit(dialog.shape!.id); hideDialog(); }}
-          onDelete={() => { svgEditor.current.delete(dialog.shape!.id); hideDialog(); }}
-          onClose={hideAndUpdateClasses} 
+          onEdit={() => { svgEditor!.edit(dialog.shape!.id); hideDialog(); }}
+          onDelete={() => { svgEditor!.delete(dialog.shape!.id); hideDialog(); }}
+          onClose={hideAndUpdateClasses}
           offset={dialog.shape!.getCenterWithOffset()} />
       }
       <SvgEditor
-        ref={svgEditor}
+        setHandles={setHandles}
         naturalSize={true}
         imageUrl={img}
         shapes={shapes}
@@ -66,7 +66,7 @@ export const SvgEditorPrimary: FC = () => {
 }
 
 const Dialog = (props: DialogProps) => {
-  
+
   const handleCheck = (event: any) => {
     let selected = props.items;
     if (event.target.checked) selected = [...selected, event.target.value];
@@ -93,10 +93,10 @@ const Dialog = (props: DialogProps) => {
   )
 }
 
-interface DialogProps { 
-  items: string[], 
-  itemsChanged: (items: string[]) => void, 
-  onClose: () => void, 
-  onEdit: () => void, 
-  onDelete: () => void, offset: Point 
+interface DialogProps {
+  items: string[],
+  itemsChanged: (items: string[]) => void,
+  onClose: () => void,
+  onEdit: () => void,
+  onDelete: () => void, offset: Point
 }
