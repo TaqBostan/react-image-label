@@ -4,11 +4,6 @@ import { Director } from '../base/Director';
 import { Circle, Shape, Polygon, Rectangle } from '../base/types';
 import './index.css';
 
-export const useSvgEditor = () => {
-  const [handles, setHandles] = React.useState<SvgEditorHandles>();
-  return { setHandles, svgEditor: handles };
-};
-
 export default (props: SvgEditorProps) => {
   const svgContainer = React.useRef<any>();
 
@@ -103,18 +98,4 @@ interface SvgEditorProps {
   maxWidth?: number;
   maxHeight?: number;
   setHandles: (data: any) => void;
-}
-
-type SvgEditorHandles = {
-  newRectangle(): void;
-  newPolygon(): void;
-  newCircle(): void;
-  stop: () => void;
-  stopEdit: () => void;
-  edit: (id: number) => void;
-  delete: (id: number) => void;
-  updateClasses: (shape: Shape) => void;
-  zoom: (factor: number) => void;
-  getShapes: () => Shape[];
-  container: HTMLDivElement;
 }

@@ -1,7 +1,8 @@
 import React, { FC } from 'react';
-import SvgEditor, { useSvgEditor } from './';
+import SvgEditor from './';
 import { Circle, Shape, Point, Polygon, Rectangle } from '../base/types';
 import './svg-editor.stories.css';
+import { useSvgEditor } from './hook';
 
 //const imgUrl = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
 const imgUrl = '/logo512.png';
