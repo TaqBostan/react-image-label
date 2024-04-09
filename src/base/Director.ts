@@ -12,8 +12,8 @@ export class Director {
   static onAdded: ((shape: Shape) => void) | undefined;
   static onContextMenu: ((shape: Shape) => void) | undefined;
 
-  getBuilder<Shape extends Shape>(shape: Shape): ShapeBuilder<Shape> {
-    let builder = Director.builders.find(b => b.ofType(shape))! as ShapeBuilder<Shape>;
+  getBuilder<T extends Shape>(shape: T): ShapeBuilder<T> {
+    let builder = Director.builders.find(b => b.ofType(shape))! as ShapeBuilder<T>;
     builder.shape = shape;
     return builder
   }
@@ -21,7 +21,7 @@ export class Director {
   stopEdit = (): void => Director.builders.find(b => b.element?.editing)?.stopEdit()
 
   edit(id: number): void {
-    if(ShapeBuilder.editing) this.stopEdit();
+    if (ShapeBuilder.editing) this.stopEdit();
     let elem = this.getElement(id);
     let builder = this.getBuilder(elem.shape);
     builder.element = elem;
@@ -30,7 +30,7 @@ export class Director {
 
   zoom(factor: number) {
     let builderInDraw = Director.builders.find(b => b.drawing);
-    if(builderInDraw?.element?.shape.id === 0) builderInDraw.zoom(builderInDraw.element, factor);
+    if (builderInDraw?.element?.shape.id === 0) builderInDraw.zoom(builderInDraw.element, factor);
     Director.elements.forEach(elem => this.getBuilder(elem.shape).zoom(elem, factor));
   }
 
@@ -57,7 +57,7 @@ export class Director {
 
   stopDraw(): void {
     let builder = Director.builders.find(b => b.drawing);
-    if(builder) {
+    if (builder) {
       builder.stopDraw();
       builder.drawing = false;
     }
@@ -78,16 +78,16 @@ export class Director {
       return false;
     }, false);
     if (isNew) {
-      if(!builder.element!.editing) builder.edit();
+      if (!builder.element!.editing) builder.edit();
       Director.onAdded?.(builder.element.shape);
     }
   }
 
-  updateClasses(shape: Shape) {
-    let elem = this.getElement(shape.id);
-    elem.shape.classes = shape.classes;
+  updateClasses(id: number, classes: string[]) {
+    let elem = this.getElement(id);
+    elem.shape.classes = classes;
     let builder = this.getBuilder(elem.shape);
-    if(!elem.editing) builder.setOptions(elem, shape.classes);
+    if (!elem.editing) builder.setOptions(elem, classes);
   }
 
   removeElement(id: number) {
@@ -101,8 +101,8 @@ export class Director {
   static getShapes = () => Director.elements.map(el => el.shape.getOutput(ShapeBuilder.ratio));
   static findShape = (id: number) => Director.elements.find(el => el.shape.id === id)!.shape;
 
-  static init(svg: Svg, width: number, height: number, ratio: number, container: HTMLDivElement, 
-      onAdded?: (shape: Shape) => void, onContextMenu?: (shape: Shape) => void) {
+  static init(svg: Svg, width: number, height: number, ratio: number, container: HTMLDivElement,
+    onAdded?: (shape: Shape) => void, onContextMenu?: (shape: Shape) => void) {
     svg.size(width, height);
     Shape.containerOffset = [container.offsetLeft, container.offsetTop];
     ShapeBuilder._svg = svg;
@@ -115,7 +115,7 @@ export class Director {
   }
 
   static clear() {
-    if(ShapeBuilder._svg) ShapeBuilder._svg.clear();
+    if (ShapeBuilder._svg) ShapeBuilder._svg.clear();
     Director.elements = [];
     Director.builders = [];
   }

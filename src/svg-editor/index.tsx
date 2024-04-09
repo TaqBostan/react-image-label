@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { SvgContainer, Svg } from 'react-svgdotjs';
 import { Director } from '../base/Director';
 import { Circle, Shape, Polygon, Rectangle } from '../base/types';
+import { SvgEditorHandles } from './hook';
 import './index.css';
 
 export default (props: SvgEditorProps) => {
@@ -34,15 +35,15 @@ export default (props: SvgEditorProps) => {
   }
 
   const getHandles = () => ({
-    newRectangle() {
+    drawRectangle() {
       stopAll();
       new Director().startDraw(new Rectangle());
     },
-    newPolygon() {
+    drawPolygon() {
       stopAll();
       new Director().startDraw(new Polygon());
     },
-    newCircle() {
+    drawCircle() {
       stopAll();
       new Director().startDraw(new Circle());
     },
@@ -50,7 +51,7 @@ export default (props: SvgEditorProps) => {
     stopEdit: () => new Director().stopEdit(),
     edit: (id: number) => new Director().edit(id),
     delete: (id: number) => new Director().removeElement(id),
-    updateClasses: (shape: Shape) => new Director().updateClasses(shape),
+    updateClasses: (id: number, classes: string[]) => new Director().updateClasses(id, classes),
     zoom,
     getShapes: Director.getShapes,
     container: HTMLDivElement = svgContainer.current?.container
@@ -75,8 +76,8 @@ export default (props: SvgEditorProps) => {
       Director.init(svg, width, height, width / ev.target.naturalWidth, svgContainer.current.container,
         props.onAdded, props.onContextMenu);
       drawShapes(props.shapes);
-      props.onReady?.();
       props.setHandles({ ...getHandles() });
+      props.onReady?.(getHandles());
     }).size('100%', '100%').attr('onmousedown', 'return false').attr('oncontextmenu', 'return false');
   }, []);
 
@@ -88,8 +89,8 @@ export default (props: SvgEditorProps) => {
   return (<SvgContainer ref={svgContainer} width='fit-content' height='fit-content' />);
 }
 
-interface SvgEditorProps {
-  onReady?: () => any;
+export interface SvgEditorProps {
+  onReady?: (svgEditor: SvgEditorHandles) => any;
   onAdded?: (shape: Shape) => any;
   onContextMenu?: (shape: Shape) => any;
   imageUrl?: string;
@@ -97,5 +98,5 @@ interface SvgEditorProps {
   naturalSize?: boolean;
   maxWidth?: number;
   maxHeight?: number;
-  setHandles: (data: any) => void;
+  setHandles: (handles: SvgEditorHandles) => void;
 }

@@ -38,17 +38,36 @@ Now you can draw, edit, and drag rectangles on the image.
 
 ## Props
 
-All of the following properties can be defined on the Annotator...
+The following props can be defined on `SvgEditor`:
 
 | Prop | Type | Description | Default |
 |---|---|---|---|
 | `imageUrl` \* | `string` | Use a state for image url if you want to change it on the fly |   |
-| `naturalSize` | `boolean` | Show image in its natural size | `false` |
 | `shapes` | `Shape[] \| any[]` | Tags being displayed on load |   |
+| `naturalSize` | `boolean` | Show image in its natural size | `false` |
+| `maxWidth` | `number` | The maximum width without breaking the aspect ratio when `naturalSize` is `false` |  |
+| `maxHeight` | `number` | The maximum height without breaking the aspect ratio when `naturalSize` is `false` |  |
 | `onAdded` | `Shape => any` | After a tag is added  |  |
 | `onContextMenu` | `Shape => any` | When a tag is right-clicked |   |
-| `onReady` | `Shape => any` | When SvgEditor is mounted |   |
+| `onReady` | `SvgEditorHandles => any` | When SvgEditor is mounted |   |
 (\*) required props
+
+## Exposed Handles
+
+Use `svgEditor` object received from `useSvgEditor` to call or use the following handles:
+
+| Prop | Type | Description |
+|---|---|---|
+| `drawCircle` | `() => void` | Allows drawing circles by dragging the left mouse button |
+| `drawRectangle` | `() => void` | Allows drawing rectangles by dragging the left mouse button (keep the shift key to draw square) |
+| `drawPolygon` | `() => void` | Allows drawing polygons by clicking and double-clicking |
+| `stop` | `() => void` | Stops draw/edit/drag mode |
+| `edit` | `(id: number) => void` | The tag identified by `id` can be edited and dragged |
+| `stopEdit` | `() => void` | Stops editing and dragging |
+| `updateClasses` | `(id: number, classes: string[]) => void` | Updates the classes associated with the tag identified by `id` |
+| `zoom` | `(factor: number) => void` | Multiplies the dimensions by `factor` |
+| `getShapes` | `() => Shape[]` | Gets all tags |
+| `container` | `HTMLDivElement` | The `div` wrapping the `SVG` |
 
 ## Contributing
 

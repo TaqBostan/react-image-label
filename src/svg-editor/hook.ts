@@ -6,15 +6,15 @@ export const useSvgEditor = () => {
   return { setHandles, svgEditor: handles };
 };
 
-type SvgEditorHandles = {
-  newRectangle(): void;
-  newPolygon(): void;
-  newCircle(): void;
+export type SvgEditorHandles = {
+  drawRectangle(): void;
+  drawPolygon(): void;
+  drawCircle(): void;
   stop: () => void;
   stopEdit: () => void;
   edit: (id: number) => void;
   delete: (id: number) => void;
-  updateClasses: (shape: Shape) => void;
+  updateClasses: (id: number, classes: string[]) => void;
   zoom: (factor: number) => void;
   getShapes: () => Shape[];
   container: HTMLDivElement;

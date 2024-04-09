@@ -31,7 +31,7 @@ export const SvgEditorPrimary: FC = () => {
   const hideDialog = () => setDialog({ show: false, shape: undefined });
   const hideAndUpdateClasses = () => {
     if (dialog.show) {
-      svgEditor!.updateClasses(dialog.shape!);
+      svgEditor!.updateClasses(dialog.shape!.id, dialog.shape!.classes);
       hideDialog();
     }
   }
@@ -39,9 +39,9 @@ export const SvgEditorPrimary: FC = () => {
   return (
     <div>
       <button onClick={() => { setImg(img2); }}>change image</button>
-      <button onClick={() => { svgEditor!.newRectangle() }}>Add Rectangle</button>
-      <button onClick={() => { svgEditor!.newPolygon() }}>Add Polygon</button>
-      <button onClick={() => { svgEditor!.newCircle() }}>Add Circle</button>
+      <button onClick={() => { svgEditor!.drawRectangle() }}>Add Rectangle</button>
+      <button onClick={() => { svgEditor!.drawPolygon() }}>Add Polygon</button>
+      <button onClick={() => { svgEditor!.drawCircle() }}>Add Circle</button>
       <button onClick={() => { svgEditor!.stop() }}>stop</button>
       <button onClick={() => { svgEditor!.stopEdit() }}>Edit Done</button>
       <button onClick={() => { svgEditor!.zoom(1.25) }}>zoom in</button>

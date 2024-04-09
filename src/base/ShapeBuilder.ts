@@ -55,8 +55,11 @@ export abstract class ShapeBuilder<T extends Shape> {
       let height = element.classNames.bbox().height;
       element.classNamesWrapper = this.svg.rect(width, height).radius(2).move(pos[0] - width / 2, pos[1] + height / 4).fill('#ffffff80');
       element.classNames.clear();
-      element.classNames = this.svg.plain(classNames);
-      element.classNames.move(pos[0], pos[1]).font({ fill: '#3a4620', size: 12, anchor: 'middle', weight: 'bold' }).attr('class', 'class-names');
+      element.classNames = this.svg
+        .plain(classNames)
+        .move(pos[0], pos[1])
+        .font({ fill: '#3a4620', size: 12, anchor: 'middle', weight: 'bold' })
+        .addClass('class-names');
     }
   }
 
@@ -78,11 +81,12 @@ export abstract class ShapeBuilder<T extends Shape> {
     this.moveIconPath = this.svg.path(str);
     this.element!.after(this.moveIconPath);
     this.moveIconPath.attr('class', 'move-icon grabbable');
-    this.moveIconPath.mousedown((ev: MouseEvent) => this.mouseDown(ev));
-    this.moveIconPath.on('contextmenu', (ev: any) => { 
-      ev.preventDefault(); 
-      this.element!.node.dispatchEvent!(new Event('contextmenu', ev)); 
-    })
+    this.moveIconPath
+      .mousedown((ev: MouseEvent) => this.mouseDown(ev))
+      .on('contextmenu', (ev: any) => {
+        ev.preventDefault();
+        this.element!.node.dispatchEvent!(new Event('contextmenu', ev));
+      })
   }
 
   initDrag() {
