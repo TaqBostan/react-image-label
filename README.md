@@ -1,9 +1,9 @@
-A comprehensive package for tagging images.
+A comprehensive component for tagging images.
 
 ## Features
 
-- Bounding Box, Circle, and Polygon Tag
-- Add, Edit, Drag, and Delete Tags
+- Bounding Box (Rectangle, Square, and Circle), and Polygon Annotations 
+- Add, Edit, Drag, and Delete Annotations
 - Zoom and Scale
 - Changing image on the fly
 - Raw or typed input/output
@@ -16,25 +16,25 @@ Install `react-image-label` using npm.
 npm install react-image-label
 ```
 
-Then you can just import the component:
+Then you can just import the component and its hook:
 
 ```js
-import { SvgEditor } from 'react-image-label';
+import { SvgEditor, useSvgEditor } from 'react-image-label';
 ```
 
-and use it like so:
+and use it as below:
 
 ```js
-const svgEditor = React.useRef<any>();
+const { setHandles, svgEditor } = useSvgEditor();
 
 <SvgEditor
-  ref={svgEditor}
+  setHandles={setHandles}
   naturalSize={true}
   imageUrl={'your-image-url'}
-  onReady={() => {svgEditor.current.newRectangle();}} />
+  onReady={svgEditor => { svgEditor.drawRectangle() }} />
 ```
 
-Now you can draw, edit, and drag rectangles on the image.
+Now you can draw rectangles on the image by dragging the left mouse button.
 
 ## Props
 
@@ -43,18 +43,26 @@ The following props can be defined on `SvgEditor`:
 | Prop | Type | Description | Default |
 |---|---|---|---|
 | `imageUrl` \* | `string` | Use a state for image url if you want to change it on the fly |   |
-| `shapes` | `Shape[] \| any[]` | Tags being displayed on load |   |
+| `shapes` | `Shape[] \| any[]` | Annotations being displayed on load |   |
 | `naturalSize` | `boolean` | Show image in its natural size | `false` |
-| `maxWidth` | `number` | The maximum width without breaking the aspect ratio when `naturalSize` is `false` |  |
-| `maxHeight` | `number` | The maximum height without breaking the aspect ratio when `naturalSize` is `false` |  |
-| `onAdded` | `Shape => any` | After a tag is added  |  |
-| `onContextMenu` | `Shape => any` | When a tag is right-clicked |   |
-| `onReady` | `SvgEditorHandles => any` | When SvgEditor is mounted |   |
+| `width` | `number` | Maximum width without breaking the aspect ratio at initial loading (when `naturalSize` is `false`) |  |
+| `height` | `number` | Maximum height without breaking the aspect ratio at initial loading (when `naturalSize` is `false`) |  |
+| `discRadius` | `number` | The radius of the green discs in edit mode | 5 |
+| `onAdded` | `Shape => any` | When an annotation is drawn (see [Annotations with Categories](#annotations-with-categories)) |  |
+| `onContextMenu` | `Shape => any` | When an annotation is right-clicked (see [Annotations with Categories](#annotations-with-categories)) |   |
+| `onReady` | `SvgEditorHandles => any` | When the component is mounted |   |
+
 (\*) required props
 
-## Exposed Handles
+## Handles
 
-Use `svgEditor` object received from `useSvgEditor` to call or use the following handles:
+Use `svgEditor` object to use the handles like so:
+
+```js
+<button onClick={() => { svgEditor.drawCircle() }}>Draw Circle</button>
+```
+
+Below is a list of all handles:
 
 | Prop | Type | Description |
 |---|---|---|
@@ -62,12 +70,16 @@ Use `svgEditor` object received from `useSvgEditor` to call or use the following
 | `drawRectangle` | `() => void` | Allows drawing rectangles by dragging the left mouse button (keep the shift key to draw square) |
 | `drawPolygon` | `() => void` | Allows drawing polygons by clicking and double-clicking |
 | `stop` | `() => void` | Stops draw/edit/drag mode |
-| `edit` | `(id: number) => void` | The tag identified by `id` can be edited and dragged |
+| `edit` | `(id: number) => void` | The annotation identified by `id` can be edited and dragged |
 | `stopEdit` | `() => void` | Stops editing and dragging |
-| `updateClasses` | `(id: number, classes: string[]) => void` | Updates the classes associated with the tag identified by `id` |
+| `updatecategories` | `(id: number, categories: string[]) => void` | Updates the categories associated with the annotation identified by `id` |
 | `zoom` | `(factor: number) => void` | Multiplies the dimensions by `factor` |
-| `getShapes` | `() => Shape[]` | Gets all tags |
+| `getShapes` | `() => Shape[]` | Gets all annotations |
 | `container` | `HTMLDivElement` | The `div` wrapping the `SVG` |
+
+## Annotations with Categories
+
+To attach one or more categories to an annotation, utilize `onAdded` and `onContextMenu` props being called when an annotation is drawn and right-clicked, respectively.
 
 ## Contributing
 

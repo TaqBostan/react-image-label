@@ -1,6 +1,7 @@
 import { ArrayXY, PointArray } from '@svgdotjs/svg.js'
 import { AngledBuilder } from "../AngledBuilder";
 import { Rectangle, Point } from "../types";
+import { ShapeBuilder } from '../ShapeBuilder';
 
 export default class RectangleBuilder extends AngledBuilder<Rectangle> {
   rectOrigin?: Point;
@@ -55,20 +56,21 @@ export default class RectangleBuilder extends AngledBuilder<Rectangle> {
   editShapeMouseMove(event: MouseEvent) {
     // Moves a vertex of the polyline
     if (this.dragPointIndex !== undefined) {
+      let discRadius = ShapeBuilder.statics.discRadius;
       this.element!.shape.points[this.dragPointIndex] = [event.offsetX, event.offsetY];
-      this.element!.discs[this.dragPointIndex].move(event.offsetX - 5, event.offsetY - 5);
+      this.element!.discs[this.dragPointIndex].move(event.offsetX - discRadius, event.offsetY - discRadius);
       let prevIndex = this.dragPointIndex === 0 ? 3 : this.dragPointIndex - 1,
         nextIndex = this.dragPointIndex === 3 ? 0 : this.dragPointIndex + 1;
       if (this.dragPointIndex % 2 === 0) {
         this.element!.shape.points[prevIndex][1] = event.offsetY;
         this.element!.shape.points[nextIndex][0] = event.offsetX;
-        this.element!.discs[prevIndex].move(this.element!.shape.points[prevIndex][0] - 5, event.offsetY - 5);
-        this.element!.discs[nextIndex].move(event.offsetX - 5, this.element!.shape.points[nextIndex][1] - 5);
+        this.element!.discs[prevIndex].move(this.element!.shape.points[prevIndex][0] - discRadius, event.offsetY - discRadius);
+        this.element!.discs[nextIndex].move(event.offsetX - discRadius, this.element!.shape.points[nextIndex][1] - discRadius);
       } else {
         this.element!.shape.points[prevIndex][0] = event.offsetX;
         this.element!.shape.points[nextIndex][1] = event.offsetY;
-        this.element!.discs[prevIndex].move(event.offsetX - 5, this.element!.shape.points[prevIndex][1] - 5);
-        this.element!.discs[nextIndex].move(this.element!.shape.points[nextIndex][0] - 5, event.offsetY - 5);
+        this.element!.discs[prevIndex].move(event.offsetX - discRadius, this.element!.shape.points[prevIndex][1] - discRadius);
+        this.element!.discs[nextIndex].move(this.element!.shape.points[nextIndex][0] - discRadius, event.offsetY - discRadius);
       }
       this.element!.shape.points[this.element!.shape.points.length - 1] = [...this.element!.shape.points[0]];
       this.plotAngledShape();

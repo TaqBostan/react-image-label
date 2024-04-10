@@ -1,4 +1,5 @@
 import { AngledBuilder } from "../AngledBuilder";
+import { ShapeBuilder } from "../ShapeBuilder";
 import { Polygon, Color } from "../types";
 
 export default class PolygonBuilder extends AngledBuilder<Polygon> {
@@ -39,7 +40,7 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
         this.createElement(new Polygon());
       }
       let x = event.offsetX, y = event.offsetY;
-      let radius = 5 + PolygonBuilder.width / 150;
+      let radius = PolygonBuilder.statics.discRadius + PolygonBuilder.statics.width / 150;
       if (this.element.shape.points.length >= 3 &&
         Math.pow(this.element.shape.points[0][0] - x, 2) +
         Math.pow(this.element.shape.points[0][1] - y, 2) < Math.pow(radius, 2)) {
@@ -92,8 +93,9 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
   editShapeMouseMove(event: MouseEvent) {
     // Moves a vertex of the polyline
     if (this.dragPointIndex !== undefined) {
+      let discRadius = ShapeBuilder.statics.discRadius;
       this.element!.shape.points[this.dragPointIndex] = [event.offsetX, event.offsetY];
-      this.element!.discs[this.dragPointIndex].move(event.offsetX - 5, event.offsetY - 5);
+      this.element!.discs[this.dragPointIndex].move(event.offsetX - discRadius, event.offsetY - discRadius);
       if (this.dragPointIndex === 0)
         this.element!.shape.points[this.element!.shape.points.length - 1] = [event.offsetX, event.offsetY];
       this.plotAngledShape();

@@ -14,7 +14,7 @@ export type SvgEditorHandles = {
   stopEdit: () => void;
   edit: (id: number) => void;
   delete: (id: number) => void;
-  updateClasses: (id: number, classes: string[]) => void;
+  updateCategories: (id: number, categories: string[]) => void;
   zoom: (factor: number) => void;
   getShapes: () => Shape[];
   container: HTMLDivElement;

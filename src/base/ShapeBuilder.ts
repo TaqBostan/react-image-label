@@ -1,5 +1,5 @@
 import { Svg } from "react-svgdotjs";
-import { Shape, ElementWithExtra, Color, Point, Polygon } from "./types";
+import { Shape, ElementWithExtra, Color, Point, Polygon, StaticData } from "./types";
 import { ArrayXY, Path } from '@svgdotjs/svg.js'
 
 export abstract class ShapeBuilder<T extends Shape> {
@@ -8,10 +8,8 @@ export abstract class ShapeBuilder<T extends Shape> {
   abstract element?: ElementWithExtra;
   abstract shape?: T;
   //#region static data
+  static statics: StaticData;
   static editing: boolean = false;
-  static width: number;
-  static height: number;
-  static ratio: number = 1;
   //#endregion
   //#region drag
   private lastPoint?: Point;
@@ -38,25 +36,25 @@ export abstract class ShapeBuilder<T extends Shape> {
 
   basePlotShape() {
     this.plotShape();
-    this.setOptions(this.element!, this.element!.shape.classes);
+    this.setOptions(this.element!, this.element!.shape.categories);
   }
 
-  setOptions(element: ElementWithExtra, classes: string[]) {
-    let labeled = classes.length > 0;
+  setOptions(element: ElementWithExtra, categories: string[]) {
+    let labeled = categories.length > 0;
     element.stroke({ color: labeled ? Color.WhiteLine : Color.RedLine });
 
-    if (element.classNames) element.classNames.remove();
-    if (element.classNamesWrapper) element.classNamesWrapper.remove();
+    if (element.categoriesPlain) element.categoriesPlain.remove();
+    if (element.categoriesRect) element.categoriesRect.remove();
     if (labeled) {
       let pos = element.shape.labelPosition();
-      let classNames = classes.join(', ');
-      element.classNames = this.svg.plain(classNames).font({ size: 12, weight: 'bold' });
-      let width = element.classNames.bbox().width;
-      let height = element.classNames.bbox().height;
-      element.classNamesWrapper = this.svg.rect(width, height).radius(2).move(pos[0] - width / 2, pos[1] + height / 4).fill('#ffffff80');
-      element.classNames.clear();
-      element.classNames = this.svg
-        .plain(classNames)
+      let categoriesPlain = categories.join(', ');
+      element.categoriesPlain = this.svg.plain(categoriesPlain).font({ size: 12, weight: 'bold' });
+      let width = element.categoriesPlain.bbox().width;
+      let height = element.categoriesPlain.bbox().height;
+      element.categoriesRect = this.svg.rect(width, height).radius(2).move(pos[0] - width / 2, pos[1] + height / 4).fill('#ffffff80');
+      element.categoriesPlain.clear();
+      element.categoriesPlain = this.svg
+        .plain(categoriesPlain)
         .move(pos[0], pos[1])
         .font({ fill: '#3a4620', size: 12, anchor: 'middle', weight: 'bold' })
         .addClass('class-names');
@@ -67,8 +65,8 @@ export abstract class ShapeBuilder<T extends Shape> {
     let elem = this.element!;
     if (elem.editing) ShapeBuilder.editing = false;
     this.moveIconPath?.remove();
-    elem.classNames?.remove();
-    elem.classNamesWrapper?.remove();
+    elem.categoriesPlain?.remove();
+    elem.categoriesRect?.remove();
     elem.connector?.remove();
     elem.discs.forEach(disc => disc.remove());
     elem.shadow.remove();
@@ -151,7 +149,7 @@ export abstract class ShapeBuilder<T extends Shape> {
     elem.discs?.forEach(_disc => _disc.cx(_disc.cx() * factor).cy(_disc.cy() * factor));
     elem.connector?.plot(elem.connector.array().map(p => [p[0] * factor, p[1] * factor] as ArrayXY));
     this.moveIconPath?.plot(this.moveIcon(elem.shape.getCenter()))
-    this.setOptions(elem, elem.shape.classes);
+    this.setOptions(elem, elem.shape.categories);
   }
 
   stopEdit() {
@@ -169,15 +167,15 @@ export abstract class ShapeBuilder<T extends Shape> {
         .off('click').off('mousedown').off('mouseup')
       this.dragPointIndex = undefined;
     });
-    this.setOptions(elem, elem.shape.classes);
+    this.setOptions(elem, elem.shape.categories);
   }
 
   edit(): void {
     let polyline = this.element!;
     ShapeBuilder.editing = true;
     this.element!.editing = true;
-    if (polyline.classNames) polyline.classNames.clear();
-    if (polyline.classNamesWrapper) polyline.classNamesWrapper.remove();
+    if (polyline.categoriesPlain) polyline.categoriesPlain.clear();
+    if (polyline.categoriesRect) polyline.categoriesRect.remove();
     this.initDrag();
     this.editShape();
   }

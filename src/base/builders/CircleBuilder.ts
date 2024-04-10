@@ -5,8 +5,8 @@ import { ShapeBuilder } from "../ShapeBuilder";
 
 class IlCircle extends Circ implements IlElementExtra {
   discs!: Circ[];
-  classNames?: Text;
-  classNamesWrapper?: Rect;
+  categoriesPlain?: Text;
+  categoriesRect?: Rect;
   shape!: Circle;
   shadow!: Circ;
   editing: boolean = false;
@@ -24,8 +24,8 @@ export default class CircleBuilder extends ShapeBuilder<Circle> {
 
   plotShape(): void {
     let shape = this.shape!;
-    shape.centre = [shape.centre[0] * ShapeBuilder.ratio, shape.centre[1] * ShapeBuilder.ratio];
-    shape.radius = shape.radius * ShapeBuilder.ratio;
+    shape.centre = [shape.centre[0] * ShapeBuilder.statics.ratio, shape.centre[1] * ShapeBuilder.statics.ratio];
+    shape.radius = shape.radius * ShapeBuilder.statics.ratio;
     this.createElement(shape);
   }
 
@@ -87,12 +87,10 @@ export default class CircleBuilder extends ShapeBuilder<Circle> {
   }
 
   editShape() {
-    this.element!.editing = true;
-    if (this.element!.classNames) this.element!.classNames.clear();
-    if (this.element!.classNamesWrapper) this.element!.classNamesWrapper.remove();
     this.addEditingPoints();
     this.element!.discs?.forEach((_disc, index) => {
-      _disc.addClass('seg-point')
+      _disc
+        .addClass('seg-point')
         .click((event: MouseEvent) => { event.stopPropagation(); })
         .mousedown((event: MouseEvent) => {
           if (event.button === 0 && this.dragPointIndex === undefined) {
@@ -114,11 +112,12 @@ export default class CircleBuilder extends ShapeBuilder<Circle> {
   }
 
   addEditingPoints(): void {
-    let radius = this.element!.shape.radius, x = this.element!.shape.centre[0], y = this.element!.shape.centre[1];
-    this.element!.discs.push(this.drawDisc(x - radius, y - radius, 4, Color.GreenDisc));
-    this.element!.discs.push(this.drawDisc(x - radius, y + radius, 4, Color.GreenDisc));
-    this.element!.discs.push(this.drawDisc(x + radius, y + radius, 4, Color.GreenDisc));
-    this.element!.discs.push(this.drawDisc(x + radius, y - radius, 4, Color.GreenDisc));
+    let radius = this.element!.shape.radius, x = this.element!.shape.centre[0], y = this.element!.shape.centre[1],
+      discRadius = ShapeBuilder.statics.discRadius;
+    this.element!.discs.push(this.drawDisc(x - radius, y - radius, discRadius, Color.GreenDisc));
+    this.element!.discs.push(this.drawDisc(x - radius, y + radius, discRadius, Color.GreenDisc));
+    this.element!.discs.push(this.drawDisc(x + radius, y + radius, discRadius, Color.GreenDisc));
+    this.element!.discs.push(this.drawDisc(x + radius, y - radius, discRadius, Color.GreenDisc));
     let points: ArrayXY[] = this.element!.discs.map(disc => [disc.cx(), disc.cy()]);
     this.element!.connector = this.svg.polyline([...points, points[0]])
       .fill(Color.ShapeFill)
@@ -157,6 +156,6 @@ export default class CircleBuilder extends ShapeBuilder<Circle> {
     });
     circle.discs = [];
     circle.connector!.remove();
-    this.setOptions(circle, circle.shape.classes);
+    this.setOptions(circle, circle.shape.categories);
   }
 }

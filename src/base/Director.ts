@@ -1,5 +1,5 @@
 import { Svg } from "react-svgdotjs";
-import { Shape, ElementWithExtra } from "./types";
+import { Shape, ElementWithExtra, StaticData } from "./types";
 import Util from './util'
 import PolygonBuilder from "./builders/PolygonBuilder";
 import { ShapeBuilder } from "./ShapeBuilder";
@@ -36,8 +36,8 @@ export class Director {
 
   getElement = (id: number) => Director.elements.find(p => p.shape.id === id)!;
 
-  setOptions(element: ElementWithExtra, classes: string[]) {
-    this.getBuilder(element.shape).setOptions(element, classes);
+  setOptions(element: ElementWithExtra, categories: string[]) {
+    this.getBuilder(element.shape).setOptions(element, categories);
   }
 
   plot(shapes: Shape[]): void {
@@ -83,11 +83,11 @@ export class Director {
     }
   }
 
-  updateClasses(id: number, classes: string[]) {
+  updateCategories(id: number, categories: string[]) {
     let elem = this.getElement(id);
-    elem.shape.classes = classes;
+    elem.shape.categories = categories;
     let builder = this.getBuilder(elem.shape);
-    if (!elem.editing) builder.setOptions(elem, classes);
+    if (!elem.editing) builder.setOptions(elem, categories);
   }
 
   removeElement(id: number) {
@@ -98,19 +98,16 @@ export class Director {
     Director.elements.splice(Director.elements.indexOf(elem), 1);
   }
 
-  static getShapes = () => Director.elements.map(el => el.shape.getOutput(ShapeBuilder.ratio));
+  static getShapes = () => Director.elements.map(el => el.shape.getOutput(ShapeBuilder.statics.ratio));
   static findShape = (id: number) => Director.elements.find(el => el.shape.id === id)!.shape;
 
-  static init(svg: Svg, width: number, height: number, ratio: number, container: HTMLDivElement,
-    onAdded?: (shape: Shape) => void, onContextMenu?: (shape: Shape) => void) {
-    svg.size(width, height);
+  static init(svg: Svg, statics: StaticData, container: HTMLDivElement, onAdded?: (shape: Shape) => void, onContextMenu?: (shape: Shape) => void) {
+    svg.size(statics.width, statics.height);
     Shape.containerOffset = [container.offsetLeft, container.offsetTop];
     ShapeBuilder._svg = svg;
-    ShapeBuilder.ratio = ratio;
-    ShapeBuilder.width = width;
-    ShapeBuilder.height = height;
-    Director.onAdded = shape => onAdded?.(shape.getOutput(ShapeBuilder.ratio));
-    Director.onContextMenu = shape => onContextMenu?.(shape.getOutput(ShapeBuilder.ratio));
+    ShapeBuilder.statics = statics;
+    Director.onAdded = shape => onAdded?.(shape.getOutput(ShapeBuilder.statics.ratio));
+    Director.onContextMenu = shape => onContextMenu?.(shape.getOutput(ShapeBuilder.statics.ratio));
     Director.builders = [new PolygonBuilder(), new RectangleBuilder(), new CircleBuilder()];
   }
 
@@ -121,9 +118,9 @@ export class Director {
   }
 
   static setSizeAndRatio(factor: number) {
-    ShapeBuilder.ratio *= factor;
-    ShapeBuilder.width *= factor;
-    ShapeBuilder.height *= factor;
-    ShapeBuilder._svg.size(ShapeBuilder.width, ShapeBuilder.height);
+    ShapeBuilder.statics.ratio *= factor;
+    ShapeBuilder.statics.width *= factor;
+    ShapeBuilder.statics.height *= factor;
+    ShapeBuilder._svg.size(ShapeBuilder.statics.width, ShapeBuilder.statics.height);
   }
 }

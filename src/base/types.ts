@@ -1,8 +1,9 @@
 import { ArrayXY, PointArray, Rect, Text, Element, Circle as Circ, Polyline } from '@svgdotjs/svg.js'
 import Util from './util';
 
-
 export type Point = { X: number, Y: number }
+
+export type StaticData = { width: number, height: number, ratio: number, discRadius: number }
 
 export abstract class Shape {
   id: number;
@@ -15,7 +16,7 @@ export abstract class Shape {
   abstract output(ratio: number): Shape;
   abstract centerChanged(newCenter: ArrayXY): void;
 
-  constructor(public classes: string[] = []) {
+  constructor(public categories: string[] = []) {
     this.id = 0;
   }
 
@@ -29,8 +30,8 @@ export abstract class Shape {
 }
 
 export interface IlElementExtra {
-  classNames?: Text;
-  classNamesWrapper?: Rect;
+  categoriesPlain?: Text;
+  categoriesRect?: Rect;
   shape: Shape;
   shadow: Element;
   discs: Circ[];
@@ -41,8 +42,8 @@ export interface IlElementExtra {
 export type ElementWithExtra = Element & IlElementExtra;
 
 export abstract class AngledShape extends Shape {
-  constructor(public points: ArrayXY[] | PointArray = [], public classes: string[] = []) {
-    super(classes);
+  constructor(public points: ArrayXY[] | PointArray = [], public categories: string[] = []) {
+    super(categories);
   }
   labelPosition(): ArrayXY {
     let x = this.points
@@ -78,7 +79,7 @@ export abstract class AngledShape extends Shape {
   output(ratio: number) {
     let points: ArrayXY[] = this.points.filter((p, i) => i < this.points.length - 1)
       .map(p => [Math.round(p[0] / ratio), Math.round(p[1] / ratio)]);
-    return new Polygon(points, this.classes);
+    return new Polygon(points, this.categories);
   }
 }
 
@@ -104,8 +105,8 @@ export class Polygon extends AngledShape {
 
 export class Circle extends Shape {
   type: string = 'circle';
-  constructor(public centre: ArrayXY = [0, 0], public radius: number = 0, public classes: string[] = []) {
-    super(classes);
+  constructor(public centre: ArrayXY = [0, 0], public radius: number = 0, public categories: string[] = []) {
+    super(categories);
   }
   labelPosition(): ArrayXY {
     return [this.centre[0], this.centre[1] - this.radius - 24];
@@ -123,6 +124,6 @@ export class Circle extends Shape {
   }
 
   output = (ratio: number): Shape =>
-    new Circle([Math.round(this.centre[0] / ratio), Math.round(this.centre[1] / ratio)], Math.round(this.radius / ratio), this.classes);
+    new Circle([Math.round(this.centre[0] / ratio), Math.round(this.centre[1] / ratio)], Math.round(this.radius / ratio), this.categories);
 
 }
