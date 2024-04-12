@@ -18,10 +18,10 @@ export class Director {
     return builder
   }
 
-  stopEdit = (): void => Director.builders.find(b => b.element?.editing)?.stopEdit()
+  stopEdit = (): void => Director.builders.filter(b => b.element?.editing).forEach(b => b.stopEdit());
 
   edit(id: number): void {
-    if (ShapeBuilder.editing) this.stopEdit();
+    this.stopEdit();
     let elem = this.getElement(id);
     let builder = this.getBuilder(elem.shape);
     builder.element = elem;

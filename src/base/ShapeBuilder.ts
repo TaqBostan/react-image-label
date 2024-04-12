@@ -7,10 +7,7 @@ export abstract class ShapeBuilder<T extends Shape> {
   svg: Svg = ShapeBuilder._svg;
   abstract element?: ElementWithExtra;
   abstract shape?: T;
-  //#region static data
   static statics: StaticData;
-  static editing: boolean = false;
-  //#endregion
   //#region drag
   private lastPoint?: Point;
   private originPoint?: Point;
@@ -63,7 +60,6 @@ export abstract class ShapeBuilder<T extends Shape> {
 
   removeElement() {
     let elem = this.element!;
-    if (elem.editing) ShapeBuilder.editing = false;
     this.moveIconPath?.remove();
     elem.categoriesPlain?.remove();
     elem.categoriesRect?.remove();
@@ -153,8 +149,8 @@ export abstract class ShapeBuilder<T extends Shape> {
   }
 
   stopEdit() {
-    if (ShapeBuilder.editing && this.element && this.element.editing) {
-      ShapeBuilder.editing = this.element.editing = false;
+    if (this.element && this.element.editing) {
+      this.element.editing = false;
       this.stopDrag();
       this.stopEditShape(this.element);
       if (this.drawing) this.createElement(this.newShape());
@@ -172,7 +168,6 @@ export abstract class ShapeBuilder<T extends Shape> {
 
   edit(): void {
     let polyline = this.element!;
-    ShapeBuilder.editing = true;
     this.element!.editing = true;
     if (polyline.categoriesPlain) polyline.categoriesPlain.clear();
     if (polyline.categoriesRect) polyline.categoriesRect.remove();

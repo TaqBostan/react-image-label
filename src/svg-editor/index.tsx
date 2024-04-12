@@ -1,12 +1,12 @@
 import React, { useEffect, FC } from 'react';
-import { SvgContainer, Svg } from 'react-svgdotjs';
+import { SvgContainer, useSvgContainer, Svg } from 'react-svgdotjs';
 import { Director } from '../base/Director';
 import { Circle, Shape, Polygon, Rectangle } from '../base/types';
 import { SvgEditorHandles } from './hook';
 import './index.css';
 
 const SvgEditor: FC<SvgEditorProps> = props => {
-  const svgContainer = React.useRef<any>();
+  const { setHandles, svgContainer } = useSvgContainer();
 
   const drawShapes = (shapes?: Shape[] | any[]) => {
     let director = new Director();
@@ -53,17 +53,16 @@ const SvgEditor: FC<SvgEditorProps> = props => {
     delete: (id: number) => new Director().removeElement(id),
     updateCategories: (id: number, categories: string[]) => new Director().updateCategories(id, categories),
     zoom,
-    getShapes: Director.getShapes,
-    container: HTMLDivElement = svgContainer.current?.container
+    getShapes: Director.getShapes
   })
 
-  const onload = React.useCallback((svg: Svg, imageUrl: string) => {
+  const onload = React.useCallback((svg: Svg, container: HTMLDivElement, imageUrl: string) => {
     svg.image(imageUrl, (ev: any) => {
       if (!ev?.target) return;
       let width = ev.target.naturalWidth, height = ev.target.naturalHeight, maxWidth = props.width, maxHeight = props.height;
       if (!props.naturalSize) {
-        if (!maxWidth) maxWidth = svgContainer.current.container.scrollWidth;
-        if (!maxHeight) maxHeight = svgContainer.current.container.scrollHeight;
+        if (!maxWidth) maxWidth = container.scrollWidth;
+        if (!maxHeight) maxHeight = container.scrollHeight;
         if (maxWidth! / maxHeight! > ev.target.naturalWidth / ev.target.naturalHeight) {
           height = Math.min(maxHeight!, ev.target.naturalHeight);
           width = height * ev.target.naturalWidth / ev.target.naturalHeight;
@@ -74,19 +73,19 @@ const SvgEditor: FC<SvgEditorProps> = props => {
         }
       }
       let statics = { width, height, ratio: width / ev.target.naturalWidth, discRadius: props.discRadius! }
-      Director.init(svg, statics, svgContainer.current.container, props.onAdded, props.onContextMenu);
+      Director.init(svg, statics, container, props.onAdded, props.onContextMenu);
       drawShapes(props.shapes);
-      props.setHandles({ ...getHandles() });
-      props.onReady?.(getHandles());
+      props.setHandles({ ...getHandles(), container });
+      props.onReady?.({ ...getHandles(), container });
     }).size('100%', '100%').attr('onmousedown', 'return false').attr('oncontextmenu', 'return false');
   }, []);
 
   useEffect(() => {
-    if (svgContainer.current && props.imageUrl) onload(svgContainer.current.svg, props.imageUrl);
+    if (svgContainer && props.imageUrl) onload(svgContainer.svg, svgContainer.container, props.imageUrl);
     return () => { Director.clear(); }
   }, [svgContainer, onload, props.imageUrl]);
 
-  return (<SvgContainer ref={svgContainer} width='fit-content' height='fit-content' />);
+  return (<SvgContainer setHandles={setHandles} width='fit-content' height='fit-content' />);
 }
 
 SvgEditor.defaultProps = { discRadius: 5 };

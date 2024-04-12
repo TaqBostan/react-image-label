@@ -1,4 +1,4 @@
-A comprehensive component for tagging images.
+A comprehensive component for tagging images. Check out [demo 1](https://codepen.io/Mohamad-Mehdi-Rajaei/pen/rNbvbYJ) and [demo 2](https://codepen.io/Mohamad-Mehdi-Rajaei/pen/ZEZRoLK) for some examples.
 
 ## Features
 
@@ -26,7 +26,9 @@ and use it as below:
 
 ```js
 const { setHandles, svgEditor } = useSvgEditor();
+```
 
+```js
 <SvgEditor
   setHandles={setHandles}
   naturalSize={true}
@@ -44,7 +46,7 @@ The following props can be defined on `SvgEditor`:
 |---|---|---|---|
 | `imageUrl` \* | `string` | Use a state for image url if you want to change it on the fly |   |
 | `shapes` | `Shape[] \| any[]` | Annotations being displayed on load |   |
-| `naturalSize` | `boolean` | Show image in its natural size | `false` |
+| `naturalSize` | `boolean` | To show image in its natural size | `false` |
 | `width` | `number` | Maximum width without breaking the aspect ratio at initial loading (when `naturalSize` is `false`) |  |
 | `height` | `number` | Maximum height without breaking the aspect ratio at initial loading (when `naturalSize` is `false`) |  |
 | `discRadius` | `number` | The radius of the green discs in edit mode | 5 |
@@ -56,7 +58,7 @@ The following props can be defined on `SvgEditor`:
 
 ## Handles
 
-Use `svgEditor` object to use the handles like so:
+You can access the handles using the `svgEditor` object as follows:
 
 ```js
 <button onClick={() => { svgEditor.drawCircle() }}>Draw Circle</button>
@@ -72,14 +74,32 @@ Below is a list of all handles:
 | `stop` | `() => void` | Stops draw/edit/drag mode |
 | `edit` | `(id: number) => void` | The annotation identified by `id` can be edited and dragged |
 | `stopEdit` | `() => void` | Stops editing and dragging |
-| `updatecategories` | `(id: number, categories: string[]) => void` | Updates the categories associated with the annotation identified by `id` |
+| `updateCategories` | `(id: number, categories: string[]) => void` | Updates the categories associated with the annotation identified by `id` |
 | `zoom` | `(factor: number) => void` | Multiplies the dimensions by `factor` |
 | `getShapes` | `() => Shape[]` | Gets all annotations |
 | `container` | `HTMLDivElement` | The `div` wrapping the `SVG` |
 
 ## Annotations with Categories
 
-To attach one or more categories to an annotation, utilize `onAdded` and `onContextMenu` props being called when an annotation is drawn and right-clicked, respectively.
+To attach one or more categories to an annotation, utilize `onAdded` and `onContextMenu` props being called when an annotation is drawn and right-clicked, respectively. Use `shape.categories` to get the previous categories as `string[]`:
+
+```js
+const showCategoriesDialog = (shape) => {
+  console.log(shape.id) // 1
+  console.log(shape.getCenterWithOffset()) // { X: 247.5, Y: 193 }
+  console.log(shape.categories) // Array []
+  // Show a category selection component
+}
+
+return (
+  <SvgEditor
+    onAdded={showCategoriesDialog}
+    onContextMenu={showCategoriesDialog}
+    ...
+);
+```
+
+Finally, call `svgEditor.updateCategories` to update the categories of the annotation.
 
 ## Contributing
 
