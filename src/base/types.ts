@@ -103,27 +103,61 @@ export class Polygon extends AngledShape {
   type: string = 'polygon';
 }
 
-export class Circle extends Shape {
-  type: string = 'circle';
-  constructor(public centre: ArrayXY = [0, 0], public radius: number = 0, public categories: string[] = []) {
+export abstract class RoundShape extends Shape {
+  constructor(public centre: ArrayXY = [0, 0], public categories: string[] = []) {
     super(categories);
   }
-  labelPosition(): ArrayXY {
-    return [this.centre[0], this.centre[1] - this.radius - 24];
-  }
+  abstract get width(): number;
+  abstract set width(w);
+  abstract get height(): number;
+  abstract set height(h);
   getCenter(): ArrayXY {
     return this.centre;
   }
   centerChanged(newCenter: ArrayXY): void {
     this.centre = newCenter;
   }
+}
 
+export class Circle extends RoundShape {
+  type: string = 'circle';
+  constructor(public centre: ArrayXY = [0, 0], public radius: number = 0, public categories: string[] = []) {
+    super(centre, categories);
+  }
+  get width(): number { return 2 * this.radius; }
+  set width(w: number) { this.radius = w / 2; }
+  get height(): number { return 2 * this.radius; }
+  set height(h: number) { this.radius = h / 2; }
+  labelPosition(): ArrayXY {
+    return [this.centre[0], this.centre[1] - this.radius - 24];
+  }
   zoom(factor: number): void {
     this.centre = [this.centre[0] * factor, this.centre[1] * factor];
     this.radius *= factor;
   }
-
   output = (ratio: number): Shape =>
     new Circle([Math.round(this.centre[0] / ratio), Math.round(this.centre[1] / ratio)], Math.round(this.radius / ratio), this.categories);
+
+}
+
+export class Ellipse extends RoundShape {
+  type: string = 'ellipse';
+  constructor(public centre: ArrayXY = [0, 0], public radiusX: number = 0, public radiusY: number = 0, public categories: string[] = []) {
+    super(centre, categories);
+  }
+  get width(): number { return 2 * this.radiusX; }
+  set width(w: number) { this.radiusX = w / 2; }
+  get height(): number { return 2 * this.radiusY; }
+  set height(h: number) { this.radiusY = h / 2; }
+  labelPosition(): ArrayXY {
+    return [this.centre[0], this.centre[1] - this.radiusY - 24];
+  }
+  zoom(factor: number): void {
+    this.centre = [this.centre[0] * factor, this.centre[1] * factor];
+    this.radiusX *= factor;
+    this.radiusY *= factor;
+  }
+  output = (ratio: number): Shape =>
+    new Ellipse([Math.round(this.centre[0] / ratio), Math.round(this.centre[1] / ratio)], Math.round(this.radiusX / ratio), Math.round(this.radiusY / ratio), this.categories);
 
 }

@@ -10,6 +10,7 @@ export type SvgEditorHandles = {
   drawRectangle(): void;
   drawPolygon(): void;
   drawCircle(): void;
+  drawEllipse(): void;
   stop: () => void;
   stopEdit: () => void;
   edit: (id: number) => void;

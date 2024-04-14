@@ -1,21 +1,25 @@
 import React, { FC } from 'react';
 import { SvgEditor } from './';
-import { Circle, Shape, Point, Polygon, Rectangle } from '../base/types';
+import { Circle, Shape, Point, Polygon, Rectangle, Ellipse } from '../base/types';
 import './svg-editor.stories.css';
 import { useSvgEditor } from './hook';
 
-//const imgUrl = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
-const imgUrl = '/logo512.png';
+const imgUrl = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
+// const imgUrl = '/logo512.png';
 const img2 = '/ic.png';
 // const img1 = 'https://svgjs.dev/docs/3.0/assets/images/logo-svg-js-01d-128.png';
 // const img2 = 'https://en.systemgroup.net/wp-content/themes/sg/dist/images/logo.png';
 const categories = ['class 1', 'class 2', 'class 3', 'class 4', 'class 5'];
 let p: Polygon = new Polygon([[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]], ['class 1', 'class 2']);
 let r: Rectangle = new Rectangle([[150, 50], [200, 50], [200, 100], [150, 100]], ['class 3']);
-let c: Circle = new Circle([250, 100], 40, ['class 4'])
-let rawShapes = [{ type: 'rectangle', categories: ["class 3"], points: [[150, 50], [200, 50], [200, 100], [150, 100]] },
-{ type: 'polygon', categories: ["class 1", "class 2"], points: [[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]] },
-{ type: 'circle', categories: ["class 4"], centre: [250, 100], radius: 40 }]
+let c: Circle = new Circle([250, 100], 40, ['class 4']);
+let e: Ellipse = new Ellipse([350, 150], 60, 40, ['class 3']);
+let rawShapes = [
+  { type: 'rectangle', categories: ["class 3"], points: [[150, 50], [200, 50], [200, 100], [150, 100]] },
+  { type: 'polygon', categories: ["class 1", "class 2"], points: [[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]] },
+  { type: 'circle', categories: ["class 4"], centre: [250, 100], radius: 40 },
+  { type: 'ellipse', categories: ["class 3"], centre: [350, 150], radiusX: 60, radiusY: 40 },
+]
 
 export const SvgEditorPrimary: FC = () => {
   const { setHandles, svgEditor } = useSvgEditor();
@@ -38,15 +42,16 @@ export const SvgEditorPrimary: FC = () => {
 
   return (
     <div>
-      <button onClick={() => { setImg(img2); }}>change image</button>
+      <button onClick={() => { setImg(img2); }}>Change image</button>
       <button onClick={() => { svgEditor!.drawRectangle() }}>Add Rectangle</button>
       <button onClick={() => { svgEditor!.drawPolygon() }}>Add Polygon</button>
       <button onClick={() => { svgEditor!.drawCircle() }}>Add Circle</button>
-      <button onClick={() => { svgEditor!.stop() }}>stop</button>
+      <button onClick={() => { svgEditor!.drawEllipse() }}>Add Ellipse</button>
+      <button onClick={() => { svgEditor!.stop() }}>Stop</button>
       <button onClick={() => { svgEditor!.stopEdit() }}>Edit Done</button>
-      <button onClick={() => { svgEditor!.zoom(1.25) }}>zoom in</button>
-      <button onClick={() => { svgEditor!.zoom(0.8) }}>zoom out</button>
-      <button onClick={() => { setShapes(svgEditor!.getShapes()) }}>get shapes</button>
+      <button onClick={() => { svgEditor!.zoom(1.25) }}>Zoom in</button>
+      <button onClick={() => { svgEditor!.zoom(0.8) }}>Zoom out</button>
+      <button onClick={() => { setShapes(svgEditor!.getShapes()) }}>Get shapes</button>
       {dialog.show &&
         <Dialog items={dialog.shape!.categories} itemsChanged={selectedCategoriesChanged}
           onEdit={() => { svgEditor!.edit(dialog.shape!.id); hideDialog(); }}

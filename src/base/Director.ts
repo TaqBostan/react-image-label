@@ -5,6 +5,7 @@ import PolygonBuilder from "./builders/PolygonBuilder";
 import { ShapeBuilder } from "./ShapeBuilder";
 import RectangleBuilder from "./builders/RectangleBuilder";
 import CircleBuilder from "./builders/CircleBuilder";
+import EllipseBuilder from "./builders/EllipseBuilder";
 
 export class Director {
   static builders: ShapeBuilder<Shape>[];
@@ -108,7 +109,7 @@ export class Director {
     ShapeBuilder.statics = statics;
     Director.onAdded = shape => onAdded?.(shape.getOutput(ShapeBuilder.statics.ratio));
     Director.onContextMenu = shape => onContextMenu?.(shape.getOutput(ShapeBuilder.statics.ratio));
-    Director.builders = [new PolygonBuilder(), new RectangleBuilder(), new CircleBuilder()];
+    Director.builders = [new PolygonBuilder(), new RectangleBuilder(), new CircleBuilder(), new EllipseBuilder()];
   }
 
   static clear() {

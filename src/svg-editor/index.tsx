@@ -1,7 +1,7 @@
 import React, { useEffect, FC } from 'react';
 import { SvgContainer, useSvgContainer, Svg } from 'react-svgdotjs';
 import { Director } from '../base/Director';
-import { Circle, Shape, Polygon, Rectangle } from '../base/types';
+import { Shape, Polygon, Rectangle, Circle, Ellipse } from '../base/types';
 import { SvgEditorHandles } from './hook';
 import './index.css';
 
@@ -17,9 +17,12 @@ const SvgEditor: FC<SvgEditorProps> = props => {
       .map(s => new Polygon(s.points, s.categories));
     let circles = shapes.filter(s => s instanceof Circle || s.type === 'circle')
       .map(s => new Circle(s.centre, s.radius, s.categories));
+    let ellipses = shapes.filter(s => s instanceof Ellipse || s.type === 'ellipse')
+      .map(s => new Ellipse(s.centre, s.radiusX, s.radiusY, s.categories));
     if (rectangles.length > 0) director.plot(rectangles);
     if (polygons.length > 0) director.plot(polygons);
     if (circles.length > 0) director.plot(circles);
+    if (ellipses.length > 0) director.plot(ellipses);
   }
 
   const zoom = (factor: number) => {
@@ -46,6 +49,10 @@ const SvgEditor: FC<SvgEditorProps> = props => {
     drawCircle() {
       stopAll();
       new Director().startDraw(new Circle());
+    },
+    drawEllipse() {
+      stopAll();
+      new Director().startDraw(new Ellipse());
     },
     stop: stopAll,
     stopEdit: () => new Director().stopEdit(),

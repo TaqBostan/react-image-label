@@ -1,5 +1,5 @@
 import { Polyline, Circle as Circ, Rect, Text } from "@svgdotjs/svg.js";
-import { AngledShape, IlElementExtra, Color, ElementWithExtra } from "./types";
+import { AngledShape, IlElementExtra, Color } from "./types";
 import { ShapeBuilder } from "./ShapeBuilder";
 
 export class IlPolyline extends Polyline implements IlElementExtra {
@@ -39,7 +39,7 @@ export abstract class AngledBuilder<T extends AngledShape> extends ShapeBuilder<
 	plotShape(): void {
 		let shape = this.shape!;
 		this.processShape();
-		shape.points = shape.points.map(p => [p[0] * ShapeBuilder.statics.ratio, p[1] * ShapeBuilder.statics.ratio]);
+		shape.zoom(ShapeBuilder.statics.ratio);
 		shape.points.push([...shape.points[0]]);
 		this.createElement(shape);
 		this.plotAngledShape();
