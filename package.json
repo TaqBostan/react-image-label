@@ -1,14 +1,15 @@
 {
   "name": "react-image-label",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "A comprehensive package for tagging images.",
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "TaqBostan",
   "license": "MIT",
   "scripts": {
     "ladle": "ladle serve",
-    "build": "tsup --dts",
+    "build": "tsup --dts --external @svgdotjs/svg.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
