@@ -91,6 +91,7 @@ export class Director {
   }
 
   removeElement(id: number) {
+    this.stopEdit();
     let elem = this.getElement(id);
     let builder = this.getBuilder(elem.shape);
     builder.element = elem;
