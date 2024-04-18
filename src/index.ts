@@ -1,4 +1,4 @@
-import { SvgEditor } from './svg-editor';
+import { ImageAnnotator } from './svg-editor';
 import { Shape, Polygon, Rectangle, Circle, Point, Ellipse } from './base/types';
-import { useSvgEditor } from './svg-editor/hook';
-export { SvgEditor, Shape, Polygon, Rectangle, Circle, Point, Ellipse, useSvgEditor }
+import { useImageAnnotator } from './svg-editor/hook';
+export { ImageAnnotator, Shape, Polygon, Rectangle, Circle, Point, Ellipse, useImageAnnotator }

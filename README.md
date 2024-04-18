@@ -19,28 +19,28 @@ npm install react-image-label
 Then you can just import the component and its hook:
 
 ```js
-import { SvgEditor, useSvgEditor } from 'react-image-label';
+import { ImageAnnotator, useImageAnnotator } from 'react-image-label';
 ```
 
 and use it as below:
 
 ```js
-const { setHandles, svgEditor } = useSvgEditor();
+const { setHandles, annotator } = useImageAnnotator();
 ```
 
 ```js
-<SvgEditor
+<ImageAnnotator
   setHandles={setHandles}
   naturalSize={true}
   imageUrl={'your-image-url'}
-  onReady={svgEditor => { svgEditor.drawRectangle() }} />
+  onReady={annotator => { annotator.drawRectangle() }} />
 ```
 
 Now you can draw rectangles on the image by dragging the left mouse button.
 
 ## Props
 
-The following props can be defined on `SvgEditor`:
+The following props can be defined on `ImageAnnotator`:
 
 | Prop | Type | Description | Default |
 |---|---|---|---|
@@ -52,16 +52,16 @@ The following props can be defined on `SvgEditor`:
 | `discRadius` | `number` | The radius of the green discs in edit mode | 5 |
 | `onAdded` | `Shape => any` | When an annotation is drawn (see [Annotations with Categories](#annotations-with-categories)) |  |
 | `onContextMenu` | `Shape => any` | When an annotation is right-clicked (see [Annotations with Categories](#annotations-with-categories)) |   |
-| `onReady` | `SvgEditorHandles => any` | When the component is mounted |   |
+| `onReady` | `AnnotatorHandles => any` | When the component is mounted |   |
 
 (\*) required props
 
 ## Handles
 
-You can access the handles using the `svgEditor` object as follows:
+You can access the handles using the `annotator` object as follows:
 
 ```js
-<button onClick={() => { svgEditor.drawCircle() }}>Draw Circle</button>
+<button onClick={() => { annotator.drawCircle() }}>Draw Circle</button>
 ```
 
 Below is a list of all handles:
@@ -92,14 +92,14 @@ const showCategoriesDialog = (shape) => {
 }
 
 return (
-  <SvgEditor
+  <ImageAnnotator
     onAdded={showCategoriesDialog}
     onContextMenu={showCategoriesDialog}
     ...
 );
 ```
 
-Finally, call `svgEditor.updateCategories` to update the categories of the annotation.
+Finally, call `annotator.updateCategories` to update the categories of the annotation.
 
 ## Contributing
 

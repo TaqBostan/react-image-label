@@ -1,12 +1,12 @@
 import React from 'react';
 import { Shape } from '../base/types';
 
-export const useSvgEditor = () => {
-  const [handles, setHandles] = React.useState<SvgEditorHandles>();
-  return { setHandles, svgEditor: handles };
+export const useImageAnnotator = () => {
+  const [handles, setHandles] = React.useState<AnnotatorHandles>();
+  return { setHandles, annotator: handles };
 };
 
-export type SvgEditorHandles = {
+export type AnnotatorHandles = {
   drawRectangle(): void;
   drawPolygon(): void;
   drawCircle(): void;

@@ -2,10 +2,10 @@ import React, { useEffect, FC } from 'react';
 import { SvgContainer, useSvgContainer, Svg } from 'react-svgdotjs';
 import { Director } from '../base/Director';
 import { Shape, Polygon, Rectangle, Circle, Ellipse } from '../base/types';
-import { SvgEditorHandles } from './hook';
+import { AnnotatorHandles } from './hook';
 import './index.css';
 
-const SvgEditor: FC<SvgEditorProps> = props => {
+const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   const { setHandles, svgContainer } = useSvgContainer();
 
   const drawShapes = (shapes?: Shape[] | any[]) => {
@@ -95,12 +95,12 @@ const SvgEditor: FC<SvgEditorProps> = props => {
   return (<SvgContainer setHandles={setHandles} width='fit-content' height='fit-content' />);
 }
 
-SvgEditor.defaultProps = { discRadius: 5 };
+ImageAnnotator.defaultProps = { discRadius: 5 };
 
-export { SvgEditor };
+export { ImageAnnotator };
 
-export interface SvgEditorProps {
-  onReady?: (svgEditor: SvgEditorHandles) => any;
+export interface ImageAnnotatorProps {
+  onReady?: (annotator: AnnotatorHandles) => any;
   onAdded?: (shape: Shape) => any;
   onContextMenu?: (shape: Shape) => any;
   imageUrl?: string;
@@ -109,5 +109,5 @@ export interface SvgEditorProps {
   width?: number;
   height?: number;
   discRadius?: number;
-  setHandles: (handles: SvgEditorHandles) => void;
+  setHandles: (handles: AnnotatorHandles) => void;
 }

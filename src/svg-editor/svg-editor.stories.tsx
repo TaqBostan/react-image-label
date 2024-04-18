@@ -1,19 +1,19 @@
 import React, { FC } from 'react';
-import { SvgEditor } from './';
+import { ImageAnnotator } from './';
 import { Circle, Shape, Point, Polygon, Rectangle, Ellipse } from '../base/types';
 import './svg-editor.stories.css';
-import { useSvgEditor } from './hook';
+import { useImageAnnotator } from './hook';
 
-const imgUrl = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
-// const imgUrl = '/logo512.png';
+// const imgUrl = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
+const imgUrl = '/Fruit.jpeg';
 const img2 = '/ic.png';
 // const img1 = 'https://svgjs.dev/docs/3.0/assets/images/logo-svg-js-01d-128.png';
 // const img2 = 'https://en.systemgroup.net/wp-content/themes/sg/dist/images/logo.png';
-const categories = ['class 1', 'class 2', 'class 3', 'class 4', 'class 5'];
-let p: Polygon = new Polygon([[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]], ['class 1', 'class 2']);
-let r: Rectangle = new Rectangle([[150, 50], [200, 50], [200, 100], [150, 100]], ['class 3']);
-let c: Circle = new Circle([250, 100], 40, ['class 4']);
-let e: Ellipse = new Ellipse([350, 150], 60, 40, ['class 3']);
+const categories = ['blueberry', 'strawberry', 'raspberry', 'apple', 'benana'];
+let p = new Polygon([[550, 224], [519, 222], [474, 261], [430, 341], [416, 383], [427, 399], [446, 414], [528, 396], [604, 372], [633, 325], [654, 313], [648, 282], [638, 231], [596, 208], [562, 208]], ['strawberry']);
+let r = new Rectangle([[698, 316], [698, 416], [817, 416], [817, 316]], ['blueberry']);
+let c = new Circle([70, 90], 55, ['blueberry']);
+let e = new Ellipse([457, 114], 76, 80, ['raspberry']);
 let rawShapes = [
   { type: 'rectangle', categories: ["class 3"], points: [[150, 50], [200, 50], [200, 100], [150, 100]] },
   { type: 'polygon', categories: ["class 1", "class 2"], points: [[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]] },
@@ -21,10 +21,10 @@ let rawShapes = [
   { type: 'ellipse', categories: ["class 3"], centre: [350, 150], radiusX: 60, radiusY: 40 },
 ]
 
-export const SvgEditorPrimary: FC = () => {
-  const { setHandles, svgEditor } = useSvgEditor();
+export const ImageAnnotatorPrimary: FC = () => {
+  const { setHandles, annotator } = useImageAnnotator();
   const [img, setImg] = React.useState(imgUrl);
-  const [shapes, setShapes] = React.useState<Shape[]>([r, p, c]);
+  const [shapes, setShapes] = React.useState<Shape[]>([r, p, c, e]);
   const [dialog, setDialog] = React.useState<{ show: boolean, shape: Shape | undefined }>({ show: false, shape: undefined });
 
   const selectedCategoriesChanged = (items: string[]) => {
@@ -35,7 +35,7 @@ export const SvgEditorPrimary: FC = () => {
   const hideDialog = () => setDialog({ show: false, shape: undefined });
   const hideAndUpdateCategories = () => {
     if (dialog.show) {
-      svgEditor!.updateCategories(dialog.shape!.id, dialog.shape!.categories);
+      annotator!.updateCategories(dialog.shape!.id, dialog.shape!.categories);
       hideDialog();
     }
   }
@@ -43,30 +43,30 @@ export const SvgEditorPrimary: FC = () => {
   return (
     <div>
       <button onClick={() => { setImg(img2); }}>Change image</button>
-      <button onClick={() => { svgEditor!.drawRectangle() }}>Add Rectangle</button>
-      <button onClick={() => { svgEditor!.drawPolygon() }}>Add Polygon</button>
-      <button onClick={() => { svgEditor!.drawCircle() }}>Add Circle</button>
-      <button onClick={() => { svgEditor!.drawEllipse() }}>Add Ellipse</button>
-      <button onClick={() => { svgEditor!.stop() }}>Stop</button>
-      <button onClick={() => { svgEditor!.stopEdit() }}>Edit Done</button>
-      <button onClick={() => { svgEditor!.zoom(1.25) }}>Zoom in</button>
-      <button onClick={() => { svgEditor!.zoom(0.8) }}>Zoom out</button>
-      <button onClick={() => { setShapes(svgEditor!.getShapes()) }}>Get shapes</button>
+      <button onClick={() => { annotator!.drawRectangle() }}>Add Rectangle</button>
+      <button onClick={() => { annotator!.drawPolygon() }}>Add Polygon</button>
+      <button onClick={() => { annotator!.drawCircle() }}>Add Circle</button>
+      <button onClick={() => { annotator!.drawEllipse() }}>Add Ellipse</button>
+      <button onClick={() => { annotator!.stop() }}>Stop</button>
+      <button onClick={() => { annotator!.stopEdit() }}>Edit Done</button>
+      <button onClick={() => { annotator!.zoom(1.25) }}>Zoom in</button>
+      <button onClick={() => { annotator!.zoom(0.8) }}>Zoom out</button>
+      <button onClick={() => { setShapes(annotator!.getShapes()) }}>Get shapes</button>
       {dialog.show &&
         <Dialog items={dialog.shape!.categories} itemsChanged={selectedCategoriesChanged}
-          onEdit={() => { svgEditor!.edit(dialog.shape!.id); hideDialog(); }}
-          onDelete={() => { svgEditor!.delete(dialog.shape!.id); hideDialog(); }}
+          onEdit={() => { annotator!.edit(dialog.shape!.id); hideDialog(); }}
+          onDelete={() => { annotator!.delete(dialog.shape!.id); hideDialog(); }}
           onClose={hideAndUpdateCategories}
           offset={dialog.shape!.getCenterWithOffset()} />
       }
-      <SvgEditor
+      <ImageAnnotator
         setHandles={setHandles}
         naturalSize={true}
         imageUrl={img}
         shapes={shapes}
         onAdded={shape => setDialog({ show: true, shape })}
         onContextMenu={shape => setDialog({ show: true, shape })}
-        onReady={svgEditor => { svgEditor.drawRectangle() }} />
+        onReady={annotator => { annotator.drawRectangle() }} />
       <div>{JSON.stringify(shapes, null, 2)}</div>
     </div>
   );
@@ -83,16 +83,16 @@ const Dialog = (props: DialogProps) => {
   };
 
   return (
-    <div className='dialog-bg' onClick={props.onClose}>
+    <div className='dialog-bg' onClick={props.onClose}> 
       <div className='dialog' onClick={e => e.stopPropagation()}
         style={{ left: props.offset.X, top: props.offset.Y }}>
-        <button onClick={props.onEdit}>edit</button>
-        <button onClick={props.onDelete}>delete</button>
-        {categories.map((_class, index) => (
-          <div key={index}>
-            <input id={'checkbox' + index} value={_class} type="checkbox" onChange={handleCheck}
-              checked={props.items.includes(_class)} />
-            <label htmlFor={'checkbox' + index}>{_class}</label>
+        <button onClick={props.onEdit} style={{background: '#36A9AE'}}>edit</button>
+        <button onClick={props.onDelete} style={{background: '#F082AC'}}>delete</button>
+        {categories.map((_class, i) => (
+          <div key={i} className="checkbox-wrapper-1">
+            <input id={'chb' + i} className="substituted" type="checkbox" aria-hidden="true" 
+              value={_class} onChange={handleCheck} checked={props.items.includes(_class)}/>
+            <label htmlFor={'chb' + i}>{_class}</label>
           </div>
         ))}
       </div>

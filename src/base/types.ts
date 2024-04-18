@@ -75,12 +75,6 @@ export abstract class AngledShape extends Shape {
   zoom(factor: number): void {
     this.points = this.points.map(p => [p[0] * factor, p[1] * factor]);
   }
-
-  output(ratio: number) {
-    let points: ArrayXY[] = this.points.filter((p, i) => i < this.points.length - 1)
-      .map(p => [Math.round(p[0] / ratio), Math.round(p[1] / ratio)]);
-    return new Polygon(points, this.categories);
-  }
 }
 
 export enum Color {
@@ -97,10 +91,20 @@ export enum Color {
 
 export class Rectangle extends AngledShape {
   type: string = 'rectangle';
+  output(ratio: number) {
+    let points: ArrayXY[] = this.points.filter((p, i) => i < this.points.length - 1)
+      .map(p => [Math.round(p[0] / ratio), Math.round(p[1] / ratio)]);
+    return new Rectangle(points, this.categories);
+  }
 }
 
 export class Polygon extends AngledShape {
   type: string = 'polygon';
+  output(ratio: number) {
+    let points: ArrayXY[] = this.points.filter((p, i) => i < this.points.length - 1)
+      .map(p => [Math.round(p[0] / ratio), Math.round(p[1] / ratio)]);
+    return new Polygon(points, this.categories);
+  }
 }
 
 export abstract class RoundShape extends Shape {
