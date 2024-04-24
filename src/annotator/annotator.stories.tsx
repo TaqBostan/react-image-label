@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import { ImageAnnotator } from './';
+import { ImageAnnotator } from '.';
 import { Circle, Shape, Point, Polygon, Rectangle, Ellipse } from '../base/types';
-import './svg-editor.stories.css';
+import './annotator.stories.css';
 import { useImageAnnotator } from './hook';
 
 // const imgUrl = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
@@ -13,7 +13,7 @@ const categories = ['blueberry', 'strawberry', 'raspberry', 'apple', 'benana'];
 let p = new Polygon([[550, 224], [519, 222], [474, 261], [430, 341], [416, 383], [427, 399], [446, 414], [528, 396], [604, 372], [633, 325], [654, 313], [648, 282], [638, 231], [596, 208], [562, 208]], ['strawberry']);
 let r = new Rectangle([[698, 316], [698, 416], [817, 416], [817, 316]], ['blueberry']);
 let c = new Circle([70, 90], 55, ['blueberry']);
-let e = new Ellipse([457, 114], 76, 80, ['raspberry']);
+let e = new Ellipse([457, 114], 40, 80, ['raspberry']);
 let rawShapes = [
   { type: 'rectangle', categories: ["class 3"], points: [[150, 50], [200, 50], [200, 100], [150, 100]] },
   { type: 'polygon', categories: ["class 1", "class 2"], points: [[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]] },

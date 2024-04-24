@@ -106,7 +106,7 @@ Finally, call `annotator.updateCategories` to update the categories of the annot
 - Fork the project.
 - Make changes.
 - Run the project in development mode: `npm run ladle`.
-- Test your changes using `svg-container.stories.tsx` or your own Stories (`*.stories.tsx`).
+- Test your changes using `annotator.stories.tsx` or your own Stories (`*.stories.tsx`).
 - Update README with appropriate docs.
 - Commit and PR
 
