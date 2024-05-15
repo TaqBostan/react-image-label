@@ -65,7 +65,7 @@ export abstract class AngledBuilder<T extends AngledShape> extends ShapeBuilder<
 				.mousedown((event: MouseEvent) => {
 					if (event.button === 0 && this.dragPointIndex === undefined) {
 						this.dragPointIndex = index;
-						this.moveIconPath!.remove();
+						[this.movePath!, ...this.rotateArr].forEach(item => item.remove());
 						this.svg.mousemove((event: MouseEvent) => this.editShapeMouseMove(event));
 						event.stopPropagation();
 					}
@@ -73,6 +73,7 @@ export abstract class AngledBuilder<T extends AngledShape> extends ShapeBuilder<
 			_disc.mouseup((event: MouseEvent) => {
 				if (this.dragPointIndex !== undefined) {
 					this.addMoveIcon();
+					this.addRotateIcon();
 					this.dragPointIndex = undefined;
 					this.svg.off('mousemove');
 				}

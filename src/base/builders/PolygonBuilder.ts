@@ -1,10 +1,12 @@
 import { AngledBuilder } from "../AngledBuilder";
 import { ShapeBuilder } from "../ShapeBuilder";
 import { Polygon, Color } from "../types";
+import Util from "../util";
 
 export default class PolygonBuilder extends AngledBuilder<Polygon> {
   startClicked: boolean = false;
   shape?: Polygon;
+  canRotate = false;
   newShape = () => new Polygon();
 
   ofType<T>(shape: T): boolean {

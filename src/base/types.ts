@@ -7,6 +7,7 @@ export type StaticData = { width: number, height: number, ratio: number, discRad
 
 export abstract class Shape {
   id: number;
+  fi: number = 0;
   getCenterWithOffset = (): Point => ({ X: 0, Y: 0 });
   static containerOffset: ArrayXY;
   abstract type: string;
@@ -27,6 +28,13 @@ export abstract class Shape {
     obj.getCenterWithOffset = () => ({ X: center[0], Y: center[1] })
     return obj;
   }
+
+  rotatePosition(): ArrayXY {
+    let c = this.getCenter();
+    let p = this.labelPosition();
+    return [2 * c[0] - p[0], 2 * c[1] - p[1]];
+  }
+
 }
 
 export interface IlElementExtra {
@@ -45,6 +53,7 @@ export abstract class AngledShape extends Shape {
   constructor(public points: ArrayXY[] | PointArray = [], public categories: string[] = []) {
     super(categories);
   }
+
   labelPosition(): ArrayXY {
     let x = this.points
       .map(p => p[0])
@@ -53,7 +62,13 @@ export abstract class AngledShape extends Shape {
     let y = Math.min(...this.points.map(p => p[1])) - 24;
     return [x, y];
   }
-
+  outPoints(ratio: number): ArrayXY[] {
+    return this.points.filter((p, i) => i < this.points.length - 1)
+      .map(p => {
+        let _p = Util.rotate([p[0] / ratio, p[1] / ratio], this.getCenter(), this.fi)
+        return [Math.round(_p[0]), Math.round(_p[1])];
+      });
+  }
   getCenter(): ArrayXY {
     let x = this.points
       .map(p => p[0])
@@ -62,7 +77,6 @@ export abstract class AngledShape extends Shape {
     let y = (Math.min(...this.points.map(p => p[1])) + Math.max(...this.points.map(p => p[1]))) / 2;
     return [x, y];
   }
-
   centerChanged(newCenter: ArrayXY): void {
     let oldCenter = this.getCenter();
     let dx = newCenter[0] - oldCenter[0], dy = newCenter[1] - oldCenter[1];
@@ -92,18 +106,14 @@ export enum Color {
 export class Rectangle extends AngledShape {
   type: string = 'rectangle';
   output(ratio: number) {
-    let points: ArrayXY[] = this.points.filter((p, i) => i < this.points.length - 1)
-      .map(p => [Math.round(p[0] / ratio), Math.round(p[1] / ratio)]);
-    return new Rectangle(points, this.categories);
+    return new Rectangle(this.outPoints(ratio), this.categories);
   }
 }
 
 export class Polygon extends AngledShape {
   type: string = 'polygon';
   output(ratio: number) {
-    let points: ArrayXY[] = this.points.filter((p, i) => i < this.points.length - 1)
-      .map(p => [Math.round(p[0] / ratio), Math.round(p[1] / ratio)]);
-    return new Polygon(points, this.categories);
+    return new Polygon(this.outPoints(ratio), this.categories);
   }
 }
 
@@ -132,6 +142,7 @@ export class Circle extends RoundShape {
   set width(w: number) { this.radius = w / 2; }
   get height(): number { return 2 * this.radius; }
   set height(h: number) { this.radius = h / 2; }
+
   labelPosition(): ArrayXY {
     return [this.centre[0], this.centre[1] - this.radius - 24];
   }

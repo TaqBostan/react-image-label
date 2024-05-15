@@ -9,15 +9,15 @@ export default class EllipseBuilder extends RoundBuilder<Ellipse> {
     return shape instanceof Ellipse;
   }
 
-  calculateRadius(event: MouseEvent): ArrayXY {
-    let radiusX = Math.abs(event.offsetX - this.shapeOrigin!.X) / 2;
-    let radiusY = Math.abs(event.offsetY - this.shapeOrigin!.Y) / 2;
+  calculateRadius(offset: ArrayXY): ArrayXY {
+    let radiusX = Math.abs(offset[0] - this.shapeOrigin!.X) / 2;
+    let radiusY = Math.abs(offset[1] - this.shapeOrigin!.Y) / 2;
     return [radiusX, radiusY];
   }
 
-  calculateDifferent(event: MouseEvent): ArrayXY {
-    let diffX = Math.abs(this.shapeOrigin!.X - event.offsetX);
-    let diffY = Math.abs(this.shapeOrigin!.Y - event.offsetY);
+  calculateDifferent(offset: ArrayXY): ArrayXY {
+    let diffX = Math.abs(this.shapeOrigin!.X - offset[0]);
+    let diffY = Math.abs(this.shapeOrigin!.Y - offset[1]);
     return [diffX, diffY];
   }
 }

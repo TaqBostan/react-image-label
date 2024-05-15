@@ -4,19 +4,20 @@ import { RoundBuilder } from "../RoundBuilder";
 
 export default class CircleBuilder extends RoundBuilder<Circle> {
   shape?: Circle;
+  canRotate = false;
   newShape = () => new Circle();
   ofType<T>(shape: T): boolean {
     return shape instanceof Circle;
   }
 
-  calculateRadius(event: MouseEvent): ArrayXY {
+  calculateRadius(offset: ArrayXY): ArrayXY {
     let radius;
-    radius = Math.sqrt(Math.pow(this.shapeOrigin!.X - event.offsetX, 2) + Math.pow(this.shapeOrigin!.Y - event.offsetY, 2)) / 2;
+    radius = Math.sqrt(Math.pow(this.shapeOrigin!.X -offset[0], 2) + Math.pow(this.shapeOrigin!.Y - offset[1], 2)) / 2;
     return [radius, radius];
   }
 
-  calculateDifferent(event: MouseEvent): ArrayXY {
-    let diff = Math.min(Math.abs(this.shapeOrigin!.X - event.offsetX), Math.abs(this.shapeOrigin!.Y - event.offsetY));
+  calculateDifferent(offset: ArrayXY): ArrayXY {
+    let diff = Math.min(Math.abs(this.shapeOrigin!.X - offset[0]), Math.abs(this.shapeOrigin!.Y - offset[1]));
     return [diff, diff];
   }
 

@@ -1,6 +1,7 @@
 import { Svg } from "react-svgdotjs";
-import { Shape, ElementWithExtra, Color, Point, Polygon, StaticData } from "./types";
-import { ArrayXY, Path } from '@svgdotjs/svg.js'
+import { Shape, ElementWithExtra, Color, Point, StaticData } from "./types";
+import { ArrayXY, Path, Element, Circle as Circ } from '@svgdotjs/svg.js'
+import Util from "./util";
 
 export abstract class ShapeBuilder<T extends Shape> {
   static _svg: Svg;
@@ -10,12 +11,15 @@ export abstract class ShapeBuilder<T extends Shape> {
   static statics: StaticData;
   //#region drag
   private lastPoint?: Point;
-  private originPoint?: Point;
+  private dragOrigin?: Point;
   private moveIcon = (center: ArrayXY) => `M${center[0] + 11.3},${center[1]}l-4.6-4.6v2.4h-4.5v-4.5h2.4l-4.6,-4.6l-4.6,4.6h2.4v4.5h-4.5v-2.4l-4.6,4.6l4.6,4.6v-2.4h4.5v4.5h-2.4l4.6,4.6
   l4.6-4.6h-2.4v-4.5h4.5v2.4l4.6-4.6z`;
-  protected moveIconPath?: Path;
-  drawing: boolean = false;
+  protected movePath?: Path;
   //#endregion
+  private rotateIcon = (center: ArrayXY) => `M${center[0] + 5.2},${center[1] + 4.5}a7,7,0,1,1,0-8l-3,3h9v-9l-3,3a11+11,0,1,0,0+14z`;
+  protected rotateArr: Element[] = [];
+  protected canRotate = true;
+  drawing: boolean = false;
   abstract plotShape(): void;
   abstract createElement(shape: T): void;
   abstract newShape(): T;
@@ -27,6 +31,14 @@ export abstract class ShapeBuilder<T extends Shape> {
 
   drawDisc(x: number, y: number, radius: number, color: string) {
     return this.svg.circle(2 * radius).fill(color).move(x - radius, y - radius);
+  }
+
+  rotate() {
+    if (!this.element || !this.canRotate) return;
+    let shape = this.element.shape, center = shape.getCenter();
+    [this.element, this.element.shadow, this.element.connector, ...this.element.discs, ...this.rotateArr].forEach(elem => {
+      elem?.node.setAttribute('transform', `rotate(${shape.fi},${center[0]},${center[1]})`);
+    })
   }
 
   abstract ofType<S extends Shape>(shape: S): boolean;
@@ -60,83 +72,101 @@ export abstract class ShapeBuilder<T extends Shape> {
 
   removeElement() {
     let elem = this.element!;
-    this.moveIconPath?.remove();
-    elem.categoriesPlain?.remove();
-    elem.categoriesRect?.remove();
-    elem.connector?.remove();
-    elem.discs.forEach(disc => disc.remove());
-    elem.shadow.remove();
-    elem.remove();
+    [elem, elem.shadow, this.movePath, elem.categoriesPlain, elem.categoriesRect, elem.connector, ...elem.discs, ...this.rotateArr]
+      .forEach(el => el?.remove());
     if (this.drawing) this.createElement(this.newShape());
   }
 
   addMoveIcon(): void {
     let str = this.moveIcon(this.element!.shape.getCenter());
-    this.moveIconPath = this.svg.path(str);
-    this.element!.after(this.moveIconPath);
-    this.moveIconPath.attr('class', 'move-icon grabbable');
-    this.moveIconPath
-      .mousedown((ev: MouseEvent) => this.mouseDown(ev))
+    this.movePath = this.svg.path(str);
+    this.element!.after(this.movePath);
+    this.movePath.attr('class', 'move-icon grabbable')
+      .mousedown((ev: MouseEvent) => this.drag_md(ev))
       .on('contextmenu', (ev: any) => {
         ev.preventDefault();
         this.element!.node.dispatchEvent!(new Event('contextmenu', ev));
       })
   }
 
+  addRotateIcon(): void {
+    if (!this.canRotate) return;
+    let position = this.element!.shape.rotatePosition();
+    let str = this.rotateIcon(position);
+    let path = this.svg.path(str);
+    let bg = this.svg.circle(24).move(position[0] - 12, position[1] - 12).fill(Color.ShapeFill);
+    this.rotateArr = [path, bg];
+    path.attr('class', 'rot-icon grabbable');
+    bg.attr('class', 'grabbable').after(path);
+    this.rotateArr.forEach(item => item.mousedown((ev: MouseEvent) => this.rotate_md(ev)));
+    this.rotate();
+  }
+
   initDrag() {
     this.element!.addClass('grabbable')
       .click((event: MouseEvent) => { event.stopPropagation(); })
-      .mousedown((event: MouseEvent) => this.mouseDown(event));
+      .mousedown((event: MouseEvent) => this.drag_md(event));
     this.addMoveIcon();
+  }
+
+  drag_md(event: MouseEvent) {
+    if (event.button === 0 && !this.lastPoint) {
+      this.lastPoint = { X: event.offsetX, Y: event.offsetY };
+      this.dragOrigin = { X: event.offsetX, Y: event.offsetY };
+      [this.movePath!, ...this.rotateArr].forEach(item => item.remove());
+      this.svg.mousemove((event: MouseEvent) => this.drag_mm(event))
+        .mouseup(() => this.drag_mu());
+      event.stopPropagation();
+    }
+  }
+
+  drag_mm(event: MouseEvent) {
+    if (this.lastPoint) {
+      if (!this.element) return;
+      let dx = event.offsetX - this.lastPoint.X, dy = event.offsetY - this.lastPoint.Y, center = this.element.shape.getCenter();
+      [this.element, this.element.shadow, this.element.connector, ...this.element.discs].forEach(disc => {
+        disc?.cx(disc.cx() + dx).cy(disc.cy() + dy);
+      })
+      this.element.shape.centerChanged([center[0] + dx, center[1] + dy]);
+      this.rotate();
+      this.lastPoint = { X: event.offsetX, Y: event.offsetY };
+    }
+  }
+
+  drag_mu() {
+    if (this.lastPoint) {
+      if (!this.element) return;
+      this.addMoveIcon();
+      this.addRotateIcon();
+      this.lastPoint = undefined;
+      this.dragOrigin = undefined;
+      this.svg.off('mousemove').off('mouseup');
+    }
   }
 
   stopDrag() {
     if (this.element) {
       this.element.removeClass('grabbable').off('click').off('mousedown');
-      if (this.moveIconPath) this.moveIconPath.remove();
+      if (this.movePath) this.movePath.remove();
+      this.rotateArr.forEach(item => item.remove());
       this.lastPoint = undefined;
-      this.originPoint = undefined;
-      this.moveIconPath = undefined;
+      this.dragOrigin = undefined;
+      this.movePath = undefined;
     }
   }
 
-  mouseDown(event: MouseEvent) {
-    if (event.button === 0 && !this.lastPoint) {
-      this.lastPoint = { X: event.offsetX, Y: event.offsetY };
-      this.originPoint = { X: event.offsetX, Y: event.offsetY };
-      this.moveIconPath!.remove();
-      this.svg.mousemove((event: MouseEvent) => this.mouseMove(event))
-        .mouseup(() => this.mouseUp());
-      event.stopPropagation();
+  rotate_md(event: MouseEvent) {
+    if (event.button === 0) {
+      this.svg.mousemove((event: MouseEvent) => this.rotate_mm(event))
+        .mouseup(() => { this.svg.off('mousemove').off('mouseup'); });
     }
   }
 
-  mouseMove(event: MouseEvent) {
-    if (this.lastPoint) {
-      if (!this.element) return;
-      let dx = event.offsetX - this.lastPoint.X, dy = event.offsetY - this.lastPoint.Y;
-      this.element.cx(this.element.cx() + dx).cy(this.element.cy() + dy);
-      this.element.shadow.cx(this.element.shadow.cx() + dx).cy(this.element.shadow.cy() + dy);
-      this.element.discs.forEach(disc => {
-        disc.cx(disc.cx() + dx).cy(disc.cy() + dy);
-      })
-      if (this.element!.connector)
-        this.element.connector.cx(this.element.connector.cx() + dx).cy(this.element.connector.cy() + dy);
-      this.lastPoint = { X: event.offsetX, Y: event.offsetY };
-    }
-  }
-
-  mouseUp() {
-    if (this.lastPoint) {
-      if (!this.element) return;
-      let x = this.lastPoint.X - this.originPoint!.X + this.element.shape.getCenter()[0];
-      let y = this.lastPoint.Y - this.originPoint!.Y + this.element.shape.getCenter()[1];
-      this.element.shape.centerChanged([x, y]);
-      this.addMoveIcon();
-      this.lastPoint = undefined;
-      this.originPoint = undefined;
-      this.svg.off('mousemove').off('mouseup');
-    }
+  rotate_mm(event: MouseEvent) {
+    if (!this.element) return;
+    let center = this.element.shape.getCenter(), vector: ArrayXY = [event.offsetX - center[0], event.offsetY - center[1]];
+    this.element.shape.fi = Math.atan2(-vector[0], vector[1]) * 180 / Math.PI;
+    this.rotate();
   }
 
   zoom(elem: ElementWithExtra, factor: number): void {
@@ -144,8 +174,9 @@ export abstract class ShapeBuilder<T extends Shape> {
     this.plot(elem);
     elem.discs?.forEach(_disc => _disc.cx(_disc.cx() * factor).cy(_disc.cy() * factor));
     elem.connector?.plot(elem.connector.array().map(p => [p[0] * factor, p[1] * factor] as ArrayXY));
-    this.moveIconPath?.plot(this.moveIcon(elem.shape.getCenter()))
+    this.movePath?.plot(this.moveIcon(elem.shape.getCenter()))
     this.setOptions(elem, elem.shape.categories);
+    this.rotate();
   }
 
   stopEdit() {
@@ -172,6 +203,7 @@ export abstract class ShapeBuilder<T extends Shape> {
     if (polyline.categoriesPlain) polyline.categoriesPlain.clear();
     if (polyline.categoriesRect) polyline.categoriesRect.remove();
     this.initDrag();
+    this.addRotateIcon();
     this.editShape();
   }
 }

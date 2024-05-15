@@ -3,6 +3,7 @@ import { RoundShape, IlElementExtra, Point, Color, Ellipse } from "./types";
 import { Text, Rect, Circle as Circ, Ellipse as Elp, Polyline } from "@svgdotjs/svg.js";
 import { ShapeBuilder } from "./ShapeBuilder";
 import { ArrayXY } from '@svgdotjs/svg.js';
+import Util from "./util";
 
 class IlEllipse extends Elp implements IlElementExtra {
   discs!: Circ[];
@@ -18,8 +19,8 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
   element?: IlEllipse;
   shapeOrigin?: Point;
   dragPointIndex?: number;
-  abstract calculateRadius(event: MouseEvent): ArrayXY;
-  abstract calculateDifferent(event: MouseEvent): ArrayXY;
+  abstract calculateRadius(offset: ArrayXY): ArrayXY;
+  abstract calculateDifferent(offset: ArrayXY): ArrayXY;
 
   createElement(shape: RoundShape): void {
     this.element = Object.assign(this.svg.ellipse(shape.width, shape.height),
@@ -31,7 +32,6 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
       });
     this.element.fill(Color.ShapeFill).move(shape.centre[0] - shape.width / 2, shape.centre[1] - shape.height / 2);
     this.element.stroke({ color: Color.RedLine, width: 2, opacity: 0.7 });
-
     this.element.shadow.fill('none').move(shape.centre[0] - shape.width / 2, shape.centre[1] - shape.height / 2);
     this.element.shadow.stroke({ color: Color.BlackLine, width: 4, opacity: 0.4 });
   }
@@ -53,18 +53,18 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
   shapeMouseMove(event: MouseEvent): void {
     if (this.shapeOrigin) {
       let centre: ArrayXY = [(this.shapeOrigin.X + event.offsetX) / 2, (this.shapeOrigin.Y + event.offsetY) / 2];
-      let radius = this.calculateRadius(event);
-      this.element!.size(2 * radius[0], 2 * radius[1]).move(centre[0] - radius[0], centre[1] - radius[1]);
-      this.element!.shadow.size(2 * radius[0], 2 * radius[1]).move(centre[0] - radius[0], centre[1] - radius[1]);
+      let radius = this.calculateRadius([event.offsetX, event.offsetY]);
+      [this.element!, this.element!.shadow].forEach(el => el.size(2 * radius[0], 2 * radius[1]).move(centre[0] - radius[0], centre[1] - radius[1]));
     }
   }
 
   shapeMouseUp(event: MouseEvent, addShape: () => void) {
+    let shape = this.element!.shape;
     let centre: ArrayXY = [(this.shapeOrigin!.X + event.offsetX) / 2, (this.shapeOrigin!.Y + event.offsetY) / 2];
-    let radius = this.calculateRadius(event);
-    this.element!.shape.centre = centre;
-    this.element!.shape.width = 2 * radius[0];
-    this.element!.shape.height = 2 * radius[1];
+    let radius = this.calculateRadius([event.offsetX, event.offsetY]);
+    shape.centre = centre;
+    shape.width = 2 * radius[0];
+    shape.height = 2 * radius[1];
     this.svg.off('mousemove').off('mouseup');
     if (radius[0] > 10 && radius[1] > 10)
       addShape();
@@ -82,8 +82,7 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
   }
 
   plot(ellipse: IlEllipse): void {
-    ellipse.size(ellipse.shape.width, ellipse.shape.height).move(ellipse.shape.centre[0] - ellipse.shape.width / 2, ellipse.shape.centre[1] - ellipse.shape.height / 2);
-    ellipse.shadow.size(ellipse.shape.width, ellipse.shape.height).move(ellipse.shape.centre[0] - ellipse.shape.width / 2, ellipse.shape.centre[1] - ellipse.shape.height / 2);
+    [ellipse, ellipse.shadow].forEach(el => el.size(ellipse.shape.width, ellipse.shape.height).move(ellipse.shape.centre[0] - ellipse.shape.width / 2, ellipse.shape.centre[1] - ellipse.shape.height / 2));
   }
 
   editShape() {
@@ -97,11 +96,12 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
             let oppositIndex = index + 2 <= 3 ? index + 2 : index - 2;
             this.shapeOrigin = { X: this.element!.discs[oppositIndex].cx(), Y: this.element!.discs[oppositIndex].cy() }
             this.dragPointIndex = index;
-            this.moveIconPath!.remove();
+            [this.movePath!, ...this.rotateArr].forEach(item => item.remove());
             event.stopPropagation();
             this.svg.mousemove((event: MouseEvent) => this.editShapeMouseMove(event));
             this.svg.mouseup((event: MouseEvent) => {
               this.addMoveIcon();
+              this.addRotateIcon();
               this.shapeOrigin = undefined;
               this.dragPointIndex = undefined;
               this.svg.off("mousemove").off("mouseup");
@@ -112,41 +112,42 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
   }
 
   addEditingPoints(): void {
-    let width = this.element!.shape.width, height = this.element!.shape.height, x = this.element!.shape.centre[0], y = this.element!.shape.centre[1],
+    let elem = this.element!, width = elem.shape.width, height = elem.shape.height, x = elem.shape.centre[0], y = elem.shape.centre[1],
       discRadius = ShapeBuilder.statics.discRadius;
-    this.element!.discs.push(this.drawDisc(x - width / 2, y - height / 2, discRadius, Color.GreenDisc));
-    this.element!.discs.push(this.drawDisc(x - width / 2, y + height / 2, discRadius, Color.GreenDisc));
-    this.element!.discs.push(this.drawDisc(x + width / 2, y + height / 2, discRadius, Color.GreenDisc));
-    this.element!.discs.push(this.drawDisc(x + width / 2, y - height / 2, discRadius, Color.GreenDisc));
-    let points: ArrayXY[] = this.element!.discs.map(disc => [disc.cx(), disc.cy()]);
-    this.element!.connector = this.svg.polyline([...points, points[0]])
+    let points: ArrayXY[] = [[x - width / 2, y - height / 2], [x - width / 2, y + height / 2], [x + width / 2, y + height / 2], [x + width / 2, y - height / 2]];
+    elem.discs = points.map(point => this.drawDisc(point[0], point[1], discRadius, Color.GreenDisc));
+    elem.connector = this.svg.polyline([...points, points[0]])
       .fill(Color.ShapeFill)
       .stroke({ color: Color.BlackLine, width: 1, opacity: 0.8, dasharray: "3,3" })
       .mousedown((event: MouseEvent) => { event.stopPropagation(); });
-    this.element!.before(this.element!.connector);
+    elem.before(elem.connector);
+    this.rotate();
   }
 
   editShapeMouseMove(event: MouseEvent) {
     if (this.dragPointIndex !== undefined && this.shapeOrigin !== undefined) {
-      let diff = this.calculateDifferent(event);
-      let xSign = Math.sign(event.offsetX - this.shapeOrigin.X);
-      let ySign = Math.sign(event.offsetY - this.shapeOrigin.Y);
-      this.element!.discs[this.dragPointIndex].cx(diff[0] * xSign + this.shapeOrigin.X).cy(diff[1] * ySign + this.shapeOrigin.Y);
+      let elem = this.element!, discRadius = ShapeBuilder.statics.discRadius, fi = elem.shape.fi, oldCenter = elem.shape.getCenter();
+      let [x, y] = Util.rotate([event.offsetX, event.offsetY], oldCenter, -fi);
+      let diff = this.calculateDifferent([x, y]);
+      let xSign = Math.sign(x - this.shapeOrigin.X), ySign = Math.sign(y - this.shapeOrigin.Y);
       let prevIndex = this.dragPointIndex === 0 ? 3 : this.dragPointIndex - 1,
         nextIndex = this.dragPointIndex === 3 ? 0 : this.dragPointIndex + 1;
+      elem.discs[this.dragPointIndex].cx(diff[0] * xSign + this.shapeOrigin.X).cy(diff[1] * ySign + this.shapeOrigin.Y);
       if (this.dragPointIndex % 2 === 0) {
-        this.element!.discs[prevIndex].cy(diff[1] * ySign + this.shapeOrigin.Y);
-        this.element!.discs[nextIndex].cx(diff[0] * xSign + this.shapeOrigin.X);
+        elem.discs[prevIndex].cy(diff[1] * ySign + this.shapeOrigin.Y);
+        elem.discs[nextIndex].cx(diff[0] * xSign + this.shapeOrigin.X);
       } else {
-        this.element!.discs[prevIndex].cx(diff[0] * xSign + this.shapeOrigin.X);
-        this.element!.discs[nextIndex].cy(diff[1] * ySign + this.shapeOrigin.Y);
+        elem.discs[prevIndex].cx(diff[0] * xSign + this.shapeOrigin.X);
+        elem.discs[nextIndex].cy(diff[1] * ySign + this.shapeOrigin.Y);
       }
-      let points: ArrayXY[] = this.element!.discs.map(disc => [disc.cx(), disc.cy()]);
-      this.element!.connector!.plot([...points, points[0]]);
-      this.element!.shape.width = diff[0];
-      this.element!.shape.height = diff[1];
-      this.element!.shape.centre = [this.shapeOrigin.X + xSign * diff[0] / 2, this.shapeOrigin.Y + ySign * diff[1] / 2];
-      this.plot(this.element!);
+      elem.shape.width = diff[0];
+      elem.shape.height = diff[1];
+      let centre: ArrayXY = [this.shapeOrigin.X + xSign * diff[0] / 2, this.shapeOrigin.Y + ySign * diff[1] / 2];
+      elem.shape.centerChanged(Util.rotate(centre, oldCenter, fi));
+      let points: ArrayXY[] = elem.discs.map(disc => [disc.cx(), disc.cy()]);
+      elem.connector!.plot([...points, points[0]]);
+      this.plot(elem);
+      this.rotate();
     }
   }
 

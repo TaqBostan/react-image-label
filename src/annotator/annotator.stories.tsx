@@ -66,7 +66,7 @@ export const ImageAnnotatorPrimary: FC = () => {
         shapes={shapes}
         onAdded={shape => setDialog({ show: true, shape })}
         onContextMenu={shape => setDialog({ show: true, shape })}
-        onReady={annotator => { annotator.drawRectangle() }} />
+        onReady={annotator => {  }} />
       <div>{JSON.stringify(shapes, null, 2)}</div>
     </div>
   );

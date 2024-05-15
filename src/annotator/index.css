@@ -1,4 +1,3 @@
-
 .seg-point {
   cursor: pointer;
 }
@@ -12,11 +11,11 @@
   cursor: grabbing;
 }
 
-.grabbable + .move-icon {
+.grabbable+.move-icon, .grabbable+.rot-icon {
   opacity: 0.4;
 }
 
-.grabbable:hover + .move-icon{
+.grabbable:hover+.move-icon, .grabbable:hover+.rot-icon, .rot-icon:hover {
   opacity: 0.9;
 }
 
