@@ -1,4 +1,4 @@
-A comprehensive component for tagging images. Check out [demo 1](https://codepen.io/Mohamad-Mehdi-Rajaei/pen/rNbvbYJ) and [demo 2](https://codepen.io/Mohamad-Mehdi-Rajaei/pen/ZEZRoLK) for some examples.
+A comprehensive component for tagging images. Check out [demo 1](https://f2gnwn.csb.app/) and [demo 2](https://r9mw79.csb.app/) for some examples.
 
 ## Features
 
