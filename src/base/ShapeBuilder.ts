@@ -1,7 +1,6 @@
 import { Svg } from "react-svgdotjs";
 import { Shape, ElementWithExtra, Color, Point, StaticData } from "./types";
-import { ArrayXY, Path, Element, Circle as Circ } from '@svgdotjs/svg.js'
-import Util from "./util";
+import { ArrayXY, Path, Element } from '@svgdotjs/svg.js'
 
 export abstract class ShapeBuilder<T extends Shape> {
   static _svg: Svg;
@@ -27,7 +26,7 @@ export abstract class ShapeBuilder<T extends Shape> {
   abstract plot(element: ElementWithExtra): void;
   abstract stopDraw(): void;
   abstract editShape(): void;
-  dragPointIndex?: number;
+  dragIndex?: number;
 
   drawDisc(x: number, y: number, radius: number, color: string) {
     return this.svg.circle(2 * radius).fill(color).move(x - radius, y - radius);
@@ -149,6 +148,7 @@ export abstract class ShapeBuilder<T extends Shape> {
       this.element.removeClass('grabbable').off('click').off('mousedown');
       if (this.movePath) this.movePath.remove();
       this.rotateArr.forEach(item => item.remove());
+      this.rotateArr = [];
       this.lastPoint = undefined;
       this.dragOrigin = undefined;
       this.movePath = undefined;
@@ -157,8 +157,10 @@ export abstract class ShapeBuilder<T extends Shape> {
 
   rotate_md(event: MouseEvent) {
     if (event.button === 0) {
-      this.svg.mousemove((event: MouseEvent) => this.rotate_mm(event))
+      this.svg
+        .mousemove((event: MouseEvent) => this.rotate_mm(event))
         .mouseup(() => { this.svg.off('mousemove').off('mouseup'); });
+      event.stopPropagation();
     }
   }
 
@@ -174,8 +176,16 @@ export abstract class ShapeBuilder<T extends Shape> {
     this.plot(elem);
     elem.discs?.forEach(_disc => _disc.cx(_disc.cx() * factor).cy(_disc.cy() * factor));
     elem.connector?.plot(elem.connector.array().map(p => [p[0] * factor, p[1] * factor] as ArrayXY));
-    this.movePath?.plot(this.moveIcon(elem.shape.getCenter()))
-    this.setOptions(elem, elem.shape.categories);
+    if(elem.editing) {
+      if(this.rotateArr.length > 0) {
+        let position = elem.shape.rotatePosition();
+        let [path, bg] = this.rotateArr;
+        (path as Path).plot(this.rotateIcon(position));
+        bg.move(position[0] - 12, position[1] - 12);
+      }
+      this.movePath?.plot(this.moveIcon(elem.shape.getCenter()));
+    }
+    else this.setOptions(elem, elem.shape.categories);
     this.rotate();
   }
 
@@ -192,7 +202,7 @@ export abstract class ShapeBuilder<T extends Shape> {
     elem.discs?.forEach((_disc, index) => {
       _disc.fill(Color.BlackDisc).size(4).removeClass('seg-point')
         .off('click').off('mousedown').off('mouseup')
-      this.dragPointIndex = undefined;
+      this.dragIndex = undefined;
     });
     this.setOptions(elem, elem.shape.categories);
   }

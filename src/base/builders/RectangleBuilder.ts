@@ -54,15 +54,15 @@ export default class RectangleBuilder extends AngledBuilder<Rectangle> {
     }
   }
 
-  editShapeMouseMove(event: MouseEvent) {
+  editShape_mm(event: MouseEvent) {
     // Moves a vertex of the polyline
-    if (this.dragPointIndex !== undefined) {
+    if (this.dragIndex !== undefined) {
       let elem = this.element!, fi = elem.shape.fi, discRadius = ShapeBuilder.statics.discRadius, oldCenter = elem.shape.getCenter();
       let [x, y] = Util.rotate([event.offsetX, event.offsetY], oldCenter, -fi);
-      elem.shape.points[this.dragPointIndex] = [x, y];
-      let prevIndex = this.dragPointIndex === 0 ? 3 : this.dragPointIndex - 1,
-        nextIndex = this.dragPointIndex === 3 ? 0 : this.dragPointIndex + 1;
-      if (this.dragPointIndex % 2 === 0) {
+      elem.shape.points[this.dragIndex] = [x, y];
+      let prevIndex = this.dragIndex === 0 ? 3 : this.dragIndex - 1,
+        nextIndex = this.dragIndex === 3 ? 0 : this.dragIndex + 1;
+      if (this.dragIndex % 2 === 0) {
         elem.shape.points[prevIndex][1] = y;
         elem.shape.points[nextIndex][0] = x;
       } else {

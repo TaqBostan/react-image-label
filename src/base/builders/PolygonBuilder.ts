@@ -92,13 +92,13 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
     this.plotAngledShape();
   }
 
-  editShapeMouseMove(event: MouseEvent) {
+  editShape_mm(event: MouseEvent) {
     // Moves a vertex of the polyline
-    if (this.dragPointIndex !== undefined) {
+    if (this.dragIndex !== undefined) {
       let discRadius = ShapeBuilder.statics.discRadius;
-      this.element!.shape.points[this.dragPointIndex] = [event.offsetX, event.offsetY];
-      this.element!.discs[this.dragPointIndex].move(event.offsetX - discRadius, event.offsetY - discRadius);
-      if (this.dragPointIndex === 0)
+      this.element!.shape.points[this.dragIndex] = [event.offsetX, event.offsetY];
+      this.element!.discs[this.dragIndex].move(event.offsetX - discRadius, event.offsetY - discRadius);
+      if (this.dragIndex === 0)
         this.element!.shape.points[this.element!.shape.points.length - 1] = [event.offsetX, event.offsetY];
       this.plotAngledShape();
     }

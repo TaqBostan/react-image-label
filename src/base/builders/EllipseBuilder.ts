@@ -10,14 +10,12 @@ export default class EllipseBuilder extends RoundBuilder<Ellipse> {
   }
 
   calculateRadius(offset: ArrayXY): ArrayXY {
-    let radiusX = Math.abs(offset[0] - this.shapeOrigin!.X) / 2;
-    let radiusY = Math.abs(offset[1] - this.shapeOrigin!.Y) / 2;
+    let radiusX = Math.abs(offset[0] - this.origin!.X) / 2;
+    let radiusY = Math.abs(offset[1] - this.origin!.Y) / 2;
     return [radiusX, radiusY];
   }
 
   calculateDifferent(offset: ArrayXY): ArrayXY {
-    let diffX = Math.abs(this.shapeOrigin!.X - offset[0]);
-    let diffY = Math.abs(this.shapeOrigin!.Y - offset[1]);
-    return [diffX, diffY];
+    return [offset[0] - this.origin!.X, offset[1] - this.origin!.Y];
   }
 }

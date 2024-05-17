@@ -14,7 +14,7 @@ export class IlPolyline extends Polyline implements IlElementExtra {
 
 export abstract class AngledBuilder<T extends AngledShape> extends ShapeBuilder<T> {
 	element?: IlPolyline;
-	abstract editShapeMouseMove(event: MouseEvent): void;
+	abstract editShape_mm(event: MouseEvent): void;
 
 	createElement(shape: AngledShape): void {
 		this.element = Object.assign(this.svg.polyline([]), {
@@ -63,18 +63,18 @@ export abstract class AngledBuilder<T extends AngledShape> extends ShapeBuilder<
 				.addClass('seg-point')
 				.click((event: MouseEvent) => { event.stopPropagation(); })
 				.mousedown((event: MouseEvent) => {
-					if (event.button === 0 && this.dragPointIndex === undefined) {
-						this.dragPointIndex = index;
+					if (event.button === 0 && this.dragIndex === undefined) {
+						this.dragIndex = index;
 						[this.movePath!, ...this.rotateArr].forEach(item => item.remove());
-						this.svg.mousemove((event: MouseEvent) => this.editShapeMouseMove(event));
+						this.svg.mousemove((event: MouseEvent) => this.editShape_mm(event));
 						event.stopPropagation();
 					}
 				});
 			_disc.mouseup((event: MouseEvent) => {
-				if (this.dragPointIndex !== undefined) {
+				if (this.dragIndex !== undefined) {
 					this.addMoveIcon();
 					this.addRotateIcon();
-					this.dragPointIndex = undefined;
+					this.dragIndex = undefined;
 					this.svg.off('mousemove');
 				}
 			})
