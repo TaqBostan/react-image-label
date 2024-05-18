@@ -32,11 +32,11 @@ export abstract class ShapeBuilder<T extends Shape> {
     return this.svg.circle(2 * radius).fill(color).move(x - radius, y - radius);
   }
 
-  rotate() {
-    if (!this.element || !this.canRotate) return;
-    let shape = this.element.shape, center = shape.getCenter();
-    [this.element, this.element.shadow, this.element.connector, ...this.element.discs, ...this.rotateArr].forEach(elem => {
-      elem?.node.setAttribute('transform', `rotate(${shape.fi},${center[0]},${center[1]})`);
+  rotate(elem: ElementWithExtra = this.element!) {
+    if (!this.canRotate) return;
+    let shape = elem.shape, center = shape.getCenter();
+    [elem, elem.shadow, elem.connector, ...elem.discs, ...this.rotateArr].forEach(el => {
+      el?.node.setAttribute('transform', `rotate(${shape.fi},${center[0]},${center[1]})`);
     })
   }
 
@@ -186,7 +186,7 @@ export abstract class ShapeBuilder<T extends Shape> {
       this.movePath?.plot(this.moveIcon(elem.shape.getCenter()));
     }
     else this.setOptions(elem, elem.shape.categories);
-    this.rotate();
+    this.rotate(elem);
   }
 
   stopEdit() {

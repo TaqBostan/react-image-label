@@ -79,7 +79,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
           height = width * ev.target.naturalHeight / ev.target.naturalWidth;
         }
       }
-      let statics = { width, height, ratio: width / ev.target.naturalWidth, discRadius: props.discRadius! }
+      let statics = { width, height, ratio: width / ev.target.naturalWidth, discRadius: props.discRadius || 5 }
       Director.init(svg, statics, container, props.onAdded, props.onContextMenu);
       drawShapes(props.shapes);
       props.setHandles({ ...getHandles(), container });
@@ -94,8 +94,6 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
 
   return (<SvgContainer setHandles={setHandles} width='fit-content' height='fit-content' />);
 }
-
-ImageAnnotator.defaultProps = { discRadius: 5 };
 
 export { ImageAnnotator };
 
