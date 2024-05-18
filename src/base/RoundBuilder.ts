@@ -97,9 +97,7 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
         .click((event: MouseEvent) => { event.stopPropagation(); })
         .mousedown((event: MouseEvent) => {
           if (event.button === 0 && this.dragIndex === undefined) {
-            let oppositIndex = index + 2 <= 3 ? index + 2 : index - 2;
             this.setPoints();
-            this.origin = { X: this.points[oppositIndex][0], Y: this.points[oppositIndex][1] }
             this.dragIndex = index;
             [this.movePath!, ...this.rotateArr].forEach(item => item.remove());
             event.stopPropagation();
@@ -134,12 +132,14 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
   }
 
   editShape_mm(event: MouseEvent) {
-    if (this.dragIndex !== undefined && this.origin !== undefined) {
+    if (this.dragIndex !== undefined) {
       let elem = this.element!, discRadius = ShapeBuilder.statics.discRadius, fi = elem.shape.fi, oldCenter = elem.shape.getCenter();
       let [x, y] = Util.rotate([event.offsetX, event.offsetY], oldCenter, -fi);
-      let diff = this.calculateDifferent([x, y]);
       let prevIndex = this.dragIndex === 0 ? 3 : this.dragIndex - 1,
-        nextIndex = this.dragIndex === 3 ? 0 : this.dragIndex + 1;
+        nextIndex = this.dragIndex === 3 ? 0 : this.dragIndex + 1,
+        oppositIndex = this.dragIndex > 1 ? this.dragIndex - 2 : this.dragIndex + 2;
+      this.origin = { X: this.points[oppositIndex][0], Y: this.points[oppositIndex][1] };
+      let diff = this.calculateDifferent([x, y]);
       this.points[this.dragIndex] = [diff[0] + this.origin.X, diff[1] + this.origin.Y];
       if (this.dragIndex % 2 === 0) {
         this.points[prevIndex][1] = diff[1] + this.origin.Y;
@@ -150,7 +150,8 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
       }
       elem.shape.width = Math.abs(diff[0]);
       elem.shape.height = Math.abs(diff[1]);
-      elem.shape.centerChanged([this.origin.X + diff[0] / 2, this.origin.Y + diff[1] / 2]);
+      elem.shape.centerChanged(Util.rotate([this.origin.X + diff[0] / 2, this.origin.Y + diff[1] / 2], oldCenter, fi));
+      this.setPoints();
       elem.discs.forEach((disc, i) => disc.move(this.points[i][0] - discRadius, this.points[i][1] - discRadius));
       elem.connector!.plot([...this.points, this.points[0]]);
       this.plot(elem);

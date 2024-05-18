@@ -25,6 +25,7 @@ export abstract class Shape {
     let obj = this.output(ratio);
     let center = Util.ArrayXYSum(this.getCenter(), Shape.containerOffset)
     obj.id = this.id;
+    obj.fi= Math.round(this.fi);
     obj.getCenterWithOffset = () => ({ X: center[0], Y: center[1] })
     return obj;
   }
