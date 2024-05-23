@@ -1,6 +1,6 @@
 {
   "name": "react-image-label",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A comprehensive package for tagging images.",
   "main": "dist/index.js",
   "module": "dist/index.js",

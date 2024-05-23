@@ -95,7 +95,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   useEffect(() => {
     if (svgContainer && props.imageUrl) onload(svgContainer.svg, svgContainer.container, props.imageUrl);
     return () => { Director.clear(); }
-  }, [svgContainer, onload, props.imageUrl]);
+  }, [svgContainer, props.imageUrl]);
 
   return (<SvgContainer setHandles={setHandles} width='fit-content' height='fit-content' />);
 }

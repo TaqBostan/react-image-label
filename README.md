@@ -2,8 +2,8 @@ A comprehensive component for tagging images. Check out [demo 1](https://f2gnwn.
 
 ## Features
 
-- Bounding Box (Rectangle, Square, and Circle), and Polygon Annotations 
-- Add, Edit, Drag, and Delete Annotations
+- Bounding Box (Rectangle, Square, Circle, and Ellipse), and Polygon Annotations 
+- Add, Edit, Drag, Rotate, and Delete Annotations
 - Zoom and Scale
 - Changing image on the fly
 - Raw or typed input/output
@@ -69,6 +69,7 @@ Below is a list of all handles:
 | Prop | Type | Description |
 |---|---|---|
 | `drawCircle` | `() => void` | Allows drawing circles by dragging the left mouse button |
+| `drawEllipse` | `() => void` | Allows drawing ellipses by dragging the left mouse button |
 | `drawRectangle` | `() => void` | Allows drawing rectangles by dragging the left mouse button (keep the shift key to draw square) |
 | `drawPolygon` | `() => void` | Allows drawing polygons by clicking and double-clicking |
 | `stop` | `() => void` | Stops draw/edit/drag mode |
