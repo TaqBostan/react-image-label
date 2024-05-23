@@ -117,6 +117,10 @@ export class Director {
   }
 
   static clear() {
+    Director.builders?.forEach(b => {
+      b.stopDraw();
+      b.stopEdit();
+    });
     if (ShapeBuilder._svg) ShapeBuilder._svg.clear();
     Director.elements = [];
     Director.builders = [];
