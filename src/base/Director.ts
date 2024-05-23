@@ -103,14 +103,17 @@ export class Director {
   static getShapes = () => Director.elements.map(el => el.shape.getOutput(ShapeBuilder.statics.ratio));
   static findShape = (id: number) => Director.elements.find(el => el.shape.id === id)!.shape;
 
-  static init(svg: Svg, statics: StaticData, container: HTMLDivElement, onAdded?: (shape: Shape) => void, onContextMenu?: (shape: Shape) => void) {
+  static init(svg: Svg, statics: StaticData, container: HTMLDivElement) {
     svg.size(statics.width, statics.height);
     Shape.containerOffset = [container.offsetLeft, container.offsetTop];
     ShapeBuilder._svg = svg;
     ShapeBuilder.statics = statics;
+    Director.builders = [new PolygonBuilder(), new RectangleBuilder(), new CircleBuilder(), new EllipseBuilder()];
+  }
+
+  static setActions(onAdded?: (shape: Shape) => void, onContextMenu?: (shape: Shape) => void) {
     Director.onAdded = shape => onAdded?.(shape.getOutput(ShapeBuilder.statics.ratio));
     Director.onContextMenu = shape => onContextMenu?.(shape.getOutput(ShapeBuilder.statics.ratio));
-    Director.builders = [new PolygonBuilder(), new RectangleBuilder(), new CircleBuilder(), new EllipseBuilder()];
   }
 
   static clear() {

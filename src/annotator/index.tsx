@@ -80,12 +80,17 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
         }
       }
       let statics = { width, height, ratio: width / ev.target.naturalWidth, discRadius: props.discRadius || 5 }
-      Director.init(svg, statics, container, props.onAdded, props.onContextMenu);
+      Director.init(svg, statics, container);
       drawShapes(props.shapes);
       props.setHandles({ ...getHandles(), container });
       props.onReady?.({ ...getHandles(), container });
     }).size('100%', '100%').attr('onmousedown', 'return false').attr('oncontextmenu', 'return false');
-  }, []);
+  }, [props.width, props.height, props.shapes]);
+
+  useEffect(() => {
+    Director.setActions(props.onAdded, props.onContextMenu);
+    return () => Director.setActions(undefined, undefined);
+  }, [props.onAdded, props.onContextMenu]);
 
   useEffect(() => {
     if (svgContainer && props.imageUrl) onload(svgContainer.svg, svgContainer.container, props.imageUrl);
