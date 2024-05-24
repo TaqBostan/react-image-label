@@ -13,25 +13,25 @@ export default class RectangleBuilder extends AngledBuilder<Rectangle> {
     return shape instanceof Rectangle;
   }
 
-  rectangleMouseDown(event: MouseEvent, addPolyline: () => void) {
+  rect_md(event: MouseEvent, addPolyline: () => void) {
     if (event.button === 0 && !this.rectOrigin) {
       if (this.element?.editing) this.stopEdit()
       this.rectOrigin = { X: event.offsetX, Y: event.offsetY };
       this.createElement(new Rectangle());
-      this.svg.mousemove((event: any) => this.newRectangleMouseMove(event));
-      this.svg.mouseup((event: MouseEvent) => this.rectangleMouseUp(event, addPolyline));
+      this.svg.mousemove((event: any) => this.newRect_mm(event));
+      this.svg.mouseup((event: MouseEvent) => this.rect_mu(event, addPolyline));
     }
   }
 
   startDraw(addPolyline: () => void) {
-    this.svg.mousedown((event: MouseEvent) => this.rectangleMouseDown(event, addPolyline));
+    this.svg.mousedown((event: MouseEvent) => this.rect_md(event, addPolyline));
   }
 
   stopDraw() {
     this.svg.off('mousedown').off('mouseup');
   }
 
-  newRectangleMouseMove(event: MouseEvent) {
+  newRect_mm(event: MouseEvent) {
     if (this.rectOrigin) {
       let points: ArrayXY[] | PointArray = [] = [];
       points.push([this.rectOrigin.X, this.rectOrigin.Y]);
@@ -77,10 +77,11 @@ export default class RectangleBuilder extends AngledBuilder<Rectangle> {
     }
   }
 
-  rectangleMouseUp(event: MouseEvent, addPolyline: () => void) {
+  rect_mu(event: MouseEvent, addPolyline: () => void) {
     if (this.rectOrigin) {
-      if (Math.abs(this.rectOrigin.X - event.offsetX) < 10 &&
+      if (Math.abs(this.rectOrigin.X - event.offsetX) < 10 ||
         Math.abs(this.rectOrigin.Y - event.offsetY) < 10) {
+        this.removeElement();
         this.rectOrigin = undefined;
         return;
       }

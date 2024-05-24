@@ -1,7 +1,6 @@
 import { AngledBuilder } from "../AngledBuilder";
 import { ShapeBuilder } from "../ShapeBuilder";
 import { Polygon, Color } from "../types";
-import Util from "../util";
 
 export default class PolygonBuilder extends AngledBuilder<Polygon> {
   startClicked: boolean = false;
@@ -56,7 +55,7 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
       let _radius = this.element.shape.points.length === 1 ? 5 : 3;
 
       if (this.element.shape.points.length === 1) {
-        this.svg.mousemove((event: MouseEvent) => this.newPolygonMouseMove(event));
+        this.svg.mousemove((event: MouseEvent) => this.newPlg_mm(event));
         let disc = this.drawDisc(x, y, _radius, Color.GreenDisc);
         this.element.discs = [disc];
         disc.mouseover(() => {
@@ -81,7 +80,7 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
     }
   }
 
-  newPolygonMouseMove(event: MouseEvent) {
+  newPlg_mm(event: MouseEvent) {
     if (!this.element) return;
     // Draws a line from the last point to the mouse location
     if (this.element.hasConnector)

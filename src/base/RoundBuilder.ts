@@ -67,8 +67,8 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
     shape.width = 2 * radius[0];
     shape.height = 2 * radius[1];
     this.svg.off('mousemove').off('mouseup');
-    if (radius[0] > 10 && radius[1] > 10)
-      addShape();
+    if (radius[0] > 10 && radius[1] > 10) addShape();
+    else this.removeElement();
     this.origin = undefined;
   }
 
