@@ -37,7 +37,7 @@ export abstract class ShapeBuilder<T extends Shape> {
     let shape = elem.shape, center = shape.getCenter();
     let items = [elem, elem.shadow, elem.connector, ...elem.discs];
     if(elem.editing) items.push(...this.rotateArr);
-    items.forEach(el => el?.node.setAttribute('transform', `rotate(${shape.fi},${center[0]},${center[1]})`));
+    items.forEach(el => el?.node.setAttribute('transform', `rotate(${shape.phi},${center[0]},${center[1]})`));
   }
 
   abstract ofType<S extends Shape>(shape: S): boolean;
@@ -97,7 +97,8 @@ export abstract class ShapeBuilder<T extends Shape> {
     this.rotateArr = [path, bg];
     path.attr('class', 'rot-icon grabbable');
     bg.attr('class', 'grabbable').after(path);
-    this.rotateArr.forEach(item => item.mousedown((ev: MouseEvent) => this.rotate_md(ev)));
+    this.rotateArr.forEach(item => item.mousedown((ev: MouseEvent) => this.rotate_md(ev))
+    .click((event: MouseEvent) => { event.stopPropagation(); }));
     this.rotate();
   }
 
@@ -167,7 +168,7 @@ export abstract class ShapeBuilder<T extends Shape> {
   rotate_mm(event: MouseEvent) {
     if (!this.element) return;
     let center = this.element.shape.getCenter(), vector: ArrayXY = [event.offsetX - center[0], event.offsetY - center[1]];
-    this.element.shape.fi = Math.atan2(-vector[0], vector[1]) * 180 / Math.PI;
+    this.element.shape.phi = Math.atan2(-vector[0], vector[1]) * 180 / Math.PI;
     this.rotate();
   }
 

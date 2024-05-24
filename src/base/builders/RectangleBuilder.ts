@@ -57,8 +57,8 @@ export default class RectangleBuilder extends AngledBuilder<Rectangle> {
   editShape_mm(event: MouseEvent) {
     // Moves a vertex of the polyline
     if (this.dragIndex !== undefined) {
-      let elem = this.element!, fi = elem.shape.fi, discRadius = ShapeBuilder.statics.discRadius, oldCenter = elem.shape.getCenter();
-      let [x, y] = Util.rotate([event.offsetX, event.offsetY], oldCenter, -fi);
+      let elem = this.element!, phi = elem.shape.phi, discRadius = ShapeBuilder.statics.discRadius, oldCenter = elem.shape.getCenter();
+      let [x, y] = Util.rotate([event.offsetX, event.offsetY], oldCenter, -phi);
       elem.shape.points[this.dragIndex] = [x, y];
       let prevIndex = this.dragIndex === 0 ? 3 : this.dragIndex - 1,
         nextIndex = this.dragIndex === 3 ? 0 : this.dragIndex + 1;
@@ -70,7 +70,7 @@ export default class RectangleBuilder extends AngledBuilder<Rectangle> {
         elem.shape.points[nextIndex][1] = y;
       }
       elem.shape.points[elem.shape.points.length - 1] = [...elem.shape.points[0]];
-      elem.shape.centerChanged(Util.rotate(elem.shape.getCenter(), oldCenter, fi));
+      elem.shape.centerChanged(Util.rotate(elem.shape.getCenter(), oldCenter, phi));
       elem.discs.forEach((disc, i) => disc.move(elem.shape.points[i][0] - discRadius, elem.shape.points[i][1] - discRadius));
       this.plotAngledShape();
       this.rotate();

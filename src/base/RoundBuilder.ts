@@ -133,8 +133,8 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
 
   editShape_mm(event: MouseEvent) {
     if (this.dragIndex !== undefined) {
-      let elem = this.element!, discRadius = ShapeBuilder.statics.discRadius, fi = elem.shape.fi, oldCenter = elem.shape.getCenter();
-      let [x, y] = Util.rotate([event.offsetX, event.offsetY], oldCenter, -fi);
+      let elem = this.element!, discRadius = ShapeBuilder.statics.discRadius, phi = elem.shape.phi, oldCenter = elem.shape.getCenter();
+      let [x, y] = Util.rotate([event.offsetX, event.offsetY], oldCenter, -phi);
       let prevIndex = this.dragIndex === 0 ? 3 : this.dragIndex - 1,
         nextIndex = this.dragIndex === 3 ? 0 : this.dragIndex + 1,
         oppositIndex = this.dragIndex > 1 ? this.dragIndex - 2 : this.dragIndex + 2;
@@ -150,7 +150,7 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
       }
       elem.shape.width = Math.abs(diff[0]);
       elem.shape.height = Math.abs(diff[1]);
-      elem.shape.centerChanged(Util.rotate([this.origin.X + diff[0] / 2, this.origin.Y + diff[1] / 2], oldCenter, fi));
+      elem.shape.centerChanged(Util.rotate([this.origin.X + diff[0] / 2, this.origin.Y + diff[1] / 2], oldCenter, phi));
       this.setPoints();
       elem.discs.forEach((disc, i) => disc.move(this.points[i][0] - discRadius, this.points[i][1] - discRadius));
       elem.connector!.plot([...this.points, this.points[0]]);

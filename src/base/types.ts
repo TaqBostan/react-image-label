@@ -7,7 +7,7 @@ export type StaticData = { width: number, height: number, ratio: number, discRad
 
 export abstract class Shape {
   id: number;
-  fi: number = 0;
+  phi: number = 0;
   getCenterWithOffset = (): Point => ({ X: 0, Y: 0 });
   static containerOffset: ArrayXY;
   abstract type: string;
@@ -25,7 +25,7 @@ export abstract class Shape {
     let obj = this.output(ratio);
     let center = Util.ArrayXYSum(this.getCenter(), Shape.containerOffset)
     obj.id = this.id;
-    obj.fi= Math.round(this.fi);
+    obj.phi= Math.round(this.phi);
     obj.getCenterWithOffset = () => ({ X: center[0], Y: center[1] })
     return obj;
   }
@@ -66,7 +66,7 @@ export abstract class AngledShape extends Shape {
   outPoints(ratio: number): ArrayXY[] {
     return this.points.filter((p, i) => i < this.points.length - 1)
       .map(p => {
-        let _p = Util.rotate([p[0] / ratio, p[1] / ratio], this.getCenter(), this.fi)
+        let _p = Util.rotate([p[0] / ratio, p[1] / ratio], this.getCenter(), this.phi)
         return [Math.round(_p[0]), Math.round(_p[1])];
       });
   }
