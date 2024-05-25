@@ -68,10 +68,10 @@ Below is a list of all handles:
 
 | Prop | Type | Description |
 |---|---|---|
-| `drawCircle` | `() => void` | Allows drawing circles by dragging the left mouse button |
-| `drawEllipse` | `() => void` | Allows drawing ellipses by dragging the left mouse button |
-| `drawRectangle` | `() => void` | Allows drawing rectangles by dragging the left mouse button (keep the shift key to draw square) |
-| `drawPolygon` | `() => void` | Allows drawing polygons by clicking and double-clicking |
+| `drawCircle` | `() => void` | Allows drawing [circles](#shapes) by dragging the left mouse button |
+| `drawEllipse` | `() => void` | Allows drawing [ellipses](#shapes) by dragging the left mouse button |
+| `drawRectangle` | `() => void` | Allows drawing [rectangles](#shapes) by dragging the left mouse button (keep the shift key to draw square) |
+| `drawPolygon` | `() => void` | Allows drawing [polygons](#shapes) by clicking and double-clicking |
 | `stop` | `() => void` | Stops draw/edit/drag mode |
 | `edit` | `(id: number) => void` | The annotation identified by `id` can be edited and dragged |
 | `stopEdit` | `() => void` | Stops editing and dragging |
@@ -89,7 +89,7 @@ To attach one or more categories to an annotation, utilize `onAdded` and `onCont
 const showCategoriesDialog = (shape) => {
   console.log(shape.id) // 1
   console.log(shape.getCenterWithOffset()) // { X: 247.5, Y: 193 }
-  console.log(shape.categories) // Array []
+  console.log(shape.categories) // string []
   // Show a category selection component
 }
 
