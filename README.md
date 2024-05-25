@@ -80,6 +80,7 @@ Below is a list of all handles:
 | `getShapes` | `() => Shape[]` | Gets all annotations |
 | `container` | `HTMLDivElement` | The `div` wrapping the `SVG` |
 
+
 ## Annotations with Categories
 
 To attach one or more categories to an annotation, utilize `onAdded` and `onContextMenu` props being called when an annotation is drawn and right-clicked, respectively. Use `shape.categories` to get the previous categories as `string[]`:
@@ -101,6 +102,17 @@ return (
 ```
 
 Finally, call `annotator.updateCategories` to update the categories of the annotation.
+
+## Shapes
+
+The data models for all shapes are listed below:
+
+| Shape | Data Model | `type` Value |
+|---|---|---|
+| `Circle` | `{ id: number, centre: [number, number], radius: number, categories: string[], type: string }` | circle |
+| `Ellipse` | `{ id: number, centre: [number, number], radiusX: number, radiusY: number, phi: number, categories: string[], type: string }` |ellipse |
+| `Rectangle` | `{ id: number, points: [number, number][], phi: number, categories: string[], type: string }` | rectangle |
+| `Polygon` | `{ id: number, points: [number, number][], categories: string[], type: string }` | polygon |
 
 ## Contributing
 
