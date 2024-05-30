@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { ImageAnnotator } from '.';
-import { Circle, Shape, Point, Polygon, Rectangle, Ellipse } from '../base/types';
+import { Circle, Shape, Point, Polygon, Rectangle, Ellipse, Dot } from '../base/types';
 import './annotator.stories.css';
 import { useImageAnnotator } from './hook';
 
@@ -14,6 +14,7 @@ let p = new Polygon([[550, 224], [519, 222], [474, 261], [430, 341], [416, 383],
 let r = new Rectangle([[698, 316], [698, 416], [817, 416], [817, 316]], ['blueberry']);
 let c = new Circle([70, 90], 55, ['blueberry']);
 let e = new Ellipse([457, 114], 40, 80, ['raspberry']);
+let d = new Dot([ 123, 223], ['raspberry']);
 let rawShapes = [
   { type: 'rectangle', categories: ["class 3"], points: [[150, 50], [200, 50], [200, 100], [150, 100]] },
   { type: 'polygon', categories: ["class 1", "class 2"], points: [[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]] },
@@ -24,7 +25,7 @@ let rawShapes = [
 export const ImageAnnotatorPrimary: FC = () => {
   const { setHandles, annotator } = useImageAnnotator();
   const [img, setImg] = React.useState(imgUrl);
-  const [shapes, setShapes] = React.useState<Shape[]>([r, p, c, e]);
+  const [shapes, setShapes] = React.useState<Shape[]>([r, p, c, e, d]);
   const [dialog, setDialog] = React.useState<{ show: boolean, shape: Shape | undefined }>({ show: false, shape: undefined });
 
   const selectedCategoriesChanged = (items: string[]) => {
@@ -47,6 +48,7 @@ export const ImageAnnotatorPrimary: FC = () => {
       <button onClick={() => { annotator!.drawPolygon() }}>Add Polygon</button>
       <button onClick={() => { annotator!.drawCircle() }}>Add Circle</button>
       <button onClick={() => { annotator!.drawEllipse() }}>Add Ellipse</button>
+      <button onClick={() => { annotator!.drawDot() }}>Add Dot</button>
       <button onClick={() => { annotator!.stop() }}>Stop</button>
       <button onClick={() => { annotator!.stopEdit() }}>Edit Done</button>
       <button onClick={() => { annotator!.zoom(1.25) }}>Zoom in</button>
@@ -83,14 +85,14 @@ const Dialog = (props: DialogProps) => {
   };
 
   return (
-    <div className='dialog-bg' onClick={props.onClose}> 
+    <div className='dialog-bg' onClick={props.onClose}>
       <div className='dialog' onClick={e => e.stopPropagation()}
         style={{ left: props.offset.X, top: props.offset.Y }}>
         <button onClick={props.onEdit} style={{background: '#36A9AE'}}>edit</button>
         <button onClick={props.onDelete} style={{background: '#F082AC'}}>delete</button>
         {categories.map((_class, i) => (
           <div key={i} className="checkbox-wrapper-1">
-            <input id={'chb' + i} className="substituted" type="checkbox" aria-hidden="true" 
+            <input id={'chb' + i} className="substituted" type="checkbox" aria-hidden="true"
               value={_class} onChange={handleCheck} checked={props.items.includes(_class)}/>
             <label htmlFor={'chb' + i}>{_class}</label>
           </div>

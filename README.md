@@ -45,7 +45,7 @@ The following props can be defined on `ImageAnnotator`:
 | Prop | Type | Description | Default |
 |---|---|---|---|
 | `imageUrl` \* | `string` | Use a state for image url if you want to change it on the fly |   |
-| `shapes` | `Shape[] \| any[]` | Annotations being displayed on load |   |
+| `shapes` | `Shape[] \| any[]` | Annotations being displayed on load (see [shapes](#shapes)) |   |
 | `naturalSize` | `boolean` | To show image in its natural size | `false` |
 | `width` | `number` | Maximum width without breaking the aspect ratio at initial loading (when `naturalSize` is `false`) |  |
 | `height` | `number` | Maximum height without breaking the aspect ratio at initial loading (when `naturalSize` is `false`) |  |
@@ -72,12 +72,13 @@ Below is a list of all handles:
 | `drawEllipse` | `() => void` | Allows drawing [ellipses](#shapes) by dragging the left mouse button |
 | `drawRectangle` | `() => void` | Allows drawing [rectangles](#shapes) by dragging the left mouse button (keep the shift key to draw square) |
 | `drawPolygon` | `() => void` | Allows drawing [polygons](#shapes) by clicking and double-clicking |
+| `drawDot` | `() => void` | Allows adding [dots (points)](#shapes) by clicking |
 | `stop` | `() => void` | Stops draw/edit/drag mode |
 | `edit` | `(id: number) => void` | The annotation identified by `id` can be edited and dragged |
 | `stopEdit` | `() => void` | Stops editing and dragging |
 | `updateCategories` | `(id: number, categories: string[]) => void` | Updates the categories associated with the annotation identified by `id` |
 | `zoom` | `(factor: number) => void` | Multiplies the dimensions by `factor` |
-| `getShapes` | `() => Shape[]` | Gets all annotations |
+| `getShapes` | `() => Shape[]` | Gets all annotations ([shapes](#shapes)) |
 | `container` | `HTMLDivElement` | The `div` wrapping the `SVG` |
 
 
@@ -113,6 +114,7 @@ The data models for all shapes are listed below:
 | `Ellipse` | `{ id: number, centre: [number, number], radiusX: number, radiusY: number, phi: number, categories: string[], type: string }` |ellipse |
 | `Rectangle` | `{ id: number, points: [number, number][], phi: number, categories: string[], type: string }` | rectangle |
 | `Polygon` | `{ id: number, points: [number, number][], categories: string[], type: string }` | polygon |
+| `Dot` | `{ id: number, position: [number, number], categories: string[], type: string }` | dot |
 
 ## Contributing
 

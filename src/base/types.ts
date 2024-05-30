@@ -38,6 +38,30 @@ export abstract class Shape {
 
 }
 
+export class Dot extends Shape {
+  type: string = 'dot';
+
+  constructor(public position: ArrayXY = [-100, -100], public categories: string[] = []) {
+    super(categories);
+  }
+
+  labelPosition(): ArrayXY {
+    return [this.position[0], this.position[1] - 40];
+  }
+  getCenter(): ArrayXY {
+    return this.position;
+  }
+  zoom(factor: number): void {
+    this.position = [this.position[0] * factor, this.position[1] * factor];
+  }
+  output(ratio: number) {
+    return new Dot([Math.round(this.position[0] / ratio), Math.round(this.position[1] / ratio)], this.categories);
+  }
+  centerChanged(newPos: ArrayXY): void {
+    this.position = newPos;
+  }
+}
+
 export interface IlElementExtra {
   categoriesPlain?: Text;
   categoriesRect?: Rect;

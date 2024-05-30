@@ -1,7 +1,7 @@
 import React, { useEffect, FC } from 'react';
 import { SvgContainer, useSvgContainer, Svg } from 'react-svgdotjs';
 import { Director } from '../base/Director';
-import { Shape, Polygon, Rectangle, Circle, Ellipse } from '../base/types';
+import { Shape, Polygon, Rectangle, Circle, Ellipse, Dot } from '../base/types';
 import { AnnotatorHandles } from './hook';
 import './index.css';
 
@@ -19,10 +19,13 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
       .map(s => new Circle(s.centre, s.radius, s.categories));
     let ellipses = shapes.filter(s => s instanceof Ellipse || s.type === 'ellipse')
       .map(s => new Ellipse(s.centre, s.radiusX, s.radiusY, s.categories));
+    let dots = shapes.filter(s => s instanceof Dot || s.type === 'dot')
+      .map(s => new Dot(s.position, s.categories));
     if (rectangles.length > 0) director.plot(rectangles);
     if (polygons.length > 0) director.plot(polygons);
     if (circles.length > 0) director.plot(circles);
     if (ellipses.length > 0) director.plot(ellipses);
+    if (dots.length > 0) director.plot(dots);
   }
 
   const zoom = (factor: number) => {
@@ -53,6 +56,10 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     drawEllipse() {
       stopAll();
       new Director().startDraw(new Ellipse());
+    },
+    drawDot() {
+      stopAll();
+      new Director().startDraw(new Dot());
     },
     stop: stopAll,
     stopEdit: () => new Director().stopEdit(),

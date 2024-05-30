@@ -47,9 +47,13 @@ export abstract class ShapeBuilder<T extends Shape> {
     this.setOptions(this.element!, this.element!.shape.categories);
   }
 
+  labeledStyle(element: ElementWithExtra, labeled: boolean) {
+    element.stroke({ color: labeled ? Color.WhiteLine : Color.RedLine });
+  }
+
   setOptions(element: ElementWithExtra, categories: string[]) {
     let labeled = categories.length > 0;
-    element.stroke({ color: labeled ? Color.WhiteLine : Color.RedLine });
+    this.labeledStyle(element, labeled);
 
     if (element.categoriesPlain) element.categoriesPlain.remove();
     if (element.categoriesRect) element.categoriesRect.remove();
@@ -60,7 +64,7 @@ export abstract class ShapeBuilder<T extends Shape> {
       let width = element.categoriesPlain.bbox().width;
       let height = element.categoriesPlain.bbox().height;
       element.categoriesRect = this.svg.rect(width, height).radius(2).move(pos[0] - width / 2, pos[1] + height / 4).fill('#ffffff80');
-      element.categoriesPlain.clear();
+      element.categoriesPlain.remove();
       element.categoriesPlain = this.svg
         .plain(categoriesPlain)
         .move(pos[0], pos[1])
@@ -98,7 +102,7 @@ export abstract class ShapeBuilder<T extends Shape> {
     path.attr('class', 'rot-icon grabbable');
     bg.attr('class', 'grabbable').after(path);
     this.rotateArr.forEach(item => item.mousedown((ev: MouseEvent) => this.rotate_md(ev))
-    .click((event: MouseEvent) => { event.stopPropagation(); }));
+      .click((event: MouseEvent) => { event.stopPropagation(); }));
     this.rotate();
   }
 

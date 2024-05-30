@@ -11,6 +11,7 @@ export type AnnotatorHandles = {
   drawPolygon(): void;
   drawCircle(): void;
   drawEllipse(): void;
+  drawDot(): void;
   stop: () => void;
   stopEdit: () => void;
   edit: (id: number) => void;

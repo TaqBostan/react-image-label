@@ -6,6 +6,7 @@ import { ShapeBuilder } from "./ShapeBuilder";
 import RectangleBuilder from "./builders/RectangleBuilder";
 import CircleBuilder from "./builders/CircleBuilder";
 import EllipseBuilder from "./builders/EllipseBuilder";
+import { DotBuilder } from "./builders/DotBuilder";
 
 export class Director {
   static builders: ShapeBuilder<Shape>[];
@@ -108,7 +109,7 @@ export class Director {
     Shape.containerOffset = [container.offsetLeft, container.offsetTop];
     ShapeBuilder._svg = svg;
     ShapeBuilder.statics = statics;
-    Director.builders = [new PolygonBuilder(), new RectangleBuilder(), new CircleBuilder(), new EllipseBuilder()];
+    Director.builders = [new PolygonBuilder(), new RectangleBuilder(), new CircleBuilder(), new EllipseBuilder(), new DotBuilder()];
   }
 
   static setActions(onAdded?: (shape: Shape) => void, onContextMenu?: (shape: Shape) => void) {
