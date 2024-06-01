@@ -8,6 +8,8 @@ A comprehensive component for tagging images. Check out [demo 1](https://f2gnwn.
 - Changing image on the fly
 - Raw or typed input/output
 
+![Screenshot of ImageAnnotator](https://github.com/TaqBostan/content/blob/main/labeled-2.png?raw=true)
+
 ## Usage
 
 Install `react-image-label` using npm.

@@ -72,7 +72,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
 
   const onload = React.useCallback((svg: Svg, container: HTMLDivElement, imageUrl: string) => {
     svg.image(imageUrl, (ev: any) => {
-      if (!ev?.target) return;
+      if (!ev?.target || !svg.node.innerHTML) return;
       let width = ev.target.naturalWidth, height = ev.target.naturalHeight, maxWidth = props.width, maxHeight = props.height;
       if (!props.naturalSize) {
         if (!maxWidth) maxWidth = container.scrollWidth;
