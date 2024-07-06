@@ -14,7 +14,7 @@ export default class RectangleBuilder extends AngledBuilder<Rectangle> {
   }
 
   rect_md(event: MouseEvent, addPolyline: () => void) {
-    if (event.button === 0 && !this.rectOrigin) {
+    if (event.button === 0 && !event.ctrlKey && !this.rectOrigin) {
       if (this.element?.editing) this.stopEdit()
       this.rectOrigin = { X: event.offsetX, Y: event.offsetY };
       this.createElement(new Rectangle());

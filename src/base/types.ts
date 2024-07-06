@@ -21,12 +21,12 @@ export abstract class Shape {
     this.id = 0;
   }
 
-  getOutput(ratio: number): Shape {
+  getOutput(ratio: number, parent: HTMLElement): Shape {
     let obj = this.output(ratio);
     let center = Util.ArrayXYSum(this.getCenter(), Shape.containerOffset)
     obj.id = this.id;
     obj.phi= Math.round(this.phi);
-    obj.getCenterWithOffset = () => ({ X: center[0], Y: center[1] })
+    obj.getCenterWithOffset = () => ({ X: center[0] - parent.scrollLeft, Y: center[1] - parent.scrollTop })
     return obj;
   }
 

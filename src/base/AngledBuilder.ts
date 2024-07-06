@@ -63,7 +63,7 @@ export abstract class AngledBuilder<T extends AngledShape> extends ShapeBuilder<
 				.addClass('seg-point')
 				.click((event: MouseEvent) => { event.stopPropagation(); })
 				.mousedown((event: MouseEvent) => {
-					if (event.button === 0 && this.dragIndex === undefined) {
+					if (event.button === 0 && !event.ctrlKey && this.dragIndex === undefined) {
 						this.dragIndex = index;
 						[this.movePath!, ...this.rotateArr].forEach(item => item.remove());
 						this.svg.mousemove((event: MouseEvent) => this.editShape_mm(event));

@@ -49,8 +49,8 @@ The following props can be defined on `ImageAnnotator`:
 | `imageUrl` \* | `string` | Use a state for image url if you want to change it on the fly |   |
 | `shapes` | `Shape[] \| any[]` | Annotations being displayed on load (see [shapes](#shapes)) |   |
 | `naturalSize` | `boolean` | To show image in its natural size | `false` |
-| `width` | `number` | Maximum width without breaking the aspect ratio at initial loading (when `naturalSize` is `false`) |  |
-| `height` | `number` | Maximum height without breaking the aspect ratio at initial loading (when `naturalSize` is `false`) |  |
+| `width` | `number` | `container` width | `image.naturalWidth` |
+| `height` | `number` | `container` height | `image.naturalHeight` |
 | `discRadius` | `number` | The radius of the green discs in edit mode | 5 |
 | `onAdded` | `Shape => any` | When an annotation is drawn (see [Annotations with Categories](#annotations-with-categories)) |  |
 | `onContextMenu` | `Shape => any` | When an annotation is right-clicked (see [Annotations with Categories](#annotations-with-categories)) |   |

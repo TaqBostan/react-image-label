@@ -114,7 +114,7 @@ export abstract class ShapeBuilder<T extends Shape> {
   }
 
   drag_md(event: MouseEvent) {
-    if (event.button === 0 && !this.lastPoint) {
+    if (event.button === 0 && !event.ctrlKey && !this.lastPoint) {
       this.lastPoint = { X: event.offsetX, Y: event.offsetY };
       this.dragOrigin = { X: event.offsetX, Y: event.offsetY };
       [this.movePath!, ...this.rotateArr].forEach(item => item.remove());
@@ -161,7 +161,7 @@ export abstract class ShapeBuilder<T extends Shape> {
   }
 
   rotate_md(event: MouseEvent) {
-    if (event.button === 0) {
+    if (event.button === 0 && !event.ctrlKey) {
       this.svg
         .mousemove((event: MouseEvent) => this.rotate_mm(event))
         .mouseup(() => { this.svg.off('mousemove').off('mouseup'); });

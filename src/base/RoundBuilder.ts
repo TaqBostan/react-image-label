@@ -42,7 +42,7 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
   }
 
   draw_md(event: MouseEvent, addShape: () => void) {
-    if (event.button === 0 && !this.origin) {
+    if (event.button === 0 && !event.ctrlKey && !this.origin) {
       if (this.element?.editing) this.stopEdit();
       this.origin = { X: event.offsetX, Y: event.offsetY };
       this.createElement(this.newShape());
@@ -96,7 +96,7 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
         .addClass('seg-point')
         .click((event: MouseEvent) => { event.stopPropagation(); })
         .mousedown((event: MouseEvent) => {
-          if (event.button === 0 && this.dragIndex === undefined) {
+          if (event.button === 0 && !event.ctrlKey && this.dragIndex === undefined) {
             this.setPoints();
             this.dragIndex = index;
             [this.movePath!, ...this.rotateArr].forEach(item => item.remove());
