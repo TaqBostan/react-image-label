@@ -143,6 +143,7 @@ export class Director {
     ShapeBuilder.statics = statics;
     Director.instance = new Director(svg, container);
     container.onmousedown = (event: MouseEvent) => Director.instance.drag_md(container, event);
+    container.onwheel = (event: WheelEvent) => Director.instance.mousewheel(event);
   }
 
   static setActions(onAdded?: (shape: Shape) => void, onContextMenu?: (shape: Shape) => void) {
@@ -158,6 +159,17 @@ export class Director {
     ShapeBuilder._svg?.clear();
     this.elements = [];
     this.builders = [];
+  }
+
+  mousewheel(e: WheelEvent) {
+    e.preventDefault();
+    let parent = this.container;
+    let scale = e.deltaY > 0 ? 1.25 : 0.8;
+    this.setSizeAndRatio(scale);
+    this.zoom(scale);
+    let { scrollLeftMax: maxLeft, scrollTopMax: maxTop, offsetLeft: ol, offsetTop: ot } = (e.currentTarget as any)
+    parent.scrollLeft = Math.min(Math.max(parent.scrollLeft * scale + (scale - 1) * (e.pageX - ol), 0), maxLeft);
+    parent.scrollTop = Math.min(Math.max(parent.scrollTop * scale + (scale - 1) * (e.pageY - ot), 0), maxTop);
   }
 
   setSizeAndRatio(factor: number) {

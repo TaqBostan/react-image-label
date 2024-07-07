@@ -4,7 +4,7 @@ A comprehensive component for tagging images. Check out [demo 1](https://f2gnwn.
 
 - Bounding Box (Rectangle, Square, Circle, and Ellipse), and Polygon Annotations 
 - Add, Edit, Drag, Rotate, and Delete Annotations
-- Zoom and Scale
+- Zoom and Pan (Ctrl + mouse)
 - Changing image on the fly
 - Raw or typed input/output
 
