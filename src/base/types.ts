@@ -25,7 +25,7 @@ export abstract class Shape {
     let obj = this.output(ratio);
     let center = Util.ArrayXYSum(this.getCenter(), Shape.containerOffset)
     obj.id = this.id;
-    obj.phi= Math.round(this.phi);
+    obj.phi = Math.round(this.phi);
     obj.getCenterWithOffset = () => ({ X: center[0] - parent.scrollLeft, Y: center[1] - parent.scrollTop })
     return obj;
   }
@@ -88,9 +88,10 @@ export abstract class AngledShape extends Shape {
     return [x, y];
   }
   outPoints(ratio: number): ArrayXY[] {
+    let center = this.getCenter();
     return this.points.filter((p, i) => i < this.points.length - 1)
       .map(p => {
-        let _p = Util.rotate([p[0] / ratio, p[1] / ratio], this.getCenter(), this.phi)
+        let _p = Util.rotate([p[0] / ratio, p[1] / ratio], [center[0] / ratio, center[1] / ratio], this.phi)
         return [Math.round(_p[0]), Math.round(_p[1])];
       });
   }
