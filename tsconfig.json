@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es2016",
+    "target": "es2022",
     "jsx": "react",
-    "module": "commonjs",
+    "module": "CommonJS",
     "allowJs": true,
     "declaration": true,
     "declarationMap": true,

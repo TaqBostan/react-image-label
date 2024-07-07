@@ -1,9 +1,10 @@
 {
-    "splitting": true,
+    "splitting": false,
     "sourcemap": true,
     "clean": true,
     "minify": true,
     "injectStyle": true,
+    "target": "es2022",
     "entry": [
       "src/index.ts", "!src/**/*.stories.tsx", "!src/**/*.stories.css"
     ]
