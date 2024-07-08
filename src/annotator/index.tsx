@@ -65,7 +65,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     stop: stopAll,
     stopEdit: () => getDirector().stopEdit(),
     edit: (id: number) => getDirector().edit(id),
-    delete: (id: number) => getDirector().removeElement(id),
+    delete: (id: number) => getDirector().removeById(id),
     updateCategories: (id: number, categories: string[]) => getDirector().updateCategories(id, categories),
     zoom,
     getShapes: getDirector().getShapes
@@ -108,16 +108,19 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
 
   useEffect(() => {
     const onkeydown = (e: KeyboardEvent) => e.key === 'Control' && svgContainer!.container.classList.add('grabbable');
-    const onkeyup = (e: KeyboardEvent) => e.key === 'Control' && svgContainer!.container.classList.remove('grabbable');
+    const keyup = (e: KeyboardEvent) => {
+      if (e.key === 'Control') svgContainer!.container.classList.remove('grabbable');
+      if (e.key === 'Delete') Director.instance.remove();
+    }
     if (svgContainer && props.imageUrl) {
       onload(svgContainer.svg, svgContainer.container, props.imageUrl);
       window.addEventListener('keydown', onkeydown);
-      window.addEventListener('keyup', onkeyup);
+      window.addEventListener('keyup', keyup);
     }
-    return () => { 
-      Director.instance?.clear(); 
+    return () => {
+      Director.instance?.clear();
       window.removeEventListener('keydown', onkeydown);
-      window.removeEventListener('keyup', onkeyup);
+      window.removeEventListener('keyup', keyup);
     }
   }, [svgContainer, props.imageUrl]);
 

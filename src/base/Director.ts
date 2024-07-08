@@ -85,6 +85,7 @@ export class Director {
       Director.onContextMenu?.(elem.shape);
       return false;
     }, false);
+    builder.element.node.ondblclick = () => this.edit(id);
     if (isNew) {
       if (!builder.element!.editing) builder.edit();
       Director.onAdded?.(builder.element.shape);
@@ -98,13 +99,20 @@ export class Director {
     if (!elem.editing) builder.setOptions(elem, categories);
   }
 
-  removeElement(id: number) {
+  removeById(id: number) {
     this.stopEdit();
     let elem = this.getElement(id);
     let builder = this.getBuilder(elem.shape);
     builder.element = elem;
     builder.removeElement();
     this.elements.splice(this.elements.indexOf(elem), 1);
+  }
+
+  remove() {
+    if (this.builders.filter(b => b.element?.editing).length > 0) {
+      let id = this.builders.filter(b => b.element?.editing)[0].element!.shape!.id;
+      this.removeById(id);
+    }
   }
 
   drag_md(container: HTMLDivElement, e: MouseEvent) {
@@ -121,7 +129,7 @@ export class Director {
       parent.scrollLeft = parent.scrollLeft - e.clientX + this.origin.X;
       parent.scrollTop = parent.scrollTop - e.clientY + this.origin.Y;
       this.origin = { X: e.clientX, Y: e.clientY };
-      if(!e.ctrlKey) this.drag_mu();
+      if (!e.ctrlKey) this.drag_mu();
     }
   }
 
