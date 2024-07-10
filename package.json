@@ -1,6 +1,6 @@
 {
   "name": "react-image-label",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A comprehensive package for tagging images.",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -40,6 +40,6 @@
     "dist"
   ],
   "dependencies": {
-    "react-svgdotjs": "^2.0.5"
+    "react-svgdotjs": "^2.0.9"
   }
 }
