@@ -4,7 +4,7 @@ A comprehensive component for tagging images. Check out [demo 1](https://f2gnwn.
 
 - Bounding Box (Rectangle, Square, Circle, and Ellipse), and Polygon Annotations 
 - Add, Edit, Drag, Rotate, and Delete Annotations
-- Zoom and Pan (Ctrl + mouse)
+- Zoom and Pan
 - Changing image on the fly
 - Raw or typed input/output
 
@@ -40,6 +40,14 @@ const { setHandles, annotator } = useImageAnnotator();
 
 Now you can draw rectangles on the image by dragging the left mouse button.
 
+### Mouse and Keyboard events
+
+- **double click**: Edit/Stop Edit Annotations
+- **Ctrl + mouse wheel**: Zoom
+- **Ctrl + mouse drag**: Pan
+- **Delete key**: Delete Annotations
+- **mouse drag**: Drag/Edit/Rotate Annotations
+
 ## Props
 
 The following props can be defined on `ImageAnnotator`:
@@ -68,7 +76,7 @@ You can access the handles using the `annotator` object as follows:
 
 Below is a list of all handles:
 
-| Prop | Type | Description |
+| Handle | Type | Description |
 |---|---|---|
 | `drawCircle` | `() => void` | Allows drawing [circles](#shapes) by dragging the left mouse button |
 | `drawEllipse` | `() => void` | Allows drawing [ellipses](#shapes) by dragging the left mouse button |

@@ -18,7 +18,7 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
   }
 
   addPoint(event: MouseEvent, addAngledShape: () => void) {
-    if (event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (event.ctrlKey || event.shiftKey || event.altKey || event.detail > 1) return;
     if (!this.element) throw new Error();
     if (this.startClicked) {
       this.element.discs[0].remove();
@@ -106,15 +106,7 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
   addPointAndClose(event: MouseEvent, addAngledShape: () => void) {
     if (event.ctrlKey || event.shiftKey || event.altKey) return;
     if (!this.element) throw new Error();
-    if (this.element.hasConnector) {
-      this.element.shape.points.pop();
-      this.element.hasConnector = false;
-    }
-    else {
-      this.element.shape.points.pop();
-      let circle = this.element!.discs.pop();
-      circle!.remove();
-    }
+    if(this.element.shape.points.length < 3) return;
     this.startClicked = true;
     let x = this.element.shape.points[0][0];
     let y = this.element.shape.points[0][1];

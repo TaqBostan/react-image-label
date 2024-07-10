@@ -18,7 +18,6 @@ class IlEllipse extends Elp implements IlElementExtra {
 export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T> {
   element?: IlEllipse;
   origin?: Point;
-  dragIndex?: number;
   points: ArrayXY[] = [];
   abstract calculateRadius(offset: ArrayXY): ArrayXY;
   abstract calculateDifferent(offset: ArrayXY): ArrayXY;

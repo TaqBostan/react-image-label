@@ -102,7 +102,7 @@ export abstract class ShapeBuilder<T extends Shape> {
     path.attr('class', 'rot-icon grabbable');
     bg.attr('class', 'grabbable').after(path);
     this.rotateArr.forEach(item => item.mousedown((ev: MouseEvent) => this.rotate_md(ev))
-      .click((event: MouseEvent) => { event.stopPropagation(); }));
+      .click((event: MouseEvent) => event.stopPropagation()));
     this.rotate();
   }
 
@@ -204,11 +204,9 @@ export abstract class ShapeBuilder<T extends Shape> {
   }
 
   stopEditShape(elem: ElementWithExtra): void {
-    elem.discs?.forEach((_disc, index) => {
-      _disc.fill(Color.BlackDisc).size(4).removeClass('seg-point')
-        .off('click').off('mousedown').off('mouseup')
-      this.dragIndex = undefined;
-    });
+    elem.discs?.forEach(_disc => 
+      _disc.fill(Color.BlackDisc).size(4).removeClass('seg-point').off('click').off('mousedown').off('mouseup')
+    );
     this.setOptions(elem, elem.shape.categories);
   }
 
