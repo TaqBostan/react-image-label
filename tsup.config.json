@@ -1,5 +1,5 @@
 {
-    "splitting": true,
+    "splitting": false,
     "sourcemap": true,
     "clean": true,
     "minify": true,

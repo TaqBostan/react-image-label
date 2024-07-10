@@ -107,20 +107,23 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   }, [props.onAdded, props.onContextMenu]);
 
   useEffect(() => {
+    const onblur = () =>  svgContainer!.container.classList.remove('grabbable');
     const onkeydown = (e: KeyboardEvent) => e.key === 'Control' && svgContainer!.container.classList.add('grabbable');
     const keyup = (e: KeyboardEvent) => {
-      if (e.key === 'Control') svgContainer!.container.classList.remove('grabbable');
+      if (e.key === 'Control') onblur();
       if (e.key === 'Delete') Director.instance.remove();
     }
     if (svgContainer && props.imageUrl) {
       onload(svgContainer.svg, svgContainer.container, props.imageUrl);
       window.addEventListener('keydown', onkeydown);
       window.addEventListener('keyup', keyup);
+      window.addEventListener('blur', onblur);
     }
     return () => {
       Director.instance?.clear();
       window.removeEventListener('keydown', onkeydown);
       window.removeEventListener('keyup', keyup);
+      window.removeEventListener('blur', onblur);
     }
   }, [svgContainer, props.imageUrl]);
 

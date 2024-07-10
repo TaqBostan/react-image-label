@@ -97,7 +97,7 @@ export class Director {
 
   updateCategories(id: number, categories: string[]) {
     let elem = this.getElement(id);
-    if(!elem) return;
+    if (!elem) return;
     elem.shape.categories = categories;
     let builder = this.getBuilder(elem.shape);
     if (!elem.editing) builder.setOptions(elem, categories);
@@ -177,12 +177,12 @@ export class Director {
   mousewheel(e: WheelEvent) {
     e.preventDefault();
     let parent = this.container;
-    let scale = e.deltaY > 0 ? 1.25 : 0.8;
+    let scale = e.deltaY > 0 ? 0.8 : 1.25;
+    let { scrollLeft, scrollTop } = parent;
     this.setSizeAndRatio(scale);
     this.zoom(scale);
-    let { scrollLeftMax: maxLeft, scrollTopMax: maxTop, offsetLeft: ol, offsetTop: ot } = (e.currentTarget as any)
-    parent.scrollLeft = Math.min(Math.max(parent.scrollLeft * scale + (scale - 1) * (e.pageX - ol), 0), maxLeft);
-    parent.scrollTop = Math.min(Math.max(parent.scrollTop * scale + (scale - 1) * (e.pageY - ot), 0), maxTop);
+    parent.scrollLeft = Math.min(Math.max(scrollLeft * scale + (scale - 1) * (e.pageX - parent.offsetLeft), 0), parent.scrollWidth - parent.clientWidth);
+    parent.scrollTop = Math.min(Math.max(scrollTop * scale + (scale - 1) * (e.pageY - parent.offsetTop), 0), parent.scrollHeight - parent.clientHeight);
   }
 
   setSizeAndRatio(factor: number) {
