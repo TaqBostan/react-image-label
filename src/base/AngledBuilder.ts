@@ -61,24 +61,26 @@ export abstract class AngledBuilder<T extends AngledShape> extends ShapeBuilder<
 				.fill(Color.GreenDisc)
 				.radius(ShapeBuilder.statics.discRadius)
 				.addClass('seg-point')
-				.click((event: MouseEvent) => { event.stopPropagation(); })
-				.mousedown((event: MouseEvent) => {
-					if (event.button === 0 && !event.ctrlKey && this.dragIndex === undefined) {
+				.click((e: MouseEvent) => { e.stopPropagation(); })
+				.mousedown((e: MouseEvent) => {
+					if (e.buttons === 1 && !e.ctrlKey && this.dragIndex === undefined) {
 						this.dragIndex = index;
 						[this.movePath!, ...this.rotateArr].forEach(item => item.remove());
-						this.svg.mousemove((event: MouseEvent) => this.editShape_mm(event));
-						event.stopPropagation();
+						this.svg.mousemove((e: MouseEvent) => this.editShape_mm(e));
+						e.stopPropagation();
 					}
 				});
-			_disc.mouseup((event: MouseEvent) => {
-				if (this.dragIndex !== undefined) {
-					this.addMoveIcon();
-					this.addRotateIcon();
-					this.dragIndex = undefined;
-					this.svg.off('mousemove');
-				}
-			})
+			_disc.mouseup(() => this.editShape_mu());
 		});
+	}
+
+	editShape_mu() {
+		if (this.dragIndex !== undefined) {
+			this.addMoveIcon();
+			this.addRotateIcon();
+			this.dragIndex = undefined;
+			this.svg.off('mousemove');
+		}
 	}
 
 	processShape() { }

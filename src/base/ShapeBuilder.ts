@@ -113,27 +113,28 @@ export abstract class ShapeBuilder<T extends Shape> {
     this.addMoveIcon();
   }
 
-  drag_md(event: MouseEvent) {
-    if (event.button === 0 && !event.ctrlKey && !this.lastPoint) {
-      this.lastPoint = { X: event.offsetX, Y: event.offsetY };
-      this.dragOrigin = { X: event.offsetX, Y: event.offsetY };
+  drag_md(e: MouseEvent) {
+    if (e.buttons === 1 && !e.ctrlKey && !this.lastPoint) {
+      this.lastPoint = { X: e.offsetX, Y: e.offsetY };
+      this.dragOrigin = { X: e.offsetX, Y: e.offsetY };
       [this.movePath!, ...this.rotateArr].forEach(item => item.remove());
-      this.svg.mousemove((event: MouseEvent) => this.drag_mm(event))
+      this.svg.mousemove((e: MouseEvent) => this.drag_mm(e))
         .mouseup(() => this.drag_mu());
-      event.stopPropagation();
+      e.stopPropagation();
     }
   }
 
-  drag_mm(event: MouseEvent) {
+  drag_mm(e: MouseEvent) {
     if (this.lastPoint) {
+      if (e.buttons !== 1) return this.drag_mu();
       if (!this.element) return;
-      let dx = event.offsetX - this.lastPoint.X, dy = event.offsetY - this.lastPoint.Y, center = this.element.shape.getCenter();
+      let dx = e.offsetX - this.lastPoint.X, dy = e.offsetY - this.lastPoint.Y, center = this.element.shape.getCenter();
       [this.element, this.element.shadow, this.element.connector, ...this.element.discs].forEach(disc => {
         disc?.cx(disc.cx() + dx).cy(disc.cy() + dy);
       })
       this.element.shape.centerChanged([center[0] + dx, center[1] + dy]);
       this.rotate();
-      this.lastPoint = { X: event.offsetX, Y: event.offsetY };
+      this.lastPoint = { X: e.offsetX, Y: e.offsetY };
     }
   }
 
@@ -160,20 +161,25 @@ export abstract class ShapeBuilder<T extends Shape> {
     }
   }
 
-  rotate_md(event: MouseEvent) {
-    if (event.button === 0 && !event.ctrlKey) {
+  rotate_md(e: MouseEvent) {
+    if (e.buttons === 1 && !e.ctrlKey) {
       this.svg
-        .mousemove((event: MouseEvent) => this.rotate_mm(event))
-        .mouseup(() => { this.svg.off('mousemove').off('mouseup'); });
-      event.stopPropagation();
+        .mousemove((e: MouseEvent) => this.rotate_mm(e))
+        .mouseup(() => this.rotate_mu());
+      e.stopPropagation();
     }
   }
 
-  rotate_mm(event: MouseEvent) {
+  rotate_mm(e: MouseEvent) {
+    if (e.buttons !== 1) return this.rotate_mu();
     if (!this.element) return;
-    let center = this.element.shape.getCenter(), vector: ArrayXY = [event.offsetX - center[0], event.offsetY - center[1]];
+    let center = this.element.shape.getCenter(), vector: ArrayXY = [e.offsetX - center[0], e.offsetY - center[1]];
     this.element.shape.phi = Math.atan2(-vector[0], vector[1]) * 180 / Math.PI;
     this.rotate();
+  }
+
+  rotate_mu() {
+    this.svg.off('mousemove').off('mouseup');
   }
 
   zoom(elem: ElementWithExtra, factor: number): void {

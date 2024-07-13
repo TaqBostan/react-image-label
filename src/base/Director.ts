@@ -10,8 +10,9 @@ import { DotBuilder } from "./builders/DotBuilder";
 
 export class Director {
   static instance: Director;
-  static onAdded: ((shape: Shape) => void) | undefined;
-  static onContextMenu: ((shape: Shape) => void) | undefined;
+  static onAdded: ((shape: Shape) => any) | undefined;
+  static onContextMenu: ((shape: Shape) => any) | undefined;
+  static onSelected: ((shape: Shape) => any) | undefined;
   builders: ShapeBuilder<Shape>[];
   elements: ElementWithExtra[] = [];
   origin?: Point;
@@ -85,13 +86,15 @@ export class Director {
       Director.onContextMenu?.(elem.shape);
       return false;
     }, false);
-    builder.element.node.ondblclick = (event: MouseEvent) => {
+    builder.element.node.ondblclick = (e: MouseEvent) => {
       this.edit(id);
-      event.stopPropagation();
+      Director.onSelected?.(builder.element!.shape);
+      e.stopPropagation();
     };
     if (isNew) {
       if (!builder.element!.editing) builder.edit();
       Director.onAdded?.(builder.element.shape);
+      Director.onSelected?.(builder.element.shape);
     }
   }
 
@@ -120,7 +123,7 @@ export class Director {
   }
 
   drag_md(container: HTMLDivElement, e: MouseEvent) {
-    if (e.button === 0 && e.ctrlKey && !this.origin) {
+    if (e.buttons === 1 && e.ctrlKey && !this.origin) {
       this.origin = { X: e.clientX, Y: e.clientY };
       container.onmousemove = (event: MouseEvent) => this.drag_mm(event);
       container.onmouseup = () => this.drag_mu();
@@ -159,9 +162,12 @@ export class Director {
     container.ondblclick = () => !instance.builders.some(b => b.drawing) && instance.stopEdit();
   }
 
-  static setActions(onAdded?: (shape: Shape) => void, onContextMenu?: (shape: Shape) => void) {
-    Director.onAdded = shape => onAdded?.(shape.getOutput(ShapeBuilder.statics.ratio, Director.instance.container));
-    Director.onContextMenu = shape => onContextMenu?.(shape.getOutput(ShapeBuilder.statics.ratio, Director.instance.container));
+  static setActions(onAdded?: (shape: Shape) => any, onContextMenu?: (shape: Shape) => any, onSelected?: (shape: Shape) => any) {
+    let ffun = (fun?: (shape: Shape) => any) => (shape: Shape) => 
+      fun?.(shape.getOutput(ShapeBuilder.statics.ratio, Director.instance.container))
+    Director.onAdded = ffun(onAdded);
+    Director.onContextMenu = ffun(onContextMenu);
+    Director.onSelected = ffun(onSelected);
   }
 
   clear() {

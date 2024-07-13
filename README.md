@@ -61,6 +61,7 @@ The following props can be defined on `ImageAnnotator`:
 | `height` | `number` | `container` height | `image.naturalHeight` |
 | `discRadius` | `number` | The radius of the green discs in edit mode | 5 |
 | `onAdded` | `Shape => any` | When an annotation is drawn (see [Annotations with Categories](#annotations-with-categories)) |  |
+| `onSelected` | `Shape => any` | When an annotation goes into edit mode by double-clicking |  |
 | `onContextMenu` | `Shape => any` | When an annotation is right-clicked (see [Annotations with Categories](#annotations-with-categories)) |   |
 | `onReady` | `AnnotatorHandles => any` | When the component is mounted |   |
 

@@ -96,6 +96,7 @@ export abstract class AngledShape extends Shape {
       });
   }
   getCenter(): ArrayXY {
+    if(this.points.length === 0) return [0, 0];
     let x = this.points
       .map(p => p[0])
       .filter((x, i) => i < this.points.length - 1)

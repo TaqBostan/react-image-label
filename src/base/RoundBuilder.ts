@@ -40,28 +40,29 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
     this.svg.mousedown((event: MouseEvent) => this.draw_md(event, addShape));
   }
 
-  draw_md(event: MouseEvent, addShape: () => void) {
-    if (event.button === 0 && !event.ctrlKey && !this.origin) {
+  draw_md(e: MouseEvent, addShape: () => void) {
+    if (e.buttons === 1 && !e.ctrlKey && !this.origin) {
       if (this.element?.editing) this.stopEdit();
-      this.origin = { X: event.offsetX, Y: event.offsetY };
+      this.origin = { X: e.offsetX, Y: e.offsetY };
       this.createElement(this.newShape());
-      this.svg.mousemove((event: MouseEvent) => this.draw_mm(event))
-        .mouseup((event: MouseEvent) => this.draw_mu(event, addShape));
+      this.svg.mousemove((e: MouseEvent) => this.draw_mm(e, addShape))
+        .mouseup((e: MouseEvent) => this.draw_mu(e, addShape));
     }
   }
 
-  draw_mm(event: MouseEvent): void {
+  draw_mm(e: MouseEvent, addShape: () => void): void {
     if (this.origin) {
-      let centre: ArrayXY = [(this.origin.X + event.offsetX) / 2, (this.origin.Y + event.offsetY) / 2];
-      let radius = this.calculateRadius([event.offsetX, event.offsetY]);
+      if (e.buttons !== 1) return this.draw_mu(e, addShape);
+      let centre: ArrayXY = [(this.origin.X + e.offsetX) / 2, (this.origin.Y + e.offsetY) / 2];
+      let radius = this.calculateRadius([e.offsetX, e.offsetY]);
       [this.element!, this.element!.shadow].forEach(el => el.size(2 * radius[0], 2 * radius[1]).move(centre[0] - radius[0], centre[1] - radius[1]));
     }
   }
 
-  draw_mu(event: MouseEvent, addShape: () => void) {
+  draw_mu(e: MouseEvent, addShape: () => void) {
     let shape = this.element!.shape;
-    let centre: ArrayXY = [(this.origin!.X + event.offsetX) / 2, (this.origin!.Y + event.offsetY) / 2];
-    let radius = this.calculateRadius([event.offsetX, event.offsetY]);
+    let centre: ArrayXY = [(this.origin!.X + e.offsetX) / 2, (this.origin!.Y + e.offsetY) / 2];
+    let radius = this.calculateRadius([e.offsetX, e.offsetY]);
     shape.centre = centre;
     shape.width = 2 * radius[0];
     shape.height = 2 * radius[1];
@@ -94,23 +95,25 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
       _disc
         .addClass('seg-point')
         .click((event: MouseEvent) => { event.stopPropagation(); })
-        .mousedown((event: MouseEvent) => {
-          if (event.button === 0 && !event.ctrlKey && this.dragIndex === undefined) {
+        .mousedown((e: MouseEvent) => {
+          if (e.buttons === 1 && !e.ctrlKey && this.dragIndex === undefined) {
             this.setPoints();
             this.dragIndex = index;
             [this.movePath!, ...this.rotateArr].forEach(item => item.remove());
-            event.stopPropagation();
-            this.svg.mousemove((event: MouseEvent) => this.editShape_mm(event));
-            this.svg.mouseup((event: MouseEvent) => {
-              this.addMoveIcon();
-              this.addRotateIcon();
-              this.origin = undefined;
-              this.dragIndex = undefined;
-              this.svg.off("mousemove").off("mouseup");
-            });
+            e.stopPropagation();
+            this.svg.mousemove((e: MouseEvent) => this.editShape_mm(e));
+            this.svg.mouseup(() => this.editShape_mu());
           }
         });
     });
+  }
+
+  editShape_mu() {
+    this.addMoveIcon();
+    this.addRotateIcon();
+    this.origin = undefined;
+    this.dragIndex = undefined;
+    this.svg.off("mousemove").off("mouseup");
   }
 
   addDiscs(): void {
@@ -130,10 +133,11 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
     this.points = [[x - width / 2, y - height / 2], [x - width / 2, y + height / 2], [x + width / 2, y + height / 2], [x + width / 2, y - height / 2]];
   }
 
-  editShape_mm(event: MouseEvent) {
+  editShape_mm(e: MouseEvent) {
     if (this.dragIndex !== undefined) {
+      if (e.buttons !== 1) return this.editShape_mu();
       let elem = this.element!, discRadius = ShapeBuilder.statics.discRadius, phi = elem.shape.phi, oldCenter = elem.shape.getCenter();
-      let [x, y] = Util.rotate([event.offsetX, event.offsetY], oldCenter, -phi);
+      let [x, y] = Util.rotate([e.offsetX, e.offsetY], oldCenter, -phi);
       let prevIndex = this.dragIndex === 0 ? 3 : this.dragIndex - 1,
         nextIndex = this.dragIndex === 3 ? 0 : this.dragIndex + 1,
         oppositIndex = this.dragIndex > 1 ? this.dragIndex - 2 : this.dragIndex + 2;

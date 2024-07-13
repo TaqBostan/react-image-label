@@ -74,6 +74,8 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   const onload = React.useCallback((svg: Svg, container: HTMLDivElement, imageUrl: string) => {
     svg.image(imageUrl, (ev: any) => {
       if (!ev?.target || !svg.node.innerHTML) return;
+      let src1 = ev?.target.src, src2 = imageUrl;
+      if(src1.substring(src1.lastIndexOf('/') + 1) !== src2.substring(src2.lastIndexOf('/') + 1)) return;
       let width = ev.target.naturalWidth, height = ev.target.naturalHeight, maxWidth = props.width, maxHeight = props.height;
       svg.node.style.overflowY = 'scroll';
       Object.assign(container.style, {
@@ -102,9 +104,9 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   }, [props.width, props.height, props.shapes]);
 
   useEffect(() => {
-    Director.setActions(props.onAdded, props.onContextMenu);
+    Director.setActions(props.onAdded, props.onContextMenu, props.onSelected);
     return () => Director.setActions(undefined, undefined);
-  }, [props.onAdded, props.onContextMenu]);
+  }, [props.onAdded, props.onContextMenu, props.onSelected]);
 
   useEffect(() => {
     const onblur = () =>  svgContainer!.container.classList.remove('grabbable');
@@ -135,6 +137,7 @@ export { ImageAnnotator };
 export interface ImageAnnotatorProps {
   onReady?: (annotator: AnnotatorHandles) => any;
   onAdded?: (shape: Shape) => any;
+  onSelected?: (shape: Shape) => any;
   onContextMenu?: (shape: Shape) => any;
   imageUrl?: string;
   shapes?: Shape[] | any[];
