@@ -4,10 +4,11 @@ import { ArrayXY, Path, Element } from '@svgdotjs/svg.js'
 
 export abstract class ShapeBuilder<T extends Shape> {
   static _svg: Svg;
+  static _sd: StaticData;
   svg: Svg = ShapeBuilder._svg;
+  sd: StaticData = ShapeBuilder._sd;
   abstract element?: ElementWithExtra;
   abstract shape?: T;
-  static statics: StaticData;
   //#region drag
   private lastPoint?: Point;
   private dragOrigin?: Point;
@@ -44,6 +45,7 @@ export abstract class ShapeBuilder<T extends Shape> {
 
   basePlotShape() {
     this.plotShape();
+    this.rotate();
     this.setOptions(this.element!, this.element!.shape.categories);
   }
 

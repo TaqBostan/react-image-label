@@ -78,7 +78,7 @@ export default class RectangleBuilder extends AngledBuilder<Rectangle> {
     // Moves a vertex of the polyline
     if (this.dragIndex !== undefined) {
       if (e.buttons !== 1) return this.editShape_mu();
-      let elem = this.element!, phi = elem.shape.phi, discRadius = ShapeBuilder.statics.discRadius, oldCenter = elem.shape.getCenter();
+      let elem = this.element!, phi = elem.shape.phi, discRadius = this.sd.discRadius, oldCenter = elem.shape.getCenter();
       let [x, y] = Util.rotate([e.offsetX, e.offsetY], oldCenter, -phi);
       elem.shape.points[this.dragIndex] = [x, y];
       let prevIndex = this.dragIndex === 0 ? 3 : this.dragIndex - 1,
@@ -99,11 +99,15 @@ export default class RectangleBuilder extends AngledBuilder<Rectangle> {
   }
 
   override processShape(): void {
-    let shape = this.shape!;
-    if (shape.points[0][0] != shape.points[1][0]) {
-      let p = shape.points[1];
-      shape.points[1] = [...shape.points[3]];
-      shape.points[3] = [...p];
+    let shape = this.shape!, points = shape.points;
+    if (points[0][0] === points[3][0]) {
+      let p = points[1];
+      points[1] = [...points[3]];
+      points[3] = [...p];
+    }
+    if (points[0][0] != points[1][0]) {
+      shape.phi = Math.atan2(points[3][1] - points[0][1], points[3][0] - points[0][0]) * 180 / Math.PI;
+      shape.points = points.map(p => Util.rotate(p, shape.getCenter(), -shape.phi));
     }
   }
 }

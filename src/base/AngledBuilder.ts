@@ -38,9 +38,9 @@ export abstract class AngledBuilder<T extends AngledShape> extends ShapeBuilder<
 
 	plotShape(): void {
 		let shape = this.shape!;
-		this.processShape();
-		shape.zoom(ShapeBuilder.statics.ratio);
 		shape.points.push([...shape.points[0]]);
+		this.processShape();
+		shape.zoom(this.sd.ratio);
 		this.createElement(shape);
 		this.plotAngledShape();
 	}
@@ -59,7 +59,7 @@ export abstract class AngledBuilder<T extends AngledShape> extends ShapeBuilder<
 		polyline.discs?.forEach((_disc, index) => {
 			_disc
 				.fill(Color.GreenDisc)
-				.radius(ShapeBuilder.statics.discRadius)
+				.radius(this.sd.discRadius)
 				.addClass('seg-point')
 				.click((e: MouseEvent) => { e.stopPropagation(); })
 				.mousedown((e: MouseEvent) => {

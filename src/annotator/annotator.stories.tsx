@@ -11,7 +11,7 @@ const img2 = '/ic.png';
 // const img2 = 'https://en.systemgroup.net/wp-content/themes/sg/dist/images/logo.png';
 const categories = ['blueberry', 'strawberry', 'raspberry', 'apple', 'benana'];
 let p = new Polygon([[550, 224], [519, 222], [474, 261], [430, 341], [416, 383], [427, 399], [446, 414], [528, 396], [604, 372], [633, 325], [654, 313], [648, 282], [638, 231], [596, 208], [562, 208]], ['strawberry']);
-let r = new Rectangle([[698, 316], [698, 416], [817, 416], [817, 316]], ['blueberry']);
+let r = new Rectangle([[ 734, 292 ], [ 680, 377 ], [ 781, 440 ], [ 835, 355 ]], ['blueberry']);
 let c = new Circle([70, 90], 55, ['blueberry']);
 let e = new Ellipse([457, 114], 40, 80, ['raspberry']);
 let d = new Dot([ 123, 223], ['raspberry']);
@@ -63,9 +63,11 @@ export const ImageAnnotatorPrimary: FC = () => {
       }
       <ImageAnnotator
         setHandles={setHandles}
-        naturalSize={true}
+        naturalSize={false}
         imageUrl={img}
         shapes={shapes}
+        width={700}
+        height={400}
         onAdded={shape => setDialog({ show: true, shape })}
         onContextMenu={shape => setDialog({ show: true, shape })}
         onReady={annotator => {  }} />

@@ -43,7 +43,7 @@ export class DotBuilder extends ShapeBuilder<Dot> {
 
   plotShape(): void {
     let shape = this.shape!;
-    shape.zoom(ShapeBuilder.statics.ratio);
+    shape.zoom(this.sd.ratio);
     this.createElement(shape);
   }
 

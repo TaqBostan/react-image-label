@@ -13,13 +13,13 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     let director = getDirector();
     if (!shapes) return;
     let rectangles = shapes.filter(s => s instanceof Rectangle || s.type === 'rectangle')
-      .map(s => new Rectangle(s.points, s.categories));
+      .map(s => new Rectangle([...s.points], s.categories));
     let polygons = shapes.filter(s => s instanceof Polygon || s.type === 'polygon')
-      .map(s => new Polygon(s.points, s.categories));
+      .map(s => new Polygon([...s.points], s.categories));
     let circles = shapes.filter(s => s instanceof Circle || s.type === 'circle')
       .map(s => new Circle(s.centre, s.radius, s.categories));
     let ellipses = shapes.filter(s => s instanceof Ellipse || s.type === 'ellipse')
-      .map(s => new Ellipse(s.centre, s.radiusX, s.radiusY, s.categories));
+      .map(s => new Ellipse(s.centre, s.radiusX, s.radiusY, s.categories, s.phi || 0));
     let dots = shapes.filter(s => s instanceof Dot || s.type === 'dot')
       .map(s => new Dot(s.position, s.categories));
     if (rectangles.length > 0) director.plot(rectangles);
@@ -29,9 +29,9 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     if (dots.length > 0) director.plot(dots);
   }
 
-  const zoom = (factor: number) => {
+  const zoom = (factor: number, relative: boolean = true) => {
     let director = getDirector();
-    director.setSizeAndRatio(factor);
+    factor = director.setSizeAndRatio(factor, relative);
     director.zoom(factor);
   }
 
@@ -75,27 +75,23 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     svg.image(imageUrl, (ev: any) => {
       if (!ev?.target || !svg.node.innerHTML) return;
       let src1 = ev?.target.src, src2 = imageUrl;
-      if(src1.substring(src1.lastIndexOf('/') + 1) !== src2.substring(src2.lastIndexOf('/') + 1)) return;
-      let width = ev.target.naturalWidth, height = ev.target.naturalHeight, maxWidth = props.width, maxHeight = props.height;
-      svg.node.style.overflowY = 'scroll';
+      if (src1.substring(src1.lastIndexOf('/') + 1) !== src2.substring(src2.lastIndexOf('/') + 1)) return;
+      let naturalWidth = ev.target.naturalWidth, naturalHeight = ev.target.naturalHeight, maxWidth = props.width, maxHeight = props.height, ratio = 1;
+      svg.addClass('il-svg');
       Object.assign(container.style, {
-        width: (props.width || width) + 'px',
-        height: (props.height || height) + 'px',
-        overflow: 'hidden'
+        width: (props.width || naturalWidth) + 'px',
+        height: (props.height || naturalHeight) + 'px',
+        overflow: 'hidden',
+        backgroundColor: '#e6e6e6'
       });
       if (!props.naturalSize) {
         if (!maxWidth) maxWidth = container.scrollWidth;
         if (!maxHeight) maxHeight = container.scrollHeight;
-        if (maxWidth! / maxHeight! > ev.target.naturalWidth / ev.target.naturalHeight) {
-          height = Math.min(maxHeight!, ev.target.naturalHeight);
-          width = height * ev.target.naturalWidth / ev.target.naturalHeight;
-        }
-        else {
-          width = Math.min(maxWidth!, ev.target.naturalWidth);
-          height = width * ev.target.naturalHeight / ev.target.naturalWidth;
-        }
+        if (maxWidth! / maxHeight! > ev.target.naturalWidth / ev.target.naturalHeight) 
+          ratio = Math.min(maxHeight!, ev.target.naturalHeight) / naturalHeight;
+        else ratio = Math.min(maxWidth!, ev.target.naturalWidth) / naturalWidth;
       }
-      let statics = { width, height, ratio: width / ev.target.naturalWidth, discRadius: props.discRadius || 5 }
+      let statics = { width: naturalWidth, height: naturalHeight, ratio, discRadius: props.discRadius || 5 }
       Director.init(svg, statics, container);
       drawShapes(props.shapes);
       props.setHandles({ ...getHandles(), container });
@@ -109,7 +105,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   }, [props.onAdded, props.onContextMenu, props.onSelected]);
 
   useEffect(() => {
-    const onblur = () =>  svgContainer!.container.classList.remove('grabbable');
+    const onblur = () => svgContainer!.container.classList.remove('grabbable');
     const onkeydown = (e: KeyboardEvent) => e.key === 'Control' && svgContainer!.container.classList.add('grabbable');
     const keyup = (e: KeyboardEvent) => {
       if (e.key === 'Control') onblur();

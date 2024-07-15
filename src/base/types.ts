@@ -7,7 +7,6 @@ export type StaticData = { width: number, height: number, ratio: number, discRad
 
 export abstract class Shape {
   id: number;
-  phi: number = 0;
   getCenterWithOffset = (): Point => ({ X: 0, Y: 0 });
   static containerOffset: ArrayXY;
   abstract type: string;
@@ -17,7 +16,7 @@ export abstract class Shape {
   abstract output(ratio: number): Shape;
   abstract centerChanged(newCenter: ArrayXY): void;
 
-  constructor(public categories: string[] = []) {
+  constructor(public categories: string[] = [], public phi: number = 0) {
     this.id = 0;
   }
 
@@ -145,8 +144,8 @@ export class Polygon extends AngledShape {
 }
 
 export abstract class RoundShape extends Shape {
-  constructor(public centre: ArrayXY = [0, 0], public categories: string[] = []) {
-    super(categories);
+  constructor(public centre: ArrayXY = [0, 0], public categories: string[] = [], public phi: number = 0) {
+    super(categories, phi);
   }
   abstract get width(): number;
   abstract set width(w);
@@ -184,8 +183,8 @@ export class Circle extends RoundShape {
 
 export class Ellipse extends RoundShape {
   type: string = 'ellipse';
-  constructor(public centre: ArrayXY = [0, 0], public radiusX: number = 0, public radiusY: number = 0, public categories: string[] = []) {
-    super(centre, categories);
+  constructor(public centre: ArrayXY = [0, 0], public radiusX: number = 0, public radiusY: number = 0, public categories: string[] = [], public phi: number = 0) {
+    super(centre, categories, phi);
   }
   get width(): number { return 2 * this.radiusX; }
   set width(w: number) { this.radiusX = w / 2; }

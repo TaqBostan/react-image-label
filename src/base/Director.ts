@@ -148,14 +148,14 @@ export class Director {
     }
   }
 
-  getShapes = () => this.elements.map(el => el.shape.getOutput(ShapeBuilder.statics.ratio, this.container));
+  getShapes = () => this.elements.map(el => el.shape.getOutput(ShapeBuilder._sd.ratio, this.container));
   findShape = (id: number) => this.elements.find(el => el.shape.id === id)!.shape;
 
-  static init(svg: Svg, statics: StaticData, container: HTMLDivElement) {
-    svg.size(statics.width, statics.height);
+  static init(svg: Svg, sd: StaticData, container: HTMLDivElement) {
+    svg.size(sd.width * sd.ratio, sd.height * sd.ratio);
     Shape.containerOffset = [container.offsetLeft, container.offsetTop];
     ShapeBuilder._svg = svg;
-    ShapeBuilder.statics = statics;
+    ShapeBuilder._sd = sd;
     let instance = Director.instance = new Director(svg, container);
     container.onmousedown = (event: MouseEvent) => instance.drag_md(container, event);
     container.onwheel = (event: WheelEvent) => instance.mousewheel(event);
@@ -163,11 +163,11 @@ export class Director {
   }
 
   static setActions(onAdded?: (shape: Shape) => any, onContextMenu?: (shape: Shape) => any, onSelected?: (shape: Shape) => any) {
-    let ffun = (fun?: (shape: Shape) => any) => (shape: Shape) => 
-      fun?.(shape.getOutput(ShapeBuilder.statics.ratio, Director.instance.container))
-    Director.onAdded = ffun(onAdded);
-    Director.onContextMenu = ffun(onContextMenu);
-    Director.onSelected = ffun(onSelected);
+    let hoc = (fun?: (shape: Shape) => any) => (shape: Shape) => 
+      fun?.(shape.getOutput(ShapeBuilder._sd.ratio, Director.instance.container))
+    Director.onAdded = hoc(onAdded);
+    Director.onContextMenu = hoc(onContextMenu);
+    Director.onSelected = hoc(onSelected);
   }
 
   clear() {
@@ -185,16 +185,17 @@ export class Director {
     let parent = this.container;
     let scale = e.deltaY > 0 ? 0.8 : 1.25;
     let { scrollLeft, scrollTop } = parent;
-    this.setSizeAndRatio(scale);
+    this.setSizeAndRatio(scale, true);
     this.zoom(scale);
     parent.scrollLeft = Math.min(Math.max(scrollLeft * scale + (scale - 1) * (e.pageX - parent.offsetLeft), 0), parent.scrollWidth - parent.clientWidth);
     parent.scrollTop = Math.min(Math.max(scrollTop * scale + (scale - 1) * (e.pageY - parent.offsetTop), 0), parent.scrollHeight - parent.clientHeight);
   }
 
-  setSizeAndRatio(factor: number) {
-    ShapeBuilder.statics.ratio *= factor;
-    ShapeBuilder.statics.width *= factor;
-    ShapeBuilder.statics.height *= factor;
-    ShapeBuilder._svg.size(ShapeBuilder.statics.width, ShapeBuilder.statics.height);
+  setSizeAndRatio(factor: number, relative: boolean) {
+    let ratio = relative ? ShapeBuilder._sd.ratio * factor : factor;
+    factor = ratio / ShapeBuilder._sd.ratio;
+    ShapeBuilder._sd.ratio = ratio;
+    ShapeBuilder._svg.size(ShapeBuilder._sd.width * ratio, ShapeBuilder._sd.height * ratio);
+    return factor;
   }
 }

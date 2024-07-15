@@ -74,7 +74,7 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
 
   plotShape(): void {
     let shape = this.shape!;
-    shape.zoom(ShapeBuilder.statics.ratio);
+    shape.zoom(this.sd.ratio);
     this.createElement(shape);
   }
 
@@ -119,7 +119,7 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
   addDiscs(): void {
     let elem = this.element!;
     this.setPoints();
-    elem.discs = this.points.map(point => this.drawDisc(point[0], point[1], ShapeBuilder.statics.discRadius, Color.GreenDisc));
+    elem.discs = this.points.map(point => this.drawDisc(point[0], point[1], this.sd.discRadius, Color.GreenDisc));
     elem.connector = this.svg.polyline([...this.points, this.points[0]])
       .fill(Color.ShapeFill)
       .stroke({ color: Color.BlackLine, width: 1, opacity: 0.8, dasharray: "3,3" })
@@ -136,7 +136,7 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
   editShape_mm(e: MouseEvent) {
     if (this.dragIndex !== undefined) {
       if (e.buttons !== 1) return this.editShape_mu();
-      let elem = this.element!, discRadius = ShapeBuilder.statics.discRadius, phi = elem.shape.phi, oldCenter = elem.shape.getCenter();
+      let elem = this.element!, discRadius = this.sd.discRadius, phi = elem.shape.phi, oldCenter = elem.shape.getCenter();
       let [x, y] = Util.rotate([e.offsetX, e.offsetY], oldCenter, -phi);
       let prevIndex = this.dragIndex === 0 ? 3 : this.dragIndex - 1,
         nextIndex = this.dragIndex === 3 ? 0 : this.dragIndex + 1,

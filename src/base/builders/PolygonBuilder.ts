@@ -41,7 +41,7 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
         this.createElement(new Polygon());
       }
       let x = event.offsetX, y = event.offsetY;
-      let radius = PolygonBuilder.statics.discRadius + PolygonBuilder.statics.width / 150;
+      let radius = this.sd.discRadius + this.sd.width / 150;
       if (this.element.shape.points.length >= 3 &&
         Math.pow(this.element.shape.points[0][0] - x, 2) +
         Math.pow(this.element.shape.points[0][1] - y, 2) < Math.pow(radius, 2)) {
@@ -95,7 +95,7 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
     // Moves a vertex of the polyline
     if (this.dragIndex !== undefined) {
       if (e.buttons !== 1) return this.editShape_mu();
-      let discRadius = ShapeBuilder.statics.discRadius;
+      let discRadius = this.sd.discRadius;
       this.element!.shape.points[this.dragIndex] = [e.offsetX, e.offsetY];
       this.element!.discs[this.dragIndex].move(e.offsetX - discRadius, e.offsetY - discRadius);
       if (this.dragIndex === 0)
