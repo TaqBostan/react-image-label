@@ -7,7 +7,7 @@ import './index.css';
 
 const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   const { setHandles, svgContainer } = useSvgContainer();
-  const getDirector = () => Director.instance;
+  const getDirector = () => Director.instance!;
 
   const drawShapes = (shapes?: Shape[] | any[]) => {
     let director = getDirector();
@@ -109,7 +109,8 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     const onkeydown = (e: KeyboardEvent) => e.key === 'Control' && svgContainer!.container.classList.add('grabbable');
     const keyup = (e: KeyboardEvent) => {
       if (e.key === 'Control') onblur();
-      if (e.key === 'Delete') Director.instance.remove();
+      if (e.key === 'Delete') Director.instance?.remove();
+      if (e.key === 'Escape') Director.instance?.stopEdit();
     }
     if (svgContainer && props.imageUrl) {
       onload(svgContainer.svg, svgContainer.container, props.imageUrl);

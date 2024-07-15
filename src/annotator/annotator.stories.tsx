@@ -63,13 +63,14 @@ export const ImageAnnotatorPrimary: FC = () => {
       }
       <ImageAnnotator
         setHandles={setHandles}
-        naturalSize={false}
+        naturalSize={true}
         imageUrl={img}
         shapes={shapes}
         width={700}
         height={400}
         onAdded={shape => setDialog({ show: true, shape })}
         onContextMenu={shape => setDialog({ show: true, shape })}
+        onSelected={shape => setDialog({ show: true, shape })}
         onReady={annotator => {  }} />
       <div>{JSON.stringify(shapes, null, 2)}</div>
     </div>

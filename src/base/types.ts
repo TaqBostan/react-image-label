@@ -8,7 +8,6 @@ export type StaticData = { width: number, height: number, ratio: number, discRad
 export abstract class Shape {
   id: number;
   getCenterWithOffset = (): Point => ({ X: 0, Y: 0 });
-  static containerOffset: ArrayXY;
   abstract type: string;
   abstract labelPosition(): ArrayXY;
   abstract getCenter(): ArrayXY;
@@ -20,12 +19,13 @@ export abstract class Shape {
     this.id = 0;
   }
 
-  getOutput(ratio: number, parent: HTMLElement): Shape {
+  getOutput(ratio: number, svg: SVGSVGElement): Shape {
     let obj = this.output(ratio);
-    let center = Util.ArrayXYSum(this.getCenter(), Shape.containerOffset)
+    let center = this.getCenter()
+    let svgBox = svg.getBoundingClientRect();
     obj.id = this.id;
     obj.phi = Math.round(this.phi);
-    obj.getCenterWithOffset = () => ({ X: center[0] - parent.scrollLeft, Y: center[1] - parent.scrollTop })
+    obj.getCenterWithOffset = () => ({ X: center[0] + svgBox.x, Y: center[1] + svgBox.y })
     return obj;
   }
 

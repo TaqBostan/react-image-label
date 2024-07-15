@@ -2,6 +2,7 @@
   overflow-y: scroll;
   margin: 0 auto;
   display: block;
+  background-color: white;
 }
 
 .seg-point {

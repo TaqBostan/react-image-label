@@ -9,7 +9,7 @@ import EllipseBuilder from "./builders/EllipseBuilder";
 import { DotBuilder } from "./builders/DotBuilder";
 
 export class Director {
-  static instance: Director;
+  static instance?: Director;
   static onAdded: ((shape: Shape) => any) | undefined;
   static onContextMenu: ((shape: Shape) => any) | undefined;
   static onSelected: ((shape: Shape) => any) | undefined;
@@ -148,12 +148,11 @@ export class Director {
     }
   }
 
-  getShapes = () => this.elements.map(el => el.shape.getOutput(ShapeBuilder._sd.ratio, this.container));
+  getShapes = () => this.elements.map(el => el.shape.getOutput(ShapeBuilder._sd.ratio, this.svg.node));
   findShape = (id: number) => this.elements.find(el => el.shape.id === id)!.shape;
 
   static init(svg: Svg, sd: StaticData, container: HTMLDivElement) {
     svg.size(sd.width * sd.ratio, sd.height * sd.ratio);
-    Shape.containerOffset = [container.offsetLeft, container.offsetTop];
     ShapeBuilder._svg = svg;
     ShapeBuilder._sd = sd;
     let instance = Director.instance = new Director(svg, container);
@@ -164,7 +163,7 @@ export class Director {
 
   static setActions(onAdded?: (shape: Shape) => any, onContextMenu?: (shape: Shape) => any, onSelected?: (shape: Shape) => any) {
     let hoc = (fun?: (shape: Shape) => any) => (shape: Shape) => 
-      fun?.(shape.getOutput(ShapeBuilder._sd.ratio, Director.instance.container))
+      fun?.(shape.getOutput(ShapeBuilder._sd.ratio, ShapeBuilder._svg.node))
     Director.onAdded = hoc(onAdded);
     Director.onContextMenu = hoc(onContextMenu);
     Director.onSelected = hoc(onSelected);
@@ -178,6 +177,7 @@ export class Director {
     ShapeBuilder._svg?.clear();
     this.elements = [];
     this.builders = [];
+    Director.instance = undefined;
   }
 
   mousewheel(e: WheelEvent) {
