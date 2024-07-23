@@ -162,7 +162,7 @@ export class Director {
   }
 
   static setActions(onAdded?: (shape: Shape) => any, onContextMenu?: (shape: Shape) => any, onSelected?: (shape: Shape) => any) {
-    let hoc = (fun?: (shape: Shape) => any) => (shape: Shape) => 
+    let hoc = (fun?: (shape: Shape) => any) => (shape: Shape) =>
       fun?.(shape.getOutput(ShapeBuilder._sd.ratio, ShapeBuilder._svg.node))
     Director.onAdded = hoc(onAdded);
     Director.onContextMenu = hoc(onContextMenu);
@@ -181,14 +181,16 @@ export class Director {
   }
 
   mousewheel(e: WheelEvent) {
-    e.preventDefault();
-    let parent = this.container;
-    let scale = e.deltaY > 0 ? 0.8 : 1.25;
-    let { scrollLeft, scrollTop } = parent;
-    this.setSizeAndRatio(scale, true);
-    this.zoom(scale);
-    parent.scrollLeft = Math.min(Math.max(scrollLeft * scale + (scale - 1) * (e.pageX - parent.offsetLeft), 0), parent.scrollWidth - parent.clientWidth);
-    parent.scrollTop = Math.min(Math.max(scrollTop * scale + (scale - 1) * (e.pageY - parent.offsetTop), 0), parent.scrollHeight - parent.clientHeight);
+    if (e.ctrlKey) {
+      e.preventDefault();
+      let parent = this.container;
+      let scale = e.deltaY > 0 ? 0.8 : 1.25;
+      let { scrollLeft, scrollTop } = parent;
+      this.setSizeAndRatio(scale, true);
+      this.zoom(scale);
+      parent.scrollLeft = Math.min(Math.max(scrollLeft * scale + (scale - 1) * (e.pageX - parent.offsetLeft), 0), parent.scrollWidth - parent.clientWidth);
+      parent.scrollTop = Math.min(Math.max(scrollTop * scale + (scale - 1) * (e.pageY - parent.offsetTop), 0), parent.scrollHeight - parent.clientHeight);
+    }
   }
 
   setSizeAndRatio(factor: number, relative: boolean) {
