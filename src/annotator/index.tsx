@@ -73,13 +73,13 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
 
   const onload = React.useCallback((svg: Svg, container: HTMLDivElement, imageUrl: string) => {
     svg.image(imageUrl, (ev: any) => {
-      if (!ev?.target || !svg.node.innerHTML) {
+      if (!ev?.target || !svg.node.innerHTML) return
+      let target = ev!.target.testRil || ev!.target, src1 = target.src, src2 = imageUrl;
+      if (src1.substring(src1.lastIndexOf('/') + 1) !== src2.substring(src2.lastIndexOf('/') + 1)) {
         Director.instance?.clear();
         return;
       }
-      let src1 = ev?.target.src, src2 = imageUrl;
-      if (src1.substring(src1.lastIndexOf('/') + 1) !== src2.substring(src2.lastIndexOf('/') + 1)) return;
-      let naturalWidth = ev.target.naturalWidth, naturalHeight = ev.target.naturalHeight, maxWidth = props.width, maxHeight = props.height, ratio = 1;
+      let naturalWidth = target.naturalWidth, naturalHeight = target.naturalHeight, maxWidth = props.width, maxHeight = props.height, ratio = 1;
       svg.addClass('il-svg');
       Object.assign(container.style, {
         width: (props.width || naturalWidth) + 'px',
@@ -90,9 +90,9 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
       if (!props.naturalSize) {
         if (!maxWidth) maxWidth = container.scrollWidth;
         if (!maxHeight) maxHeight = container.scrollHeight;
-        if (maxWidth! / maxHeight! > ev.target.naturalWidth / ev.target.naturalHeight)
-          ratio = Math.min(maxHeight!, ev.target.naturalHeight) / naturalHeight;
-        else ratio = Math.min(maxWidth!, ev.target.naturalWidth) / naturalWidth;
+        if (maxWidth! / maxHeight! > target.naturalWidth / target.naturalHeight)
+          ratio = Math.min(maxHeight!, target.naturalHeight) / naturalHeight;
+        else ratio = Math.min(maxWidth!, target.naturalWidth) / naturalWidth;
       }
       let statics = { width: naturalWidth, height: naturalHeight, ratio, discRadius: props.discRadius || 5 }
       Director.init(svg, statics, container);
