@@ -73,7 +73,10 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
 
   const onload = React.useCallback((svg: Svg, container: HTMLDivElement, imageUrl: string) => {
     svg.image(imageUrl, (ev: any) => {
-      if (!ev?.target || !svg.node.innerHTML) return;
+      if (!ev?.target || !svg.node.innerHTML) {
+        Director.instance?.clear();
+        return;
+      }
       let src1 = ev?.target.src, src2 = imageUrl;
       if (src1.substring(src1.lastIndexOf('/') + 1) !== src2.substring(src2.lastIndexOf('/') + 1)) return;
       let naturalWidth = ev.target.naturalWidth, naturalHeight = ev.target.naturalHeight, maxWidth = props.width, maxHeight = props.height, ratio = 1;
@@ -87,7 +90,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
       if (!props.naturalSize) {
         if (!maxWidth) maxWidth = container.scrollWidth;
         if (!maxHeight) maxHeight = container.scrollHeight;
-        if (maxWidth! / maxHeight! > ev.target.naturalWidth / ev.target.naturalHeight) 
+        if (maxWidth! / maxHeight! > ev.target.naturalWidth / ev.target.naturalHeight)
           ratio = Math.min(maxHeight!, ev.target.naturalHeight) / naturalHeight;
         else ratio = Math.min(maxWidth!, ev.target.naturalWidth) / naturalWidth;
       }
