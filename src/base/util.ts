@@ -9,4 +9,6 @@ export default class Util {
     let dx = pos[0] - center[0], dy = pos[1] - center[1], fi = teta * Math.PI / 180;
     return [dx * Math.cos(fi) - dy * Math.sin(fi) + center[0], dx * Math.sin(fi) + dy * Math.cos(fi) + center[1]];
   }
+
+  static fileName = (url: string | null) => url?.substring(url.lastIndexOf('/') + 1) || '';
 }

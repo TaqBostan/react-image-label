@@ -2,6 +2,7 @@ import React, { useEffect, FC } from 'react';
 import { SvgContainer, useSvgContainer, Svg } from 'react-svgdotjs';
 import { Director } from '../base/Director';
 import { Shape, Polygon, Rectangle, Circle, Ellipse, Dot } from '../base/types';
+import Util from '../base/util';
 import { AnnotatorHandles } from './hook';
 import './index.css';
 
@@ -72,11 +73,15 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   })
 
   const onload = React.useCallback((svg: Svg, container: HTMLDivElement, imageUrl: string) => {
+    container.setAttribute('data-img', Util.fileName(imageUrl))
     svg.image(imageUrl, (ev: any) => {
-      if (!ev?.target || !svg.node.innerHTML) return
-      let target = ev!.target.testRil || ev!.target, src1 = target.src, src2 = imageUrl;
-      if (src1.substring(src1.lastIndexOf('/') + 1) !== src2.substring(src2.lastIndexOf('/') + 1)) {
-        Director.instance?.clear();
+      if (!ev?.target || !svg.node.innerHTML) return;
+      let target = ev!.target.testRil || ev!.target, src1 = container.getAttribute('data-img')!, src2 = imageUrl;
+      if (src1 !== Util.fileName(src2)) {
+        for(let i = 0; i < svg.node.children.length; i++) {
+          let child = svg.node.children[i], href = Util.fileName(child.getAttribute('href'));
+          if(href && src1 !== href) child.remove();
+        }
         return;
       }
       let naturalWidth = target.naturalWidth, naturalHeight = target.naturalHeight, maxWidth = props.width, maxHeight = props.height, ratio = 1;

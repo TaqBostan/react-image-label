@@ -4,9 +4,10 @@ import { Circle, Shape, Point, Polygon, Rectangle, Ellipse, Dot } from '../base/
 import './annotator.stories.css';
 import { useImageAnnotator } from './hook';
 
-// const imgUrl = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
-const imgUrl = '/Fruit.jpeg';
-const img2 = '/ic.png';
+const img2 = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
+const imgUrl = 'https://github.com/TaqBostan/content/blob/main/labeled-2.png?raw=true';
+// const imgUrl = '/Fruit.jpeg';
+// const img2 = '/ic.png';
 // const img1 = 'https://svgjs.dev/docs/3.0/assets/images/logo-svg-js-01d-128.png';
 // const img2 = 'https://en.systemgroup.net/wp-content/themes/sg/dist/images/logo.png';
 const categories = ['blueberry', 'strawberry', 'raspberry', 'apple', 'benana'];
@@ -40,10 +41,23 @@ export const ImageAnnotatorPrimary: FC = () => {
       hideDialog();
     }
   }
+  const changeImage =() =>{
+    if(img === imgUrl)
+      {
+        setImg(img2);
+        setShapes([c]);
+      }
+    else if(img===img2)
+      {
+        setImg(imgUrl);
+        setShapes([r, p, c, e, d]);
+      }
+  }
+
 
   return (
     <div>
-      <button onClick={() => { setImg(img2); }}>Change image</button>
+      <button onClick={() => { changeImage(); }}>Change image</button>
       <button onClick={() => { annotator!.drawRectangle() }}>Add Rectangle</button>
       <button onClick={() => { annotator!.drawPolygon() }}>Add Polygon</button>
       <button onClick={() => { annotator!.drawCircle() }}>Add Circle</button>
