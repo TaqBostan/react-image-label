@@ -16,7 +16,7 @@ export type AnnotatorHandles = {
   stopEdit: () => void;
   edit: (id: number) => void;
   delete: (id: number) => void;
-  updateCategories: (id: number, categories: string[]) => void;
+  updateCategories: (id: number, categories: string[], color?: string) => void;
   zoom: (factor: number, relative?: boolean) => void;
   getShapes: () => Shape[];
   container: HTMLDivElement;

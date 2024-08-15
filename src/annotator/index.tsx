@@ -14,15 +14,15 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     let director = getDirector();
     if (!shapes) return;
     let rectangles = shapes.filter(s => s instanceof Rectangle || s.type === 'rectangle')
-      .map(s => new Rectangle([...s.points], s.categories));
+      .map(s => new Rectangle([...s.points], s.categories, s.color));
     let polygons = shapes.filter(s => s instanceof Polygon || s.type === 'polygon')
-      .map(s => new Polygon([...s.points], s.categories));
+      .map(s => new Polygon([...s.points], s.categories, s.color));
     let circles = shapes.filter(s => s instanceof Circle || s.type === 'circle')
-      .map(s => new Circle(s.centre, s.radius, s.categories));
+      .map(s => new Circle(s.centre, s.radius, s.categories, s.color));
     let ellipses = shapes.filter(s => s instanceof Ellipse || s.type === 'ellipse')
-      .map(s => new Ellipse(s.centre, s.radiusX, s.radiusY, s.categories, s.phi || 0));
+      .map(s => new Ellipse(s.centre, s.radiusX, s.radiusY, s.categories, s.phi || 0, s.color));
     let dots = shapes.filter(s => s instanceof Dot || s.type === 'dot')
-      .map(s => new Dot(s.position, s.categories));
+      .map(s => new Dot(s.position, s.categories, s.color));
     if (rectangles.length > 0) director.plot(rectangles);
     if (polygons.length > 0) director.plot(polygons);
     if (circles.length > 0) director.plot(circles);
@@ -67,7 +67,8 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     stopEdit: () => getDirector().stopEdit(),
     edit: (id: number) => getDirector().edit(id),
     delete: (id: number) => getDirector().removeById(id),
-    updateCategories: (id: number, categories: string[]) => getDirector().updateCategories(id, categories),
+    updateCategories: (id: number, categories: string[], color?: string) => 
+      getDirector().updateCategories(id, categories, color),
     zoom,
     getShapes: getDirector().getShapes
   })

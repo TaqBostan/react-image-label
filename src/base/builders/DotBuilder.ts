@@ -81,7 +81,8 @@ export class DotBuilder extends ShapeBuilder<Dot> {
   }
 
   stopEditShape(elem: IDot): void {
-    this.setOptions(elem, elem.shape.categories);
+		let shape = elem.shape;
+    this.setOptions(elem, shape.categories, shape.color);
   }
 
   vertices(x: number, y: number, w: number, h: number) : ArrayXY[] {

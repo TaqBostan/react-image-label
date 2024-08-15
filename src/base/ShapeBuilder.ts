@@ -44,19 +44,20 @@ export abstract class ShapeBuilder<T extends Shape> {
   abstract ofType<S extends Shape>(shape: S): boolean;
 
   basePlotShape() {
+		let shape = this.shape!;
     this.plotShape();
     this.rotate();
-    this.setOptions(this.element!, this.element!.shape.categories);
+    this.setOptions(this.element!, shape.categories, shape.color);
   }
 
   labeledStyle(element: ElementWithExtra, labeled: boolean) {
     element.stroke({ color: labeled ? Color.WhiteLine : Color.RedLine });
   }
 
-  setOptions(element: ElementWithExtra, categories: string[]) {
+  setOptions(element: ElementWithExtra, categories: string[], color?: string) {
     let labeled = categories.length > 0;
     this.labeledStyle(element, labeled);
-
+    element.fill(color || Color.ShapeFill);
     if (element.categoriesPlain) element.categoriesPlain.remove();
     if (element.categoriesRect) element.categoriesRect.remove();
     if (labeled) {
@@ -198,7 +199,7 @@ export abstract class ShapeBuilder<T extends Shape> {
       }
       this.movePath?.plot(this.moveIcon(elem.shape.getCenter()));
     }
-    else this.setOptions(elem, elem.shape.categories);
+    else this.setOptions(elem, elem.shape.categories, elem.shape.color);
     this.rotate(elem);
   }
 
@@ -212,10 +213,11 @@ export abstract class ShapeBuilder<T extends Shape> {
   }
 
   stopEditShape(elem: ElementWithExtra): void {
+		let shape = elem.shape;
     elem.discs?.forEach(_disc => 
       _disc.fill(Color.BlackDisc).size(4).removeClass('seg-point').off('click').off('mousedown').off('mouseup')
     );
-    this.setOptions(elem, elem.shape.categories);
+    this.setOptions(elem, shape.categories, shape.color);
   }
 
   edit(): void {

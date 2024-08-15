@@ -163,12 +163,13 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
   }
 
   stopEditShape(ellipse: IlEllipse): void {
+		let shape = ellipse.shape;
     ellipse.discs?.forEach((_disc, index) => {
       this.dragIndex = undefined;
       _disc.remove();
     });
     ellipse.discs = [];
     ellipse.connector!.remove();
-    this.setOptions(ellipse, ellipse.shape.categories);
+    this.setOptions(ellipse, shape.categories, shape.color);
   }
 }

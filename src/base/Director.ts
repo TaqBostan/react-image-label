@@ -45,8 +45,8 @@ export class Director {
 
   getElement = (id: number) => this.elements.find(p => p.shape.id === id)!;
 
-  setOptions(element: ElementWithExtra, categories: string[]) {
-    this.getBuilder(element.shape).setOptions(element, categories);
+  setOptions(element: ElementWithExtra, categories: string[], color?: string) {
+    this.getBuilder(element.shape).setOptions(element, categories, color);
   }
 
   plot(shapes: Shape[]): void {
@@ -98,12 +98,13 @@ export class Director {
     }
   }
 
-  updateCategories(id: number, categories: string[]) {
+  updateCategories(id: number, categories: string[], color?: string) {
     let elem = this.getElement(id);
     if (!elem) return;
     elem.shape.categories = categories;
+    elem.shape.color = color;
     let builder = this.getBuilder(elem.shape);
-    if (!elem.editing) builder.setOptions(elem, categories);
+    if (!elem.editing) builder.setOptions(elem, categories, color);
   }
 
   removeById(id: number) {

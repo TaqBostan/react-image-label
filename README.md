@@ -87,7 +87,7 @@ Below is a list of all handles:
 | `stop` | `() => void` | Stops draw/edit/drag mode |
 | `edit` | `(id: number) => void` | The annotation identified by `id` can be edited and dragged |
 | `stopEdit` | `() => void` | Stops editing and dragging |
-| `updateCategories` | `(id: number, categories: string[]) => void` | Updates the categories associated with the annotation identified by `id` |
+| `updateCategories` | `(id: number, categories: string[], color?: string) => void` | Updates the categories associated with the annotation identified by `id` |
 | `zoom` | `(factor: number) => void` | Multiplies the dimensions by `factor` |
 | `getShapes` | `() => Shape[]` | Gets all annotations ([shapes](#shapes)) |
 | `container` | `HTMLDivElement` | The `div` wrapping the `SVG` |
@@ -121,11 +121,11 @@ The data models for all shapes are listed below:
 
 | Shape | Data Model | `type` Value |
 |---|---|---|
-| `Circle` | `{ id: number, centre: [number, number], radius: number, categories: string[], type: string }` | circle |
-| `Ellipse` | `{ id: number, centre: [number, number], radiusX: number, radiusY: number, phi: number, categories: string[], type: string }` |ellipse |
-| `Rectangle` | `{ id: number, points: [number, number][], phi: number, categories: string[], type: string }` | rectangle |
-| `Polygon` | `{ id: number, points: [number, number][], categories: string[], type: string }` | polygon |
-| `Dot` | `{ id: number, position: [number, number], categories: string[], type: string }` | dot |
+| `Circle` | `{ id: number, centre: [number, number], radius: number, categories: string[], type: string, color: string }` | circle |
+| `Ellipse` | `{ id: number, centre: [number, number], radiusX: number, radiusY: number, phi: number, categories: string[], type: string, color: string }` |ellipse |
+| `Rectangle` | `{ id: number, points: [number, number][], phi: number, categories: string[], type: string, color: string }` | rectangle |
+| `Polygon` | `{ id: number, points: [number, number][], categories: string[], type: string, color: string }` | polygon |
+| `Dot` | `{ id: number, position: [number, number], categories: string[], type: string, color: string }` | dot |
 
 ## Contributing
 
