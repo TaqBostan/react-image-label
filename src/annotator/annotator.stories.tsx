@@ -4,8 +4,8 @@ import { Circle, Shape, Point, Polygon, Rectangle, Ellipse, Dot } from '../base/
 import './annotator.stories.css';
 import { useImageAnnotator } from './hook';
 
-const img2 = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
-const imgUrl = 'https://raw.githubusercontent.com/TaqBostan/content/main/Fruit.jpeg';
+const img2 = '/ic.png';
+const imgUrl = '/Fruit.jpeg';
 // const imgUrl = '/Fruit.jpeg';
 // const img2 = '/ic.png';
 // const img1 = 'https://svgjs.dev/docs/3.0/assets/images/logo-svg-js-01d-128.png';

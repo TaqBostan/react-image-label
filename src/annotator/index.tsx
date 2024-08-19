@@ -74,10 +74,9 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   })
 
   const onload = React.useCallback((svg: Svg, container: HTMLDivElement, imageUrl: string) => {
-    container.setAttribute('data-img', Util.fileName(imageUrl))
-    svg.image(imageUrl, (ev: any) => {
+    let onloaded = (ev: any) => {
       if (!ev?.target || !svg.node.innerHTML) return;
-      let target = ev!.target.testRil || ev!.target, src1 = container.getAttribute('data-img')!, src2 = imageUrl;
+      let target = ev!.detail?.testRil || ev!.target, src1 = container.getAttribute('data-img')!, src2 = imageUrl;
       if (src1 !== Util.fileName(src2)) {
         for(let i = 0; i < svg.node.children.length; i++) {
           let child = svg.node.children[i], href = Util.fileName(child.getAttribute('href'));
@@ -105,7 +104,10 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
       drawShapes(props.shapes);
       props.setHandles({ ...getHandles(), container });
       props.onReady?.({ ...getHandles(), container });
-    }).size('100%', '100%').attr('onmousedown', 'return false').attr('oncontextmenu', 'return false');
+    }
+    container.setAttribute('data-img', Util.fileName(imageUrl))
+    var image = svg.image(imageUrl, onloaded).size('100%', '100%').attr('onmousedown', 'return false').attr('oncontextmenu', 'return false');
+    image.node.addEventListener('testEvent', onloaded)
   }, [props.width, props.height, props.shapes]);
 
   useEffect(() => {
