@@ -226,6 +226,7 @@ it('load shapes', () => {
   let container =_annotator.container.children[0] as HTMLDivElement;
   let svg = _annotator.container.querySelector('svg')!;
 
+  //#region elements
   let polylines = svg.querySelectorAll('polyline');
   let discs = svg.querySelectorAll('circle[r="2"]');
   let ellipses = svg.querySelectorAll('ellipse');
@@ -233,6 +234,7 @@ it('load shapes', () => {
   expect(polylines.length).toBe(6);
   expect(discs.length).toBe(16);
   expect(ellipses.length).toBe(4);
+  //#endregion
 
   //#region rect1
   let rect1 = polylines[0];
