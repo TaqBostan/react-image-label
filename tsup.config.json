@@ -6,6 +6,6 @@
     "injectStyle": true,
     "target": "es2021",
     "entry": [
-      "src/index.ts", "!src/**/*.stories.tsx", "!src/**/*.stories.css"
+      "src/index.ts", "!src/**/*.stories.tsx", "!src/**/*.stories.css", "!src/test/**"
     ]
    }
