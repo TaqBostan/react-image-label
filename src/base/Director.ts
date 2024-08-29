@@ -102,9 +102,9 @@ export class Director {
     let elem = this.getElement(id);
     if (!elem) return;
     elem.shape.categories = categories;
-    elem.shape.color = color;
+    if(color !== undefined) elem.shape.color = color;
     let builder = this.getBuilder(elem.shape);
-    if (!elem.editing) builder.setOptions(elem, categories, color);
+    if (!elem.editing) builder.setOptions(elem, categories, elem.shape.color);
   }
 
   removeById(id: number) {

@@ -247,7 +247,7 @@ it('load shapes', () => {
 
   expect(rect1).toHaveAttribute('fill', '#27f17640');
   expect(rect1).toHaveAttribute('points', '150,50 150,100 200,100 200,50 150,50');
-  expect(rect1).toHaveAttribute('stroke', '#ffffff');
+  expect(rect1).toHaveAttribute('stroke', '#27f176');
   expect(rect1).toHaveAttribute('stroke-opacity', '0.7');
   expect(rect1).toHaveAttribute('stroke-width', '2');
   expect(rect1).toHaveAttribute('transform', 'rotate(0,175,75)');
@@ -266,7 +266,7 @@ it('load shapes', () => {
 
   expect(rect2).toHaveAttribute('fill', 'red');
   expect(rect2).toHaveAttribute('points', '250,150 250,200 300,200 300,150 250,150');
-  expect(rect2).toHaveAttribute('stroke', '#ffffff');
+  expect(rect2).toHaveAttribute('stroke', 'red');
   expect(rect2).toHaveAttribute('stroke-opacity', '0.7');
   expect(rect2).toHaveAttribute('stroke-width', '2');
   expect(rect2).toHaveAttribute('transform', 'rotate(0,275,175)');
@@ -285,7 +285,7 @@ it('load shapes', () => {
 
   expect(polyline).toHaveAttribute('fill', '#27f17640');
   expect(polyline).toHaveAttribute('points', '50,50 50,100 75,100 75,120 90,120 90,150 120,150 120,50 50,50');
-  expect(polyline).toHaveAttribute('stroke', '#ffffff');
+  expect(polyline).toHaveAttribute('stroke', '#27f176');
   expect(polyline).toHaveAttribute('stroke-opacity', '0.7');
   expect(polyline).toHaveAttribute('stroke-width', '2');
   expect(polyline).not.toHaveAttribute('transform');
@@ -332,7 +332,7 @@ it('load shapes', () => {
   expect(ellipse).toHaveAttribute('cy', '150');
   expect(ellipse).toHaveAttribute('rx', '60');
   expect(ellipse).toHaveAttribute('ry', '40');
-  expect(ellipse).toHaveAttribute('stroke', '#ffffff');
+  expect(ellipse).toHaveAttribute('stroke', '#27f176');
   expect(ellipse).toHaveAttribute('stroke-opacity', '0.7');
   expect(ellipse).toHaveAttribute('stroke-width', '2');
   expect(ellipse).toHaveAttribute('transform', 'rotate(0,350,150)');

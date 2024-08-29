@@ -11,4 +11,29 @@ export default class Util {
   }
 
   static fileName = (url: string | null) => url?.substring(url.lastIndexOf('/') + 1) || '';
+
+  static parseColor = (str: string) => {
+    let colors: number[];
+    if (str[0] === "#") {
+      str = str.substring(1, str.length >= 7 ? 7 : 4);
+      var collen = str.length / 3;
+      var fact = [17, 1][collen - 1];
+      colors = [
+        Math.round(parseInt(str.substring(0, collen), 16) * fact),
+        Math.round(parseInt(str.substring(collen, 2 * collen), 16) * fact),
+        Math.round(parseInt(str.substring(2 * collen, 3 * collen), 16) * fact)
+      ];
+    }
+    else colors = str.split("(")[1].split(")")[0].split(",").map(x => +x);
+    if (colors.length < 4) colors.push(1);
+    return colors;
+  }
+
+  static removeOpacity = (color: string) => {
+    if (color[0] === "#" || color.startsWith('rgb')) {
+      let rgba = Util.parseColor(color);
+      return `rgb(${rgba[0]},${rgba[1]},${rgba[2]})`
+    }
+    else return color;
+  }
 }

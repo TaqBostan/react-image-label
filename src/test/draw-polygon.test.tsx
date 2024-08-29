@@ -122,6 +122,6 @@ it('draw polygon', () => {
   
   expect(polyline).not.toHaveClass('grabbable');
   expect(polyline).toHaveAttribute('fill', "blue");
-  expect(polyline).toHaveAttribute('stroke', "#ffffff");
+  expect(polyline).toHaveAttribute('stroke', "blue");
   //#endregion
 });

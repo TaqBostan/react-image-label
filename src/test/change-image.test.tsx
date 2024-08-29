@@ -89,7 +89,7 @@ it('change image', () => {
 
   expect(rect1).toHaveAttribute('fill', '#27f17640');
   expect(rect1).toHaveAttribute('points', '131.25,43.75 131.25,87.5 175,87.5 175,43.75 131.25,43.75');
-  expect(rect1).toHaveAttribute('stroke', '#ffffff');
+  expect(rect1).toHaveAttribute('stroke', '#27f176');
   expect(rect1).toHaveAttribute('stroke-opacity', '0.7');
   expect(rect1).toHaveAttribute('stroke-width', '2');
   expect(rect1).toHaveAttribute('transform', 'rotate(0,153.125,65.625)');

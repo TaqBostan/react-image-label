@@ -24,7 +24,7 @@ export abstract class Shape {
     let center = this.getCenter()
     let svgBox = svg.getBoundingClientRect();
     obj.id = this.id;
-    obj.color = this.color;
+    if(this.color) obj.color = this.color;
     obj.phi = Math.round(this.phi);
     obj.getCenterWithOffset = () => ({ X: center[0] + svgBox.x, Y: center[1] + svgBox.y })
     return obj;

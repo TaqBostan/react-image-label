@@ -1,6 +1,7 @@
 import { Svg } from "react-svgdotjs";
 import { Shape, ElementWithExtra, Color, Point, StaticData } from "./types";
 import { ArrayXY, Path, Element } from '@svgdotjs/svg.js'
+import Util from "./util";
 
 export abstract class ShapeBuilder<T extends Shape> {
   static _svg: Svg;
@@ -50,13 +51,13 @@ export abstract class ShapeBuilder<T extends Shape> {
     this.setOptions(this.element!, shape.categories, shape.color);
   }
 
-  labeledStyle(element: ElementWithExtra, labeled: boolean) {
-    element.stroke({ color: labeled ? Color.WhiteLine : Color.RedLine });
+  labeledStyle(element: ElementWithExtra, labeled: boolean, color?: string) {
+    element.stroke({ color: color ? Util.removeOpacity(color) : (labeled ? Color.WhiteLine : Color.RedLine) });
   }
 
   setOptions(element: ElementWithExtra, categories: string[], color?: string) {
     let labeled = categories.length > 0;
-    this.labeledStyle(element, labeled);
+    this.labeledStyle(element, labeled, color);
     element.fill(color || Color.ShapeFill);
     if (element.categoriesPlain) element.categoriesPlain.remove();
     if (element.categoriesRect) element.categoriesRect.remove();

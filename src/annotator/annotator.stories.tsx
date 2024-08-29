@@ -11,11 +11,11 @@ const imgUrl = '/Fruit.jpeg';
 // const img1 = 'https://svgjs.dev/docs/3.0/assets/images/logo-svg-js-01d-128.png';
 // const img2 = 'https://en.systemgroup.net/wp-content/themes/sg/dist/images/logo.png';
 const categories = ['blueberry', 'strawberry', 'raspberry', 'apple', 'benana'];
-let p = new Polygon([[550, 224], [519, 222], [474, 261], [430, 341], [416, 383], [427, 399], [446, 414], [528, 396], [604, 372], [633, 325], [654, 313], [648, 282], [638, 231], [596, 208], [562, 208]], ['strawberry'], "#27f17640");
-let r = new Rectangle([[ 734, 292 ], [ 680, 377 ], [ 781, 440 ], [ 835, 355 ]], ['blueberry'], "#27f17640");
-let c = new Circle([70, 90], 55, ['blueberry']);
-let e = new Ellipse([457, 114], 40, 80, ['raspberry'], 0, "#27f17640");
-let d = new Dot([ 123, 223], ['raspberry'], "#27f17640");
+let p = new Polygon([[550, 224], [519, 222], [474, 261], [430, 341], [416, 383], [427, 399], [446, 414], [528, 396], [604, 372], [633, 325], [654, 313], [648, 282], [638, 231], [596, 208], [562, 208]], ['strawberry'], "#27fe7640");
+let r = new Rectangle([[ 734, 292 ], [ 680, 377 ], [ 781, 440 ], [ 835, 355 ]], ['blueberry'], "rgba(255,255,255,0.4)");
+let c = new Circle([70, 90], 55, ['blueberry'], "rgba(0,0,0,0.4)");
+let e = new Ellipse([457, 114], 40, 80, ['raspberry'], 0, "#0004");
+let d = new Dot([ 123, 223], ['raspberry'], "rgba(0,0,0,0.4)");
 let rawShapes = [
   { type: 'rectangle', categories: ["class 3"], points: [[150, 50], [200, 50], [200, 100], [150, 100]], color: "#27f17640" },
   { type: 'polygon', categories: ["class 1", "class 2"], points: [[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]], color: "#27f17640" },
@@ -37,7 +37,7 @@ export const ImageAnnotatorPrimary: FC = () => {
   const hideDialog = () => setDialog({ show: false, shape: undefined });
   const hideAndUpdateCategories = () => {
     if (dialog.show) {
-      annotator!.updateCategories(dialog.shape!.id, dialog.shape!.categories, "#27f17640");
+      annotator!.updateCategories(dialog.shape!.id, dialog.shape!.categories, "#0004");
       hideDialog();
     }
   }
