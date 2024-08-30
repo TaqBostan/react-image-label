@@ -129,6 +129,15 @@ it('draw rectangle with categories', () => {
   expect(parseInt(svg.getAttribute('width')!)).toBe(896);
   //#endregion
 
+  //#region pan
+  fireEvent(container, new FakeMouseEvent('mousedown', { bubbles: true, ctrlKey: true, buttons: 1, clientX: 200, clientY: 200 }))
+  fireEvent(container, new FakeMouseEvent('mousemove', { bubbles: true, ctrlKey: true, buttons: 1, clientX: 100, clientY: 50 }))
+  fireEvent(container, new FakeMouseEvent('mouseup', { bubbles: true, ctrlKey: true, buttons: 1, clientX: 100, clientY: 50 }))
+
+  expect(container.scrollLeft).toBe(100)
+  expect(container.scrollTop).toBe(150)
+  //#endregion
+
   //#region getShapes
   let shapes = annotator.getShapes();
 

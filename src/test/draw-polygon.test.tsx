@@ -67,6 +67,15 @@ it('draw polygon', () => {
   expect(svg).toHaveAttribute('width', '1750');
   //#endregion
 
+  //#region pan
+  fireEvent(container, new FakeMouseEvent('mousedown', { bubbles: true, ctrlKey: true, buttons: 1, clientX: 200, clientY: 200 }))
+  fireEvent(container, new FakeMouseEvent('mousemove', { bubbles: true, ctrlKey: true, buttons: 1, clientX: 100, clientY: 50 }))
+  fireEvent(container, new FakeMouseEvent('mouseup', { bubbles: true, ctrlKey: true, buttons: 1, clientX: 100, clientY: 50 }))
+
+  expect(container.scrollLeft).toBe(100)
+  expect(container.scrollTop).toBe(150)
+  //#endregion
+
   //#region draw
   let points = [[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]];
   let originalPoints = [[40, 40], [40, 80], [60, 80], [60, 96], [72, 96], [72, 120], [96, 120], [96, 40]];
