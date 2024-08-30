@@ -56,24 +56,46 @@ it('draw polygon', () => {
   let container = _annotator.container.children[0] as HTMLDivElement;
   let svg = _annotator.container.querySelector('svg')!;
   let annotator = res.result.current.annotator!;
+  
+  //#region zoom
+  expect(svg).toHaveAttribute('height', '800');
+  expect(svg).toHaveAttribute('width', '1400');
 
+  fireEvent(container, new FakeMouseEvent('wheel', { bubbles: true, ctrlKey: true, pageX: 100, pageY: 100, deltaY: -50 }))
+
+  expect(svg).toHaveAttribute('height', '1000');
+  expect(svg).toHaveAttribute('width', '1750');
+  //#endregion
+
+  //#region draw
   let points = [[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]];
+  let originalPoints = [[40, 40], [40, 80], [60, 80], [60, 96], [72, 96], [72, 120], [96, 120], [96, 40]];
   points.forEach((point, i) => {
     fireEvent(svg, new FakeMouseEvent('click', { bubbles: true, buttons: 1, offsetX: point[0], offsetY: point[1] }))
     if (i === points.length - 1)
       fireEvent(svg, new FakeMouseEvent('dblclick', { bubbles: true, buttons: 1, offsetX: point[0], offsetY: point[1] }))
   });
+  //#endregion
 
+  //#region zoom
+  fireEvent(container, new FakeMouseEvent('wheel', { bubbles: true, ctrlKey: true, pageX: 100, pageY: 100, deltaY: -50 }))
+
+  expect(svg).toHaveAttribute('height', '1250');
+  expect(svg).toHaveAttribute('width', '2187.5');
+  //#endregion
+
+  //#region getShapes
   let shapes = annotator.getShapes();
 
   expect(shapes).toHaveLength(3);
 
   let polygon = shapes.filter(s => ![1, 2].includes(s.id))[0] as Polygon;
 
-  expect(JSON.stringify(polygon.points)).toBe(JSON.stringify(points));
+  expect(JSON.stringify(polygon.points)).toBe(JSON.stringify(originalPoints));
   expect(polygon.type).toBe('polygon')
   expect(polygon.categories).toHaveLength(2);
   expect(polygon.color).toBe('blue');
+  //#endregion
 
   //#region elements
   let polylines = svg.querySelectorAll('polyline');
@@ -105,21 +127,21 @@ it('draw polygon', () => {
 
   expect(polyline).toHaveClass('grabbable');
   expect(polyline).toHaveAttribute('fill', Color.ShapeFill);
-  expect(polyline).toHaveAttribute('points', "50,50 50,100 75,100 75,120 90,120 90,150 120,150 120,50 50,50");
+  expect(polyline).toHaveAttribute('points', "62.5,62.5 62.5,125 93.75,125 93.75,150 112.5,150 112.5,187.5 150,187.5 150,62.5 62.5,62.5");
   expect(polyline).toHaveAttribute('stroke', '#ff0000');
   expect(polyline).toHaveAttribute('stroke-opacity', '0.7');
   expect(polyline).toHaveAttribute('stroke-width', '2');
   expect(polyline).not.toHaveAttribute('transform');
 
   expect(polylineShadow).toHaveAttribute('fill', 'none');
-  expect(polylineShadow).toHaveAttribute('points', "50,50 50,100 75,100 75,120 90,120 90,150 120,150 120,50 50,50");
+  expect(polylineShadow).toHaveAttribute('points', "62.5,62.5 62.5,125 93.75,125 93.75,150 112.5,150 112.5,187.5 150,187.5 150,62.5 62.5,62.5");
   expect(polylineShadow).toHaveAttribute('stroke', '#000000');
   expect(polylineShadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(polylineShadow).toHaveAttribute('stroke-width', '4');
   expect(polylineShadow).not.toHaveAttribute('transform');
 
   annotator.stopEdit()
-  
+
   expect(polyline).not.toHaveClass('grabbable');
   expect(polyline).toHaveAttribute('fill', "blue");
   expect(polyline).toHaveAttribute('stroke', "blue");

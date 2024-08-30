@@ -5,11 +5,12 @@ interface MouseEventWithOffsets extends MouseEventInit {
     offsetY?: number
     x?: number
     y?: number
+    deltaY?: number
   }
   
   export class FakeMouseEvent extends MouseEvent {
     constructor(type: string, values: MouseEventWithOffsets) {
-      const { pageX, pageY, offsetX, offsetY, x, y, ...mouseValues } = values
+      const { pageX, pageY, offsetX, offsetY, x, y, deltaY, ...mouseValues } = values
       super(type, mouseValues)
   
       Object.assign(this, {
@@ -19,6 +20,7 @@ interface MouseEventWithOffsets extends MouseEventInit {
         pageY: pageY || 0,
         x: x || 0,
         y: y || 0,
+        deltaY: deltaY || 0,
       })
     }
   }
