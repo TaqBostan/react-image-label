@@ -6,6 +6,7 @@ A comprehensive component for tagging images. Check out [demo 1](https://f2gnwn.
 - Add, Edit, Drag, Rotate, and Delete Annotations
 - Zoom and Pan
 - Changing image on the fly
+- Colorful annotations
 - Raw or typed input/output
 
 ![Screenshot of ImageAnnotator](https://github.com/TaqBostan/content/blob/main/labeled-2.png?raw=true)
@@ -132,7 +133,8 @@ The data models for all shapes are listed below:
 - Fork the project.
 - Make changes.
 - Run the project in development mode: `npm run ladle`.
-- Test your changes using `annotator.stories.tsx` or your own Stories (`*.stories.tsx`).
+- Write your own tests and/or update existing ones in src/test dir.
+- Check the new features and changes using `annotator.stories.tsx` or your own Stories (`*.stories.tsx`).
 - Update README with appropriate docs.
 - Commit and PR
 
