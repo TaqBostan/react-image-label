@@ -116,8 +116,8 @@ it('draw rectangle with categories', () => {
   //#endregion
 
   //#region draw
-  let points = [[100, 100], [100, 200], [150, 200], [150, 100]], pointsCopy = [...points];
-  let originalPoints = [[125, 125], [125, 250], [187, 250], [187, 125]];
+  let points = [[120, 120], [120, 240], [160, 240], [160, 120]], pointsCopy = [...points];
+  let originalPoints = [[150, 150], [150, 300], [200, 300], [200, 150]];
   fireEvent(svg, new FakeMouseEvent('mousedown', { bubbles: true, buttons: 1, offsetX: points[0][0], offsetY: points[0][1] }))
   fireEvent(svg, new FakeMouseEvent('mousemove', { bubbles: true, buttons: 1, offsetX: points[2][0], offsetY: points[2][1] }))
   fireEvent(svg, new FakeMouseEvent('mouseup', { bubbles: true, buttons: 1, offsetX: points[2][0], offsetY: points[2][1] }))
@@ -130,6 +130,17 @@ it('draw rectangle with categories', () => {
   expect(parseInt(svg.getAttribute('width')!)).toBe(896);
 
   points.forEach(p => { p[0] *= 0.8, p[1] *= 0.8; });
+  //#endregion
+  
+  //#region edit shape
+  let point = points[1]
+  let greenDisc = svg.querySelector(`circle[r="5"][cx="${point[0]}"][cy="${point[1]}"]`)!
+
+  fireEvent(greenDisc, new FakeMouseEvent('mousedown', { bubbles: true, buttons: 1, offsetX: point[0], offsetY: point[1] }))
+  fireEvent(svg, new FakeMouseEvent('mousemove', { bubbles: true, buttons: 1, offsetX: point[0] * 2 / 3, offsetY: point[1] * 5 / 4 }))
+  fireEvent(greenDisc, new FakeMouseEvent('mouseup', { bubbles: true, buttons: 1, offsetX: point[0] * 2 / 3, offsetY: point[1] * 5 / 4 }))
+  points[0][0] *= 2 / 3; points[1][0] *= 2 / 3; points[1][1] *= 5 / 4; points[2][1] *= 5 / 4;
+  originalPoints[0][0] *= 2 / 3; originalPoints[1][0] *= 2 / 3; originalPoints[1][1] *= 5 / 4; originalPoints[2][1] *= 5 / 4;
   //#endregion
 
   //#region pan
@@ -183,21 +194,23 @@ it('draw rectangle with categories', () => {
   //#region rect
   let _rect = polylines[6];
   let rectShadow = polylines[7];
-
+  let _points = `${points[0][0]},${points[0][1]} ${points[1][0]},${points[1][1]} ${points[2][0]},${points[2][1]} ${points[3][0]},${points[3][1]} ${points[0][0]},${points[0][1]}`;
+  let _center = [(points[0][0] + points[2][0]) / 2, (points[0][1] + points[2][1]) / 2];
+  
   expect(_rect).toHaveClass('grabbable');
   expect(_rect).toHaveAttribute('fill', Color.ShapeFill);
-  expect(_rect).toHaveAttribute('points', "80,80 80,160 120,160 120,80 80,80");
+  expect(_rect).toHaveAttribute('points', _points);
   expect(_rect).toHaveAttribute('stroke', '#ff0000');
   expect(_rect).toHaveAttribute('stroke-opacity', '0.7');
   expect(_rect).toHaveAttribute('stroke-width', '2');
-  expect(_rect).toHaveAttribute('transform', 'rotate(0,100,120)');
+  expect(_rect).toHaveAttribute('transform', `rotate(0,${_center[0]},${_center[1]})`);
 
   expect(rectShadow).toHaveAttribute('fill', 'none');
-  expect(rectShadow).toHaveAttribute('points', "80,80 80,160 120,160 120,80 80,80");
+  expect(rectShadow).toHaveAttribute('points', _points);
   expect(rectShadow).toHaveAttribute('stroke', '#000000');
   expect(rectShadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(rectShadow).toHaveAttribute('stroke-width', '4');
-  expect(rectShadow).toHaveAttribute('transform', 'rotate(0,100,120)');
+  expect(rectShadow).toHaveAttribute('transform', `rotate(0,${_center[0]},${_center[1]})`);
 
   annotator.stopEdit()
 
@@ -217,14 +230,14 @@ it('draw rectangle with categories', () => {
   let rotateIcon = rotateIcons[0]
   let bg = backgrounds[0]
 
-  expect(rotateIcon).toHaveAttribute('d', 'M105.2,188.5a7,7,0,1,1,0-8l-3,3h9v-9l-3,3a11+11,0,1,0,0+14z');
-  expect(rotateIcon).toHaveAttribute('transform', 'rotate(0,100,120)');
+  expect(rotateIcon).toHaveAttribute('d', "M101.2,268.5a7,7,0,1,1,0-8l-3,3h9v-9l-3,3a11+11,0,1,0,0+14z");
+  expect(rotateIcon).toHaveAttribute('transform', `rotate(0,${_center[0]},${_center[1]})`);
 
-  expect(bg).toHaveAttribute('cx', '100');
-  expect(bg).toHaveAttribute('cy', '184');
+  expect(bg).toHaveAttribute('cx', '96');
+  expect(bg).toHaveAttribute('cy', '264');
   expect(bg).toHaveAttribute('fill', Color.ShapeFill);
   expect(bg).toHaveAttribute('r', '12');
-  expect(bg).toHaveAttribute('transform', 'rotate(0,100,120)');
+  expect(bg).toHaveAttribute('transform', `rotate(0,${_center[0]},${_center[1]})`);
 
   let origin: ArrayXY = [center[0], 190], dest = Util.rotate(origin, [center[0], center[1]], 30)
 
@@ -234,7 +247,7 @@ it('draw rectangle with categories', () => {
 
   rect = annotator.getShapes().find(c => c.id === rect.id)! as Rectangle;
 
-  expect(JSON.stringify(rect.points)).toBe('[[160,118],[98,226],[152,257],[215,149]]')
+  expect(JSON.stringify(rect.points)).toBe('[[163,140],[50,335],[137,385],[250,190]]')
   expect(rect.phi).toBe(30)
   expect(rect.type).toBe('rectangle')
   expect(rect.categories).toHaveLength(1);
@@ -243,17 +256,17 @@ it('draw rectangle with categories', () => {
 
   expect(_rect).toHaveClass('grabbable');
   expect(_rect).toHaveAttribute('fill', 'rgba(250,250,250,0.4)');
-  expect(_rect).toHaveAttribute('points', "80,80 80,160 120,160 120,80 80,80");
+  expect(_rect).toHaveAttribute('points', _points);
   expect(_rect).toHaveAttribute('stroke', '#fafafa');
   expect(_rect).toHaveAttribute('stroke-opacity', '0.7');
   expect(_rect).toHaveAttribute('stroke-width', '2');
-  expect(_rect).toHaveAttribute('transform', 'rotate(29.999999999999993,100,120)');
+  expect(_rect).toHaveAttribute('transform', `rotate(29.999999999999993,${_center[0]},${_center[1]})`);
 
   expect(rectShadow).toHaveAttribute('fill', 'none');
-  expect(rectShadow).toHaveAttribute('points', "80,80 80,160 120,160 120,80 80,80");
+  expect(rectShadow).toHaveAttribute('points', _points);
   expect(rectShadow).toHaveAttribute('stroke', '#000000');
   expect(rectShadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(rectShadow).toHaveAttribute('stroke-width', '4');
-  expect(rectShadow).toHaveAttribute('transform', 'rotate(29.999999999999993,100,120)');
+  expect(rectShadow).toHaveAttribute('transform', `rotate(29.999999999999993,${_center[0]},${_center[1]})`);
   //#endregion
 });
