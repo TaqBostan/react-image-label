@@ -77,8 +77,8 @@ it('draw polygon', () => {
   //#endregion
 
   //#region draw
-  let points = [[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]];
-  let originalPoints = [[40, 40], [40, 80], [60, 80], [60, 96], [72, 96], [72, 120], [96, 120], [96, 40]];
+  let points = [[40, 40], [40, 80], [80, 80], [80, 120], [120, 120], [120, 160], [160, 160], [160, 40]], pointsCopy = [...points];
+  let originalPoints = [[32, 32], [32, 64], [64, 64], [64, 96], [96, 96], [96, 128], [128, 128], [128, 32]];
   points.forEach((point, i) => {
     fireEvent(svg, new FakeMouseEvent('click', { bubbles: true, buttons: 1, offsetX: point[0], offsetY: point[1] }))
     if (i === points.length - 1)
@@ -91,6 +91,19 @@ it('draw polygon', () => {
 
   expect(svg).toHaveAttribute('height', '1250');
   expect(svg).toHaveAttribute('width', '2187.5');
+
+  points.forEach(p => { p[0] *= 1.25, p[1] *= 1.25; });
+  //#endregion
+
+  //#region edit shape
+  let point = points[3]
+  let greenDisc = svg.querySelector(`circle[r="5"][cx="${point[0]}"][cy="${point[1]}"]`)!
+
+  fireEvent(greenDisc, new FakeMouseEvent('mousedown', { bubbles: true, buttons: 1, offsetX: point[0], offsetY: point[1] }))
+  fireEvent(svg, new FakeMouseEvent('mousemove', { bubbles: true, buttons: 1, offsetX: point[0] * 3 / 2, offsetY: point[1] * 2 / 3 }))
+  fireEvent(greenDisc, new FakeMouseEvent('mouseup', { bubbles: true, buttons: 1, offsetX: point[0] * 3 / 2, offsetY: point[1] * 2 / 3 }))
+  points[3][0] *= 3 / 2; points[3][1] *= 2 / 3;
+  originalPoints[3][0] *= 3 / 2; originalPoints[3][1] *= 2 / 3;
   //#endregion
 
   //#region getShapes
@@ -124,26 +137,29 @@ it('draw polygon', () => {
     expect(greenDisc).toHaveAttribute('fill', Color.GreenDisc);
     let cx = parseInt(greenDisc.getAttribute('cx')!);
     let cy = parseInt(greenDisc.getAttribute('cy')!);
-    points.splice(points.findIndex(p => p[0] === cx && p[1] === cy), 1)[0]
+    expect(pointsCopy.findIndex(p => p[0] === cx && p[1] === cy)).toBeGreaterThanOrEqual(0)
+    pointsCopy.splice(pointsCopy.findIndex(p => p[0] === cx && p[1] === cy), 1)[0]
   });
 
-  expect(points).toHaveLength(0);
+  expect(pointsCopy).toHaveLength(0);
   //#endregion
 
   //#region polyline
   let polyline = polylines[4];
   let polylineShadow = polylines[5];
+  let _points = `${points[0][0]},${points[0][1]} ${points[1][0]},${points[1][1]} ${points[2][0]},${points[2][1]} ${points[3][0]},${points[3][1]} ${points[4][0]},${points[4][1]} ${points[5][0]},${points[5][1]} ${points[6][0]},${points[6][1]} ${points[7][0]},${points[7][1]} ${points[0][0]},${points[0][1]}`;
+  let _center = [points.reduce((sum: number, p: number[]) => sum + p[0], 0) / 8.0, points.reduce((sum: number, p: number[]) => sum + p[1], 0) / 8.0];
 
   expect(polyline).toHaveClass('grabbable');
   expect(polyline).toHaveAttribute('fill', Color.ShapeFill);
-  expect(polyline).toHaveAttribute('points', "62.5,62.5 62.5,125 93.75,125 93.75,150 112.5,150 112.5,187.5 150,187.5 150,62.5 62.5,62.5");
+  expect(polyline).toHaveAttribute('points', _points);
   expect(polyline).toHaveAttribute('stroke', '#ff0000');
   expect(polyline).toHaveAttribute('stroke-opacity', '0.7');
   expect(polyline).toHaveAttribute('stroke-width', '2');
   expect(polyline).not.toHaveAttribute('transform');
 
   expect(polylineShadow).toHaveAttribute('fill', 'none');
-  expect(polylineShadow).toHaveAttribute('points', "62.5,62.5 62.5,125 93.75,125 93.75,150 112.5,150 112.5,187.5 150,187.5 150,62.5 62.5,62.5");
+  expect(polylineShadow).toHaveAttribute('points', _points);
   expect(polylineShadow).toHaveAttribute('stroke', '#000000');
   expect(polylineShadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(polylineShadow).toHaveAttribute('stroke-width', '4');
