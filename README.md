@@ -43,7 +43,7 @@ Now you can draw rectangles on the image by dragging the left mouse button.
 
 ### Mouse and Keyboard events
 
-- **double click**: Edit/Stop Edit Annotations
+- **click**: Edit/Stop Edit Annotations
 - **Ctrl + mouse wheel**: Zoom
 - **Ctrl + mouse drag**: Pan
 - **Delete key**: Delete Annotations

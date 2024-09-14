@@ -86,7 +86,7 @@ export class Director {
       Director.onContextMenu?.(elem.shape);
       return false;
     }, false);
-    builder.element.node.ondblclick = (e: MouseEvent) => {
+    builder.element.node.onclick = (e: MouseEvent) => {
       this.edit(id);
       Director.onSelected?.(builder.element!.shape);
       e.stopPropagation();
@@ -102,7 +102,7 @@ export class Director {
     let elem = this.getElement(id);
     if (!elem) return;
     elem.shape.categories = categories;
-    if(color !== undefined) elem.shape.color = color;
+    if (color !== undefined) elem.shape.color = color;
     let builder = this.getBuilder(elem.shape);
     if (!elem.editing) builder.setOptions(elem, categories, elem.shape.color);
   }
@@ -159,7 +159,7 @@ export class Director {
     let instance = Director.instance = new Director(svg, container);
     container.onmousedown = (event: MouseEvent) => instance.drag_md(container, event);
     container.onwheel = (event: WheelEvent) => instance.mousewheel(event);
-    container.ondblclick = () => !instance.builders.some(b => b.drawing) && instance.stopEdit();
+    container.onclick = () => !instance.builders.some(b => b.drawing) && instance.stopEdit();
   }
 
   static setActions(onAdded?: (shape: Shape) => any, onContextMenu?: (shape: Shape) => any, onSelected?: (shape: Shape) => any) {

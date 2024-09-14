@@ -12,10 +12,10 @@ const imgUrl = '/Fruit.jpeg';
 // const img2 = 'https://en.systemgroup.net/wp-content/themes/sg/dist/images/logo.png';
 const categories = ['blueberry', 'strawberry', 'raspberry', 'apple', 'benana'];
 let p = new Polygon([[550, 224], [519, 222], [474, 261], [430, 341], [416, 383], [427, 399], [446, 414], [528, 396], [604, 372], [633, 325], [654, 313], [648, 282], [638, 231], [596, 208], [562, 208]], ['strawberry'], "#27fe7640");
-let r = new Rectangle([[ 734, 292 ], [ 680, 377 ], [ 781, 440 ], [ 835, 355 ]], ['blueberry'], "rgba(255,255,255,0.4)");
+let r = new Rectangle([[734, 292], [680, 377], [781, 440], [835, 355]], ['blueberry'], "rgba(255,255,255,0.4)");
 let c = new Circle([70, 90], 55, ['blueberry'], "rgba(0,0,0,0.4)");
 let e = new Ellipse([457, 114], 40, 80, ['raspberry'], 0, "#0004");
-let d = new Dot([ 123, 223], ['raspberry'], "rgba(0,0,0,0.4)");
+let d = new Dot([123, 223], ['raspberry'], "rgba(0,0,0,0.4)");
 let rawShapes = [
   { type: 'rectangle', categories: ["class 3"], points: [[150, 50], [200, 50], [200, 100], [150, 100]], color: "#27f17640" },
   { type: 'polygon', categories: ["class 1", "class 2"], points: [[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]], color: "#27f17640" },
@@ -41,17 +41,15 @@ export const ImageAnnotatorPrimary: FC = () => {
       hideDialog();
     }
   }
-  const changeImage =() =>{
-    if(img === imgUrl)
-      {
-        setImg(img2);
-        setShapes([c]);
-      }
-    else if(img===img2)
-      {
-        setImg(imgUrl);
-        setShapes([r, p, c, e, d]);
-      }
+  const changeImage = () => {
+    if (img === imgUrl) {
+      setImg(img2);
+      setShapes([c]);
+    }
+    else if (img === img2) {
+      setImg(imgUrl);
+      setShapes([r, p, c, e, d]);
+    }
   }
 
 
@@ -84,8 +82,7 @@ export const ImageAnnotatorPrimary: FC = () => {
         height={400}
         onAdded={shape => setDialog({ show: true, shape })}
         onContextMenu={shape => setDialog({ show: true, shape })}
-        onSelected={shape => setDialog({ show: true, shape })}
-        onReady={annotator => {  }} />
+        onReady={annotator => { }} />
       <div>{JSON.stringify(shapes, null, 2)}</div>
     </div>
   );
@@ -105,12 +102,12 @@ const Dialog = (props: DialogProps) => {
     <div className='dialog-bg' onClick={props.onClose}>
       <div className='dialog' onClick={e => e.stopPropagation()}
         style={{ left: props.offset.X, top: props.offset.Y }}>
-        <button onClick={props.onEdit} style={{background: '#36A9AE'}}>edit</button>
-        <button onClick={props.onDelete} style={{background: '#F082AC'}}>delete</button>
+        <button onClick={props.onEdit} style={{ background: '#36A9AE' }}>edit</button>
+        <button onClick={props.onDelete} style={{ background: '#F082AC' }}>delete</button>
         {categories.map((_class, i) => (
           <div key={i} className="checkbox-wrapper-1">
             <input id={'chb' + i} className="substituted" type="checkbox" aria-hidden="true"
-              value={_class} onChange={handleCheck} checked={props.items.includes(_class)}/>
+              value={_class} onChange={handleCheck} checked={props.items.includes(_class)} />
             <label htmlFor={'chb' + i}>{_class}</label>
           </div>
         ))}
