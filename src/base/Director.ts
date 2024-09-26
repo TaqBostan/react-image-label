@@ -87,8 +87,11 @@ export class Director {
       return false;
     }, false);
     builder.element.node.onclick = (e: MouseEvent) => {
-      this.edit(id);
-      Director.onSelected?.(builder.element!.shape);
+      let elem = this.elements.find(p => p.shape.id === id)!;
+      if(!e.ctrlKey && !elem.editing) {
+        this.edit(id);
+        Director.onSelected?.(builder.element!.shape);
+      }
       e.stopPropagation();
     };
     if (isNew) {
@@ -159,7 +162,7 @@ export class Director {
     let instance = Director.instance = new Director(svg, container);
     container.onmousedown = (event: MouseEvent) => instance.drag_md(container, event);
     container.onwheel = (event: WheelEvent) => instance.mousewheel(event);
-    container.onclick = () => !instance.builders.some(b => b.drawing) && instance.stopEdit();
+    container.onclick = (e: MouseEvent) => !instance.builders.some(b => b.drawing) && !e.ctrlKey && instance.stopEdit();
   }
 
   static setActions(onAdded?: (shape: Shape) => any, onContextMenu?: (shape: Shape) => any, onSelected?: (shape: Shape) => any) {
