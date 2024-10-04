@@ -17,6 +17,7 @@ export class DotBuilder extends ShapeBuilder<Dot> {
   shape?: Dot;
   element?: IDot;
   canRotate = false;
+	canHB = false;
   newShape = () => new Dot();
   ofType<T>(shape: T): boolean {
     return shape instanceof Dot;

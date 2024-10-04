@@ -3,7 +3,14 @@ import Util from './util';
 
 export type Point = { X: number, Y: number }
 
-export type StaticData = { width: number, height: number, ratio: number, discRadius: number }
+export type StaticData = {
+  width: number, 
+  height: number, 
+  ratio: number, 
+  discRadius: number, 
+  /** Stroke and discs can be hidden when not in edit/draw mode */
+  hb: boolean | undefined 
+}
 
 export abstract class Shape {
   id: number;
@@ -24,7 +31,7 @@ export abstract class Shape {
     let center = this.getCenter()
     let svgBox = svg.getBoundingClientRect();
     obj.id = this.id;
-    if(this.color) obj.color = this.color;
+    if (this.color) obj.color = this.color;
     obj.phi = Math.round(this.phi);
     obj.getCenterWithOffset = () => ({ X: center[0] + svgBox.x, Y: center[1] + svgBox.y })
     return obj;
@@ -96,7 +103,7 @@ export abstract class AngledShape extends Shape {
       });
   }
   getCenter(): ArrayXY {
-    if(this.points.length === 0) return [0, 0];
+    if (this.points.length === 0) return [0, 0];
     let x = this.points
       .map(p => p[0])
       .filter((x, i) => i < this.points.length - 1)

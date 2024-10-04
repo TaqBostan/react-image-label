@@ -14,6 +14,7 @@ export class IlPolyline extends Polyline implements IlElementExtra {
 
 export abstract class AngledBuilder<T extends AngledShape> extends ShapeBuilder<T> {
 	element?: IlPolyline;
+	canHB = true;
 	abstract editShape_mm(event: MouseEvent): void;
 
 	createElement(shape: AngledShape): void {

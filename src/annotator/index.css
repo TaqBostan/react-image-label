@@ -5,6 +5,10 @@
   background-color: white;
 }
 
+.il-hid {
+  display: none;
+}
+
 .seg-point {
   cursor: pointer;
 }

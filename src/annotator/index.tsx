@@ -99,7 +99,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
           ratio = Math.min(maxHeight!, target.naturalHeight) / naturalHeight;
         else ratio = Math.min(maxWidth!, target.naturalWidth) / naturalWidth;
       }
-      let statics = { width: naturalWidth, height: naturalHeight, ratio, discRadius: props.discRadius || 5 }
+      let statics = { width: naturalWidth, height: naturalHeight, ratio, discRadius: props.discRadius || 5, hb: props.hideBorder }
       Director.init(svg, statics, container);
       drawShapes(props.shapes);
       props.setHandles({ ...getHandles(), container });
@@ -153,5 +153,6 @@ export interface ImageAnnotatorProps {
   width?: number;
   height?: number;
   discRadius?: number;
+  hideBorder?: boolean;
   setHandles: (handles: AnnotatorHandles) => void;
 }

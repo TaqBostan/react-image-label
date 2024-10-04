@@ -10,6 +10,8 @@ export abstract class ShapeBuilder<T extends Shape> {
   sd: StaticData = ShapeBuilder._sd;
   abstract element?: ElementWithExtra;
   abstract shape?: T;
+  /** Stroke and discs can be hidden when not in edit/draw mode by setting hideBorder=true */
+  abstract canHB: boolean;
   //#region drag
   private lastPoint?: Point;
   private dragOrigin?: Point;
@@ -38,14 +40,14 @@ export abstract class ShapeBuilder<T extends Shape> {
     if (!this.canRotate) return;
     let shape = elem.shape, center = shape.getCenter();
     let items = [elem, elem.shadow, elem.connector, ...elem.discs];
-    if(elem.editing) items.push(...this.rotateArr);
+    if (elem.editing) items.push(...this.rotateArr);
     items.forEach(el => el?.node.setAttribute('transform', `rotate(${shape.phi},${center[0]},${center[1]})`));
   }
 
   abstract ofType<S extends Shape>(shape: S): boolean;
 
   basePlotShape() {
-		let shape = this.shape!;
+    let shape = this.shape!;
     this.plotShape();
     this.rotate();
     this.setOptions(this.element!, shape.categories, shape.color);
@@ -59,6 +61,12 @@ export abstract class ShapeBuilder<T extends Shape> {
     let labeled = categories.length > 0;
     this.labeledStyle(element, labeled, color);
     element.fill(color || Color.ShapeFill);
+
+    if (this.sd.hb && this.canHB) {
+      [element.shadow, ...element.discs].forEach(el => el.addClass('il-hid'));
+      element.stroke({ width: 0 });
+    }
+
     if (element.categoriesPlain) element.categoriesPlain.remove();
     if (element.categoriesRect) element.categoriesRect.remove();
     if (labeled) {
@@ -191,8 +199,8 @@ export abstract class ShapeBuilder<T extends Shape> {
     this.plot(elem);
     elem.discs?.forEach(_disc => _disc.cx(_disc.cx() * factor).cy(_disc.cy() * factor));
     elem.connector?.plot(elem.connector.array().map(p => [p[0] * factor, p[1] * factor] as ArrayXY));
-    if(elem.editing) {
-      if(this.rotateArr.length > 0) {
+    if (elem.editing) {
+      if (this.rotateArr.length > 0) {
         let position = elem.shape.rotatePosition();
         let [path, bg] = this.rotateArr;
         (path as Path).plot(this.rotateIcon(position));
@@ -214,18 +222,22 @@ export abstract class ShapeBuilder<T extends Shape> {
   }
 
   stopEditShape(elem: ElementWithExtra): void {
-		let shape = elem.shape;
-    elem.discs?.forEach(_disc => 
+    let shape = elem.shape;
+    elem.discs?.forEach(_disc =>
       _disc.fill(Color.BlackDisc).size(4).removeClass('seg-point').off('click').off('mousedown').off('mouseup')
     );
     this.setOptions(elem, shape.categories, shape.color);
   }
 
   edit(): void {
-    let polyline = this.element!;
-    this.element!.editing = true;
-    if (polyline.categoriesPlain) polyline.categoriesPlain.clear();
-    if (polyline.categoriesRect) polyline.categoriesRect.remove();
+    let elem = this.element!;
+    elem.editing = true;
+    if (elem.categoriesPlain) elem.categoriesPlain.clear();
+    if (elem.categoriesRect) elem.categoriesRect.remove();
+    if(this.canHB) {
+      [elem.shadow, ...elem.discs].forEach(el => el.removeClass('il-hid'));
+      elem.stroke({ width: 2 });
+    }
     this.initDrag();
     this.addRotateIcon();
     this.editShape();

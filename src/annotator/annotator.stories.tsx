@@ -80,6 +80,7 @@ export const ImageAnnotatorPrimary: FC = () => {
         shapes={shapes}
         width={700}
         height={400}
+        hideBorder={true}
         onAdded={shape => setDialog({ show: true, shape })}
         onContextMenu={shape => setDialog({ show: true, shape })}
         onReady={annotator => { }} />

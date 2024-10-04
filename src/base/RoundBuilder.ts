@@ -19,6 +19,7 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
   element?: IlEllipse;
   origin?: Point;
   points: ArrayXY[] = [];
+	canHB = true;
   abstract calculateRadius(offset: ArrayXY): ArrayXY;
   abstract calculateDifferent(offset: ArrayXY): ArrayXY;
 
