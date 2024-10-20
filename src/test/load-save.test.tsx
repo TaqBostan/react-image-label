@@ -250,7 +250,9 @@ it('load shapes', () => {
   expect(rect1).toHaveAttribute('stroke', '#27f176');
   expect(rect1).toHaveAttribute('stroke-opacity', '0.7');
   expect(rect1).toHaveAttribute('stroke-width', '2');
-  expect(rect1).toHaveAttribute('transform', 'rotate(0,175,75)');
+  expect(rect1).toHaveAttribute('transform', 'rotate(0,175,75)');  
+  expect(rect1).not.toHaveClass('il-hid');
+
 
   expect(rect1Shadow).toHaveAttribute('fill', 'none');
   expect(rect1Shadow).toHaveAttribute('points', '150,50 150,100 200,100 200,50 150,50');
@@ -258,6 +260,8 @@ it('load shapes', () => {
   expect(rect1Shadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(rect1Shadow).toHaveAttribute('stroke-width', '4');
   expect(rect1Shadow).toHaveAttribute('transform', 'rotate(0,175,75)');
+  expect(rect1Shadow).not.toHaveClass('il-hid');
+
   //#endregion
 
   //#region rect2
