@@ -93,6 +93,7 @@ it('change image', () => {
   expect(rect1).toHaveAttribute('stroke-opacity', '0.7');
   expect(rect1).toHaveAttribute('stroke-width', '2');
   expect(rect1).toHaveAttribute('transform', 'rotate(0,153.125,65.625)');
+  expect(rect1).not.toHaveClass('il-hid');
 
   expect(rect1Shadow).toHaveAttribute('fill', 'none');
   expect(rect1Shadow).toHaveAttribute('points', '131.25,43.75 131.25,87.5 175,87.5 175,43.75 131.25,43.75');
@@ -100,6 +101,7 @@ it('change image', () => {
   expect(rect1Shadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(rect1Shadow).toHaveAttribute('stroke-width', '4');
   expect(rect1Shadow).toHaveAttribute('transform', 'rotate(0,153.125,65.625)');
+  expect(rect1Shadow).not.toHaveClass('il-hid');
   //#endregion
   
   //#region polyline
