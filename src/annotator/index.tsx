@@ -135,7 +135,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
       window.removeEventListener('keyup', keyup);
       window.removeEventListener('blur', onblur);
     }
-  }, [svgContainer, props.imageUrl]);
+  }, [svgContainer, props.imageUrl, props.shapes]);
 
   return (<SvgContainer setHandles={setHandles} />);
 }

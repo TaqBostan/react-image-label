@@ -66,6 +66,7 @@ export const ImageAnnotatorPrimary: FC = () => {
       <button onClick={() => { annotator!.zoom(1.25) }}>Zoom in</button>
       <button onClick={() => { annotator!.zoom(0.8) }}>Zoom out</button>
       <button onClick={() => { setShapes(annotator!.getShapes()) }}>Get shapes</button>
+      <button onClick={() => { setShapes([p]) }}>change shapes</button>
       {dialog.show &&
         <Dialog items={dialog.shape!.categories} itemsChanged={selectedCategoriesChanged}
           onEdit={() => { annotator!.edit(dialog.shape!.id); hideDialog(); }}

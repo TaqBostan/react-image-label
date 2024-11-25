@@ -88,6 +88,7 @@ Below is a list of all handles:
 | `drawDot` | `() => void` | Allows adding [dots (points)](#shapes) by clicking |
 | `stop` | `() => void` | Stops draw/edit/drag mode |
 | `edit` | `(id: number) => void` | The annotation identified by `id` can be edited and dragged |
+| `delete` | `(id: number) => void` | Removes the annotation identified by `id` |
 | `stopEdit` | `() => void` | Stops editing and dragging |
 | `updateCategories` | `(id: number, categories: string[], color?: string) => void` | Updates the categories associated with the annotation identified by `id` |
 | `zoom` | `(factor: number) => void` | Multiplies the dimensions by `factor` |
