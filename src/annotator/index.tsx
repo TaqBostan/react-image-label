@@ -120,7 +120,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     const onkeydown = (e: KeyboardEvent) => e.key === 'Control' && svgContainer!.container.classList.add('grabbable');
     const keyup = (e: KeyboardEvent) => {
       if (e.key === 'Control') onblur();
-      if (e.key === 'Delete') Director.instance?.remove();
+      if (e.key === 'Delete' || e.key === 'Backspace') Director.instance?.remove();
       if (e.key === 'Escape') Director.instance?.stopEdit();
     }
     if (svgContainer && props.imageUrl) {
