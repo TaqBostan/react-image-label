@@ -4,14 +4,18 @@ import Util from './util';
 export type Point = { X: number, Y: number }
 
 export type StaticData = {
-  width: number, 
-  height: number, 
-  ratio: number, 
-  discRadius: number, 
+  width: number,
+  height: number,
+  ratio: number,
+  discRadius: number,
   /** Stroke and discs can be hidden when not in edit/draw mode */
-  hb: boolean | undefined 
+  hb: boolean | undefined
 }
 
+export type Shortkey = {
+  Del?: boolean,
+  Bksp?: boolean
+}
 export abstract class Shape {
   id: number;
   getCenterWithOffset = (): Point => ({ X: 0, Y: 0 });

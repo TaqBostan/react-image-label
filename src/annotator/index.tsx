@@ -1,7 +1,7 @@
 import React, { useEffect, FC } from 'react';
 import { SvgContainer, useSvgContainer, Svg } from 'react-svgdotjs';
 import { Director } from '../base/Director';
-import { Shape, Polygon, Rectangle, Circle, Ellipse, Dot } from '../base/types';
+import { Shape, Polygon, Rectangle, Circle, Ellipse, Dot, Shortkey } from '../base/types';
 import Util from '../base/util';
 import { AnnotatorHandles } from './hook';
 import './index.css';
@@ -67,7 +67,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     stopEdit: () => getDirector().stopEdit(),
     edit: (id: number) => getDirector().edit(id),
     delete: (id: number) => getDirector().removeById(id),
-    updateCategories: (id: number, categories: string[], color?: string) => 
+    updateCategories: (id: number, categories: string[], color?: string) =>
       getDirector().updateCategories(id, categories, color),
     zoom,
     getShapes: getDirector().getShapes
@@ -78,9 +78,9 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
       if (!ev?.target || !svg.node.innerHTML) return;
       let target = ev!.detail?.testRil || ev!.target, src1 = container.getAttribute('data-img')!, src2 = imageUrl;
       if (src1 !== Util.fileName(src2)) {
-        for(let i = 0; i < svg.node.children.length; i++) {
+        for (let i = 0; i < svg.node.children.length; i++) {
           let child = svg.node.children[i], href = Util.fileName(child.getAttribute('href'));
-          if(href && src1 !== href) child.remove();
+          if (href && src1 !== href) child.remove();
         }
         return;
       }
@@ -120,7 +120,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     const onkeydown = (e: KeyboardEvent) => e.key === 'Control' && svgContainer!.container.classList.add('grabbable');
     const keyup = (e: KeyboardEvent) => {
       if (e.key === 'Control') onblur();
-      if (e.key === 'Delete' || e.key === 'Backspace') Director.instance?.remove();
+      if ((props.shortkey?.Del && e.key === 'Delete') || (props.shortkey?.Bksp && e.key === 'Backspace')) Director.instance?.remove();
       if (e.key === 'Escape') Director.instance?.stopEdit();
     }
     if (svgContainer && props.imageUrl) {
@@ -154,5 +154,6 @@ export interface ImageAnnotatorProps {
   height?: number;
   discRadius?: number;
   hideBorder?: boolean;
+  shortkey?: Shortkey;
   setHandles: (handles: AnnotatorHandles) => void;
 }

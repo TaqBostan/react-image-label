@@ -35,7 +35,8 @@ const { setHandles, annotator } = useImageAnnotator();
 <ImageAnnotator
   setHandles={setHandles}
   naturalSize={true}
-  imageUrl={'your-image-url'}
+  imageUrl={'your-image-url'}  
+  shortkey={{Del: true, Bksp: true }}
   onReady={annotator => { annotator.drawRectangle() }} />
 ```
 
@@ -46,7 +47,7 @@ Now you can draw rectangles on the image by dragging the left mouse button.
 - **click**: Edit/Stop Edit Annotations
 - **Ctrl + mouse wheel**: Zoom
 - **Ctrl + mouse drag**: Pan
-- **Delete key**: Delete Annotations
+- **Delete key/Backspace key**: Delete Annotations
 - **mouse drag**: Drag/Edit/Rotate Annotations
 
 ## Props
