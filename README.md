@@ -140,8 +140,8 @@ Below is a list of shortcuts that are configured through `shortcut` prop:
 
 | Key | Type | Description | Default |
 |---|---|---|---|
-| `del` | boolean? | To enable the Delete key to remove the annotation in edit mode | `false` |
-| `bksp` | boolean? | To enable the Backspace key to remove the annotation in edit mode | `false` |
+| `del` | boolean | To enable the Delete key to remove the annotation that is in edit mode | `false` |
+| `bksp` | boolean | To enable the Backspace key to remove the annotation that is in edit mode | `false` |
 
 ## Contributing
 

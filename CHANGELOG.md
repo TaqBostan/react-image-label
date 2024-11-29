@@ -1,0 +1,13 @@
+# Versions
+
+## 1.3.9
+
+_Nov 29, 2024_
+
+__Action Required__: Add `shortcut={{del: true }}` to props to enable Delete key to remove the annotation that is in edit mode
+
+### Bug Fixes
+* Due to side effects on text inputs, the Delete key binding was disabled by default, and a prop was added to enable it intentionally.
+
+### New Features
+* A setting to bind the Backspace key to act like the Delete key, which is especially useful for Mac users. (see [Shortcut Settings](https://github.com/TaqBostan/react-image-label?tab=readme-ov-file#shortcut-settings))
