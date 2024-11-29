@@ -36,7 +36,7 @@ const { setHandles, annotator } = useImageAnnotator();
   setHandles={setHandles}
   naturalSize={true}
   imageUrl={'your-image-url'}  
-  shortkey={{Del: true, Bksp: true }}
+  shortcut={{del: true, bksp: true }}
   onReady={annotator => { annotator.drawRectangle() }} />
 ```
 
@@ -47,8 +47,10 @@ Now you can draw rectangles on the image by dragging the left mouse button.
 - **click**: Edit/Stop Edit Annotations
 - **Ctrl + mouse wheel**: Zoom
 - **Ctrl + mouse drag**: Pan
-- **Delete key/Backspace key**: Delete Annotations
 - **mouse drag**: Drag/Edit/Rotate Annotations
+
+when using `shortcut={{del: true, bksp: true }}` in props (see [Shortcut Settings](#shortcut-settings)):
+- **Delete/Backspace key**: Delete Annotations
 
 ## Props
 
@@ -62,7 +64,8 @@ The following props can be defined on `ImageAnnotator`:
 | `width` | `number` | `container` width | `image.naturalWidth` |
 | `height` | `number` | `container` height | `image.naturalHeight` |
 | `discRadius` | `number` | The radius of the green discs in edit mode | 5 |
-| `hideBorder` | `boolean` | To Hide annotation border | `false` |
+| `hideBorder` | `boolean` | To hide annotation border | `false` |
+| `shortcut` | `Shortcut` | To configure shortcuts (see [Shortcut Settings](#shortcut-settings)) |  |
 | `onAdded` | `Shape => any` | When an annotation is drawn (see [Annotations with Categories](#annotations-with-categories)) |  |
 | `onSelected` | `Shape => any` | When an annotation goes into edit mode by double-clicking |  |
 | `onContextMenu` | `Shape => any` | When an annotation is right-clicked (see [Annotations with Categories](#annotations-with-categories)) |   |
@@ -130,6 +133,15 @@ The data models for all shapes are listed below:
 | `Rectangle` | `{ id: number, points: [number, number][], phi: number, categories: string[], type: string, color: string }` | rectangle |
 | `Polygon` | `{ id: number, points: [number, number][], categories: string[], type: string, color: string }` | polygon |
 | `Dot` | `{ id: number, position: [number, number], categories: string[], type: string, color: string }` | dot |
+
+## Shortcut Settings
+
+Below is a list of shortcuts that are configured through `shortcut` prop:
+
+| Key | Type | Description | Default |
+|---|---|---|---|
+| `del` | boolean? | To enable the Delete key to remove the annotation in edit mode | `false` |
+| `bksp` | boolean? | To enable the Backspace key to remove the annotation in edit mode | `false` |
 
 ## Contributing
 

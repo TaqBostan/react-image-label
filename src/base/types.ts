@@ -12,10 +12,11 @@ export type StaticData = {
   hb: boolean | undefined
 }
 
-export type Shortkey = {
-  Del?: boolean,
-  Bksp?: boolean
+export type Shortcut = {
+  del?: boolean,
+  bksp?: boolean
 }
+
 export abstract class Shape {
   id: number;
   getCenterWithOffset = (): Point => ({ X: 0, Y: 0 });

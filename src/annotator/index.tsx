@@ -1,7 +1,7 @@
 import React, { useEffect, FC } from 'react';
 import { SvgContainer, useSvgContainer, Svg } from 'react-svgdotjs';
 import { Director } from '../base/Director';
-import { Shape, Polygon, Rectangle, Circle, Ellipse, Dot, Shortkey } from '../base/types';
+import { Shape, Polygon, Rectangle, Circle, Ellipse, Dot, Shortcut } from '../base/types';
 import Util from '../base/util';
 import { AnnotatorHandles } from './hook';
 import './index.css';
@@ -120,7 +120,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     const onkeydown = (e: KeyboardEvent) => e.key === 'Control' && svgContainer!.container.classList.add('grabbable');
     const keyup = (e: KeyboardEvent) => {
       if (e.key === 'Control') onblur();
-      if ((props.shortkey?.Del && e.key === 'Delete') || (props.shortkey?.Bksp && e.key === 'Backspace')) Director.instance?.remove();
+      if ((props.shortcut?.del && e.key === 'Delete') || (props.shortcut?.bksp && e.key === 'Backspace')) Director.instance?.remove();
       if (e.key === 'Escape') Director.instance?.stopEdit();
     }
     if (svgContainer && props.imageUrl) {
@@ -154,6 +154,6 @@ export interface ImageAnnotatorProps {
   height?: number;
   discRadius?: number;
   hideBorder?: boolean;
-  shortkey?: Shortkey;
+  shortcut?: Shortcut;
   setHandles: (handles: AnnotatorHandles) => void;
 }
