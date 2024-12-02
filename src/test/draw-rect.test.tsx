@@ -9,10 +9,6 @@ import { Circle, Color, Ellipse, Polygon, Rectangle, Shape } from '../base/types
 import { FakeMouseEvent } from './helper/MouseEventWithOffsets';
 import Util from '../base/util';
 
-afterEach(() => {
-  Util.maxId = 0;
-});
-
 export const ns = "http://www.w3.org/2000/svg";
 
 Object.defineProperty(global.SVGElement.prototype, 'getBBox', {
