@@ -4,11 +4,6 @@ import '@testing-library/jest-dom';
 import { ImageAnnotator } from '../annotator/index';
 import { AnnotatorHandles, useImageAnnotator } from '../annotator/hook';
 import { Circle, Ellipse, Polygon, Rectangle, Shape } from '../base/types';
-import Util from '../base/util';
-
-afterEach(() => {
-  Util.maxId = 0;
-});
 
 export const ns = "http://www.w3.org/2000/svg";
 

@@ -1,6 +1,5 @@
 import { Svg } from "react-svgdotjs";
 import { Shape, ElementWithExtra, StaticData, Point } from "./types";
-import Util from './util'
 import PolygonBuilder from "./builders/PolygonBuilder";
 import { ShapeBuilder } from "./ShapeBuilder";
 import RectangleBuilder from "./builders/RectangleBuilder";
@@ -13,6 +12,7 @@ export class Director {
   static onAdded: ((shape: Shape) => any) | undefined;
   static onContextMenu: ((shape: Shape) => any) | undefined;
   static onSelected: ((shape: Shape) => any) | undefined;
+  protected maxId = 0;
   builders: ShapeBuilder<Shape>[];
   elements: ElementWithExtra[] = [];
   origin?: Point;
@@ -51,7 +51,7 @@ export class Director {
 
   plot(shapes: Shape[]): void {
     shapes.forEach(shape => {
-      shape.id = ++Util.maxId;
+      shape.id = ++this.maxId;
       this.getBuilder(shape).basePlotShape();
       this.addShape(shape, false);
     });
@@ -76,7 +76,7 @@ export class Director {
     let builder = this.getBuilder(shape);
     if (!builder.element) return;
     if (builder.element.shape.id === 0) {
-      builder.element.shape.id = ++Util.maxId;
+      builder.element.shape.id = ++this.maxId;
     }
     let id = builder.element.shape.id;
     this.elements.push(builder.element);
