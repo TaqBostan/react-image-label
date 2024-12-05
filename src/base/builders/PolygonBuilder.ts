@@ -39,6 +39,7 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
       if (elem.editing) {
         this.stopEdit()
         this.createElement(new Polygon());
+        elem = this.element;
       }
       let x = event.offsetX, y = event.offsetY;
       let radius = this.sd.discRadius + this.sd.width / 150;

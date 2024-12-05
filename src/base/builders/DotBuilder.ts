@@ -55,7 +55,7 @@ export class DotBuilder extends ShapeBuilder<Dot> {
   drawClick(event: MouseEvent) {
     if (event.ctrlKey || event.shiftKey || event.altKey) return;
     let elem = this.element!;
-    if (this.element?.editing) {
+    if (elem.editing) {
       this.stopEdit()
       this.createElement(new Dot());
       this.drawClick(event);

@@ -11,3 +11,10 @@ __Action Required__: Add `shortcut={{del: true }}` to props to enable Delete key
 
 ### New Features
 * A setting to bind the Backspace key to act like the Delete key, which is especially useful for Mac users. (see [Shortcut Settings](https://github.com/TaqBostan/react-image-label?tab=readme-ov-file#shortcut-settings))
+  
+## 1.4.0
+
+_Dec 05, 2024_
+
+### New Features
+* Use `onEdited` prop to get an up-to-date copy of a shape that has been reshaped, stretched, or rotated.
