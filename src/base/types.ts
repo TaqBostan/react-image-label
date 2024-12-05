@@ -142,6 +142,13 @@ export enum Color {
   ShapeFill = "#ffffff00"
 }
 
+export enum ActType{
+  Added,
+  Edited,
+  Selected,
+  CtxMenu
+}
+
 export class Rectangle extends AngledShape {
   type: string = 'rectangle';
   output(ratio: number) {

@@ -81,6 +81,7 @@ export abstract class AngledBuilder<T extends AngledShape> extends ShapeBuilder<
 			this.addRotateIcon();
 			this.dragIndex = undefined;
 			this.svg.off('mousemove');
+			this.onEdited(this.shape!);
 		}
 	}
 

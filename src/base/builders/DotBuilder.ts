@@ -1,4 +1,4 @@
-import { IlElementExtra, Point, Color, Dot, ElementWithExtra, Shape } from "./../types";
+import { IlElementExtra, Color, Dot, ElementWithExtra } from "./../types";
 import { Text, Rect, Circle as Circ, Polyline } from "@svgdotjs/svg.js";
 import { ShapeBuilder } from "./../ShapeBuilder";
 import { ArrayXY } from '@svgdotjs/svg.js';
@@ -48,23 +48,23 @@ export class DotBuilder extends ShapeBuilder<Dot> {
     this.createElement(shape);
   }
 
-  startDraw(addDot: () => void): void {
-    this.svg.click((event: MouseEvent) => this.drawClick(event, () => addDot()));
+  startDraw(): void {
+    this.svg.click((event: MouseEvent) => this.drawClick(event));
   }
 
-  drawClick(event: MouseEvent, addDot: () => void) {
+  drawClick(event: MouseEvent) {
     if (event.ctrlKey || event.shiftKey || event.altKey) return;
     let elem = this.element!;
     if (this.element?.editing) {
       this.stopEdit()
       this.createElement(new Dot());
-      this.drawClick(event, addDot);
+      this.drawClick(event);
     }
     else {
       elem.shape.position = [event.offsetX, event.offsetY];
       elem.discs[0].move(event.offsetX - 4, event.offsetY - 4);
       this.plot(elem);
-      addDot();
+      this.enlist(elem.shape);
     }
   }
 

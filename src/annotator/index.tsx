@@ -1,7 +1,7 @@
 import React, { useEffect, FC } from 'react';
 import { SvgContainer, useSvgContainer, Svg } from 'react-svgdotjs';
 import { Director } from '../base/Director';
-import { Shape, Polygon, Rectangle, Circle, Ellipse, Dot, Shortcut } from '../base/types';
+import { Shape, Polygon, Rectangle, Circle, Ellipse, Dot, Shortcut, ActType } from '../base/types';
 import Util from '../base/util';
 import { AnnotatorHandles } from './hook';
 import './index.css';
@@ -111,9 +111,15 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   }, [props.width, props.height, props.shapes]);
 
   useEffect(() => {
-    Director.setActions(props.onAdded, props.onContextMenu, props.onSelected);
-    return () => Director.setActions(undefined, undefined);
-  }, [props.onAdded, props.onContextMenu, props.onSelected]);
+    let actions = [
+      { type: ActType.Added, func: props.onAdded },
+      { type: ActType.Edited, func: props.onEdited },
+      { type: ActType.Selected, func: props.onSelected },
+      { type: ActType.CtxMenu, func: props.onContextMenu }
+    ]
+    Director.setActions(actions);
+    return () => Director.setActions([]);
+  }, [props.onAdded,props.onEdited, props.onContextMenu, props.onSelected]);
 
   useEffect(() => {
     const onblur = () => svgContainer!.container.classList.remove('grabbable');
@@ -145,6 +151,7 @@ export { ImageAnnotator };
 export interface ImageAnnotatorProps {
   onReady?: (annotator: AnnotatorHandles) => any;
   onAdded?: (shape: Shape) => any;
+  onEdited?: (shape: Shape)=> any;
   onSelected?: (shape: Shape) => any;
   onContextMenu?: (shape: Shape) => any;
   imageUrl?: string;

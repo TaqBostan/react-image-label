@@ -1,5 +1,4 @@
 import { AngledBuilder } from "../AngledBuilder";
-import { ShapeBuilder } from "../ShapeBuilder";
 import { Polygon, Color } from "../types";
 
 export default class PolygonBuilder extends AngledBuilder<Polygon> {
@@ -12,52 +11,53 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
     return shape instanceof Polygon;
   }
 
-  startDraw(addPolyline: () => void): void {
-    this.svg.click((event: MouseEvent) => this.addPoint(event, () => addPolyline()));
-    this.svg.dblclick((event: MouseEvent) => this.addPointAndClose(event, () => addPolyline()));
+  startDraw(): void {
+    this.svg.click((event: MouseEvent) => this.addPoint(event));
+    this.svg.dblclick((event: MouseEvent) => this.addPointAndClose(event));
   }
 
-  addPoint(event: MouseEvent, addAngledShape: () => void) {
+  addPoint(event: MouseEvent) {
     if (event.ctrlKey || event.shiftKey || event.altKey || event.detail > 1) return;
     if (!this.element) throw new Error();
+    let elem = this.element;
     if (this.startClicked) {
-      this.element.discs[0].remove();
-      let origin = this.element.shape.points[0];
-      this.element.discs[0] = this.drawDisc(origin[0], origin[1], 4, Color.BlackDisc);
-      this.element.discs.forEach(_circle => {
+      elem.discs[0].remove();
+      let origin = elem.shape.points[0];
+      elem.discs[0] = this.drawDisc(origin[0], origin[1], 4, Color.BlackDisc);
+      elem.discs.forEach(_circle => {
         _circle.fill(Color.BlackDisc).size(4);
       });
       this.startClicked = false;
       this.svg.off('mousemove');
-      addAngledShape();
+      this.enlist(elem.shape);
     }
     else {
-      if (this.element.hasConnector) {
-        this.element.shape.points.pop();
-        this.element.hasConnector = false;
+      if (elem.hasConnector) {
+        elem.shape.points.pop();
+        elem.hasConnector = false;
       }
-      if (this.element?.editing) {
+      if (elem.editing) {
         this.stopEdit()
         this.createElement(new Polygon());
       }
       let x = event.offsetX, y = event.offsetY;
       let radius = this.sd.discRadius + this.sd.width / 150;
-      if (this.element.shape.points.length >= 3 &&
-        Math.pow(this.element.shape.points[0][0] - x, 2) +
-        Math.pow(this.element.shape.points[0][1] - y, 2) < Math.pow(radius, 2)) {
+      if (elem.shape.points.length >= 3 &&
+        Math.pow(elem.shape.points[0][0] - x, 2) +
+        Math.pow(elem.shape.points[0][1] - y, 2) < Math.pow(radius, 2)) {
         this.startClicked = true;
-        x = this.element.shape.points[0][0];
-        y = this.element.shape.points[0][1];
+        x = elem.shape.points[0][0];
+        y = elem.shape.points[0][1];
       }
-      this.element.shape.points.push([x, y]);
+      elem.shape.points.push([x, y]);
       this.plotAngledShape();
 
-      let _radius = this.element.shape.points.length === 1 ? 5 : 3;
+      let _radius = elem.shape.points.length === 1 ? 5 : 3;
 
-      if (this.element.shape.points.length === 1) {
+      if (elem.shape.points.length === 1) {
         this.svg.mousemove((event: MouseEvent) => this.newPlg_mm(event));
         let disc = this.drawDisc(x, y, _radius, Color.GreenDisc);
-        this.element.discs = [disc];
+        elem.discs = [disc];
         disc.mouseover(() => {
           if (this.element!.shape.points.length > 2)
             disc.animate().attr({ fill: Color.LightGreenLine });
@@ -69,11 +69,11 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
       }
       else {
         if (this.startClicked) {
-          this.element.discs[0].attr('class', '');
-          this.addPoint({ ...event, offsetX: x, offsetY: y }, addAngledShape);
+          elem.discs[0].attr('class', '');
+          this.addPoint({ ...event, offsetX: x, offsetY: y });
         }
         else {
-          this.element.discs.push(this.drawDisc(x, y, _radius, Color.GrayDisc));
+          elem.discs.push(this.drawDisc(x, y, _radius, Color.GrayDisc));
         }
       }
 
@@ -104,7 +104,7 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
     }
   }
 
-  addPointAndClose(event: MouseEvent, addAngledShape: () => void) {
+  addPointAndClose(event: MouseEvent) {
     if (event.ctrlKey || event.shiftKey || event.altKey) return;
     if (!this.element) throw new Error();
     if(this.element.shape.points.length < 3) return;
@@ -114,7 +114,7 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
     this.element.shape.points.push([x, y]);
     this.plotAngledShape();
     this.element.discs[0].attr('class', '');
-    this.addPoint({ ...event, offsetX: x, offsetY: y }, addAngledShape);
+    this.addPoint({ ...event, offsetX: x, offsetY: y });
   }
 
   stopDraw(): void {

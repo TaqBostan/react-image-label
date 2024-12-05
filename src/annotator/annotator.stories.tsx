@@ -85,6 +85,7 @@ export const ImageAnnotatorPrimary: FC = () => {
         shortcut={{del: true, bksp: true }}
         onAdded={shape => setDialog({ show: true, shape })}
         onContextMenu={shape => setDialog({ show: true, shape })}
+        onEdited={shape =>console.log(shape)}
         onReady={annotator => { }} />
       <div>{JSON.stringify(shapes, null, 2)}</div>      
     </div>

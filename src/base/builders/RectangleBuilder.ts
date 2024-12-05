@@ -1,7 +1,6 @@
 import { ArrayXY, PointArray } from '@svgdotjs/svg.js'
 import { AngledBuilder } from "../AngledBuilder";
 import { Rectangle, Point } from "../types";
-import { ShapeBuilder } from '../ShapeBuilder';
 import Util from '../util';
 
 export default class RectangleBuilder extends AngledBuilder<Rectangle> {
@@ -13,17 +12,17 @@ export default class RectangleBuilder extends AngledBuilder<Rectangle> {
     return shape instanceof Rectangle;
   }
 
-  rect_md(e: MouseEvent, addPolyline: () => void) {
+  rect_md(e: MouseEvent) {
     if (e.buttons === 1 && !e.ctrlKey && !this.rectOrigin) {
       if (this.element?.editing) this.stopEdit()
       this.rectOrigin = { X: e.offsetX, Y: e.offsetY };
       this.createElement(new Rectangle());
-      this.svg.mousemove((e: any) => this.newRect_mm(e, addPolyline));
-      this.svg.mouseup((e: MouseEvent) => this.rect_mu(e, addPolyline));
+      this.svg.mousemove((e: any) => this.newRect_mm(e));
+      this.svg.mouseup((e: MouseEvent) => this.rect_mu(e));
     }
   }
 
-  rect_mu(event: MouseEvent, addPolyline: () => void) {
+  rect_mu(event: MouseEvent) {
     if (this.rectOrigin) {
       if (Math.abs(this.rectOrigin.X - event.offsetX) < 10 ||
         Math.abs(this.rectOrigin.Y - event.offsetY) < 10) {
@@ -37,22 +36,22 @@ export default class RectangleBuilder extends AngledBuilder<Rectangle> {
           this.element!.discs.push(this.drawDisc(point[0], point[1], 2, '#000'))
         });
       this.svg.off('mousemove').off('mouseup');
-      addPolyline();
+      this.enlist(this.element.shape);
       this.rectOrigin = undefined;
     }
   }
 
-  startDraw(addPolyline: () => void) {
-    this.svg.mousedown((event: MouseEvent) => this.rect_md(event, addPolyline));
+  startDraw() {
+    this.svg.mousedown((event: MouseEvent) => this.rect_md(event));
   }
 
   stopDraw() {
     this.svg.off('mousedown').off('mouseup');
   }
 
-  newRect_mm(e: MouseEvent, addPolyline: () => void) {
+  newRect_mm(e: MouseEvent) {
     if (this.rectOrigin) {
-      if (e.buttons !== 1) return this.rect_mu(e, addPolyline);
+      if (e.buttons !== 1) return this.rect_mu(e);
       let points: ArrayXY[] | PointArray = [] = [];
       points.push([this.rectOrigin.X, this.rectOrigin.Y]);
       if (e.shiftKey) {

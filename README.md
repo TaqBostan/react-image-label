@@ -67,6 +67,7 @@ The following props can be defined on `ImageAnnotator`:
 | `hideBorder` | `boolean` | To hide annotation border | `false` |
 | `shortcut` | `Shortcut` | To configure shortcuts (see [Shortcut Settings](#shortcut-settings)) |  |
 | `onAdded` | `Shape => any` | When an annotation is drawn (see [Annotations with Categories](#annotations-with-categories)) |  |
+| `onEdited` | `Shape => any` | When an annotation is reshaped, dragged, or rotated |  |
 | `onSelected` | `Shape => any` | When an annotation goes into edit mode by double-clicking |  |
 | `onContextMenu` | `Shape => any` | When an annotation is right-clicked (see [Annotations with Categories](#annotations-with-categories)) |   |
 | `onReady` | `AnnotatorHandles => any` | When the component is mounted |   |

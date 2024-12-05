@@ -4,6 +4,7 @@ import { ArrayXY, Path, Element } from '@svgdotjs/svg.js'
 import Util from "./util";
 
 export abstract class ShapeBuilder<T extends Shape> {
+  constructor(public onEdited: (shape: Shape) => void, public enlist: (shape: Shape) => void){}
   static _svg: Svg;
   static _sd: StaticData;
   svg: Svg = ShapeBuilder._svg;
@@ -14,7 +15,6 @@ export abstract class ShapeBuilder<T extends Shape> {
   abstract canHB: boolean;
   //#region drag
   private lastPoint?: Point;
-  private dragOrigin?: Point;
   private moveIcon = (center: ArrayXY) => `M${center[0] + 11.3},${center[1]}l-4.6-4.6v2.4h-4.5v-4.5h2.4l-4.6,-4.6l-4.6,4.6h2.4v4.5h-4.5v-2.4l-4.6,4.6l4.6,4.6v-2.4h4.5v4.5h-2.4l4.6,4.6
   l4.6-4.6h-2.4v-4.5h4.5v2.4l4.6-4.6z`;
   protected movePath?: Path;
@@ -26,7 +26,7 @@ export abstract class ShapeBuilder<T extends Shape> {
   abstract plotShape(): void;
   abstract createElement(shape: T): void;
   abstract newShape(): T;
-  abstract startDraw(addShape: () => void): void;
+  abstract startDraw(): void;
   abstract plot(element: ElementWithExtra): void;
   abstract stopDraw(): void;
   abstract editShape(): void;
@@ -128,7 +128,6 @@ export abstract class ShapeBuilder<T extends Shape> {
   drag_md(e: MouseEvent) {
     if (e.buttons === 1 && !e.ctrlKey && !this.lastPoint) {
       this.lastPoint = { X: e.offsetX, Y: e.offsetY };
-      this.dragOrigin = { X: e.offsetX, Y: e.offsetY };
       [this.movePath!, ...this.rotateArr].forEach(item => item.remove());
       this.svg.mousemove((e: MouseEvent) => this.drag_mm(e))
         .mouseup(() => this.drag_mu());
@@ -156,8 +155,8 @@ export abstract class ShapeBuilder<T extends Shape> {
       this.addMoveIcon();
       this.addRotateIcon();
       this.lastPoint = undefined;
-      this.dragOrigin = undefined;
       this.svg.off('mousemove').off('mouseup');
+      this.onEdited(this.shape!);
     }
   }
 
@@ -168,7 +167,6 @@ export abstract class ShapeBuilder<T extends Shape> {
       this.rotateArr.forEach(item => item.remove());
       this.rotateArr = [];
       this.lastPoint = undefined;
-      this.dragOrigin = undefined;
       this.movePath = undefined;
     }
   }
@@ -192,6 +190,7 @@ export abstract class ShapeBuilder<T extends Shape> {
 
   rotate_mu() {
     this.svg.off('mousemove').off('mouseup');
+    this.onEdited(this.shape!);
   }
 
   zoom(elem: ElementWithExtra, factor: number): void {
@@ -234,7 +233,7 @@ export abstract class ShapeBuilder<T extends Shape> {
     elem.editing = true;
     if (elem.categoriesPlain) elem.categoriesPlain.clear();
     if (elem.categoriesRect) elem.categoriesRect.remove();
-    if(this.canHB) {
+    if (this.canHB) {
       [elem.shadow, ...elem.discs].forEach(el => el.removeClass('il-hid'));
       elem.stroke({ width: 2 });
     }

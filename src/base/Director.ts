@@ -1,5 +1,5 @@
 import { Svg } from "react-svgdotjs";
-import { Shape, ElementWithExtra, StaticData, Point } from "./types";
+import { Shape, ElementWithExtra, StaticData, Point, ActType } from "./types";
 import PolygonBuilder from "./builders/PolygonBuilder";
 import { ShapeBuilder } from "./ShapeBuilder";
 import RectangleBuilder from "./builders/RectangleBuilder";
@@ -9,16 +9,26 @@ import { DotBuilder } from "./builders/DotBuilder";
 
 export class Director {
   static instance?: Director;
-  static onAdded: ((shape: Shape) => any) | undefined;
-  static onContextMenu: ((shape: Shape) => any) | undefined;
-  static onSelected: ((shape: Shape) => any) | undefined;
+  static actions: { type: ActType, func: (shape: Shape) => any }[];
   protected maxId = 0;
   builders: ShapeBuilder<Shape>[];
   elements: ElementWithExtra[] = [];
   origin?: Point;
 
   constructor(public svg: Svg, public container: HTMLDivElement) {
-    this.builders = [new PolygonBuilder(), new RectangleBuilder(), new CircleBuilder(), new EllipseBuilder(), new DotBuilder()];
+    let onEdited = (shape: Shape) => this.raise(ActType.Edited, shape), enlist = (shape: Shape) => this.enlist(shape, true);
+    let params: [(shape: Shape) => void, (shape: Shape) => void] = [onEdited, enlist]
+    this.builders = [
+      new PolygonBuilder(...params),
+      new RectangleBuilder(...params),
+      new CircleBuilder(...params),
+      new EllipseBuilder(...params),
+      new DotBuilder(...params)
+    ];
+  }
+
+  raise(type: ActType, shape: Shape) {
+    Director.actions.find(act => act.type === type)!.func(shape);
   }
 
   getBuilder<T extends Shape>(shape: T): ShapeBuilder<T> {
@@ -53,7 +63,7 @@ export class Director {
     shapes.forEach(shape => {
       shape.id = ++this.maxId;
       this.getBuilder(shape).basePlotShape();
-      this.addShape(shape, false);
+      this.enlist(shape, false);
     });
   }
 
@@ -61,7 +71,7 @@ export class Director {
     let builder = this.getBuilder(shape);
     builder.drawing = true;
     builder.createElement(shape);
-    builder.startDraw(() => this.addShape(shape));
+    builder.startDraw();
   }
 
   stopDraw(): void {
@@ -72,7 +82,7 @@ export class Director {
     }
   }
 
-  addShape(shape: Shape, isNew: boolean = true) {
+  enlist(shape: Shape, isNew: boolean) {
     let builder = this.getBuilder(shape);
     if (!builder.element) return;
     if (builder.element.shape.id === 0) {
@@ -83,21 +93,21 @@ export class Director {
     builder.element.node.addEventListener('contextmenu', (ev: MouseEvent) => {
       ev.preventDefault();
       let elem = this.elements.find(p => p.shape.id === id)!;
-      Director.onContextMenu?.(elem.shape);
+      this.raise(ActType.CtxMenu, elem.shape);
       return false;
     }, false);
     builder.element.node.onclick = (e: MouseEvent) => {
       let elem = this.elements.find(p => p.shape.id === id)!;
-      if(!e.ctrlKey && !elem.editing) {
+      if (!e.ctrlKey && !elem.editing) {
         this.edit(id);
-        Director.onSelected?.(builder.element!.shape);
+        this.raise(ActType.Selected, builder.element!.shape);
       }
       e.stopPropagation();
     };
     if (isNew) {
       if (!builder.element!.editing) builder.edit();
-      Director.onAdded?.(builder.element.shape);
-      Director.onSelected?.(builder.element.shape);
+      this.raise(ActType.Added, builder.element.shape);
+      this.raise(ActType.Selected, builder.element.shape);
     }
   }
 
@@ -165,12 +175,10 @@ export class Director {
     container.onclick = (e: MouseEvent) => !instance.builders.some(b => b.drawing) && !e.ctrlKey && instance.stopEdit();
   }
 
-  static setActions(onAdded?: (shape: Shape) => any, onContextMenu?: (shape: Shape) => any, onSelected?: (shape: Shape) => any) {
-    let hoc = (fun?: (shape: Shape) => any) => (shape: Shape) =>
+  static setActions(actions: { type: ActType; func: ((shape: Shape) => any) | undefined }[]) {
+    let hof = (fun?: (shape: Shape) => any) => (shape: Shape) => 
       fun?.(shape.getOutput(ShapeBuilder._sd.ratio, ShapeBuilder._svg.node))
-    Director.onAdded = hoc(onAdded);
-    Director.onContextMenu = hoc(onContextMenu);
-    Director.onSelected = hoc(onSelected);
+    Director.actions = actions.map(act => ({ type: act.type, func: hof(act.func) }));
   }
 
   clear() {

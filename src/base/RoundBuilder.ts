@@ -1,5 +1,5 @@
 
-import { RoundShape, IlElementExtra, Point, Color, Ellipse } from "./types";
+import { RoundShape, IlElementExtra, Point, Color } from "./types";
 import { Text, Rect, Circle as Circ, Ellipse as Elp, Polyline } from "@svgdotjs/svg.js";
 import { ShapeBuilder } from "./ShapeBuilder";
 import { ArrayXY } from '@svgdotjs/svg.js';
@@ -37,30 +37,30 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
     this.element.shadow.stroke({ color: Color.BlackLine, width: 4, opacity: 0.4 });
   }
 
-  startDraw(addShape: () => void): void {
-    this.svg.mousedown((event: MouseEvent) => this.draw_md(event, addShape));
+  startDraw(): void {
+    this.svg.mousedown((event: MouseEvent) => this.draw_md(event));
   }
 
-  draw_md(e: MouseEvent, addShape: () => void) {
+  draw_md(e: MouseEvent) {
     if (e.buttons === 1 && !e.ctrlKey && !this.origin) {
       if (this.element?.editing) this.stopEdit();
       this.origin = { X: e.offsetX, Y: e.offsetY };
       this.createElement(this.newShape());
-      this.svg.mousemove((e: MouseEvent) => this.draw_mm(e, addShape))
-        .mouseup((e: MouseEvent) => this.draw_mu(e, addShape));
+      this.svg.mousemove((e: MouseEvent) => this.draw_mm(e))
+        .mouseup((e: MouseEvent) => this.draw_mu(e));
     }
   }
 
-  draw_mm(e: MouseEvent, addShape: () => void): void {
+  draw_mm(e: MouseEvent): void {
     if (this.origin) {
-      if (e.buttons !== 1) return this.draw_mu(e, addShape);
+      if (e.buttons !== 1) return this.draw_mu(e);
       let centre: ArrayXY = [(this.origin.X + e.offsetX) / 2, (this.origin.Y + e.offsetY) / 2];
       let radius = this.calculateRadius([e.offsetX, e.offsetY]);
       [this.element!, this.element!.shadow].forEach(el => el.size(2 * radius[0], 2 * radius[1]).move(centre[0] - radius[0], centre[1] - radius[1]));
     }
   }
 
-  draw_mu(e: MouseEvent, addShape: () => void) {
+  draw_mu(e: MouseEvent) {
     let shape = this.element!.shape;
     let centre: ArrayXY = [(this.origin!.X + e.offsetX) / 2, (this.origin!.Y + e.offsetY) / 2];
     let radius = this.calculateRadius([e.offsetX, e.offsetY]);
@@ -68,7 +68,7 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
     shape.width = 2 * radius[0];
     shape.height = 2 * radius[1];
     this.svg.off('mousemove').off('mouseup');
-    if (radius[0] > 10 && radius[1] > 10) addShape();
+    if (radius[0] > 10 && radius[1] > 10) this.enlist(shape);
     else this.removeElement();
     this.origin = undefined;
   }
@@ -115,6 +115,7 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
     this.origin = undefined;
     this.dragIndex = undefined;
     this.svg.off("mousemove").off("mouseup");
+    this.onEdited(this.shape!);
   }
 
   addDiscs(): void {
