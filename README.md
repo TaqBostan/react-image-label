@@ -13,7 +13,7 @@ A comprehensive component for tagging images. Check out [demo 1](https://f2gnwn.
 
 ## Usage
 
-Install `react-image-label` using npm.
+Install [react-image-label](https://www.npmjs.com/package/react-image-label/) using npm.
 
 ```shell
 npm install react-image-label
