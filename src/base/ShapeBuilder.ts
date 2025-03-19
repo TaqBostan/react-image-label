@@ -5,9 +5,9 @@ import Util from "./util";
 
 export abstract class ShapeBuilder<T extends Shape> {
   constructor(public onEdited: (shape: Shape) => void, public enlist: (shape: Shape) => void){}
-  static _svg: Svg;
+  static _svg: SVGSVGElement;
   static _sd: StaticData;
-  svg: Svg = ShapeBuilder._svg;
+  svg: SVGSVGElement = ShapeBuilder._svg;
   sd: StaticData = ShapeBuilder._sd;
   abstract element?: ElementWithExtra;
   abstract shape?: T;
@@ -17,10 +17,10 @@ export abstract class ShapeBuilder<T extends Shape> {
   private lastPoint?: Point;
   private moveIcon = (center: ArrayXY) => `M${center[0] + 11.3},${center[1]}l-4.6-4.6v2.4h-4.5v-4.5h2.4l-4.6,-4.6l-4.6,4.6h2.4v4.5h-4.5v-2.4l-4.6,4.6l4.6,4.6v-2.4h4.5v4.5h-2.4l4.6,4.6
   l4.6-4.6h-2.4v-4.5h4.5v2.4l4.6-4.6z`;
-  protected movePath?: Path;
+  protected movePath?: SVGPathElement;
   //#endregion
   private rotateIcon = (center: ArrayXY) => `M${center[0] + 5.2},${center[1] + 4.5}a7,7,0,1,1,0-8l-3,3h9v-9l-3,3a11+11,0,1,0,0+14z`;
-  protected rotateArr: Element[] = [];
+  protected rotateArr: SVGElement[] = [];
   protected canRotate = true;
   drawing: boolean = false;
   abstract plotShape(): void;
@@ -33,7 +33,7 @@ export abstract class ShapeBuilder<T extends Shape> {
   dragIndex?: number;
 
   drawDisc(x: number, y: number, radius: number, color: string) {
-    return this.svg.circle(2 * radius).fill(color).move(x - radius, y - radius);
+    return this.svg.circle(radius).fill(color).move(x, y);
   }
 
   rotate(elem: ElementWithExtra = this.element!) {
@@ -41,7 +41,7 @@ export abstract class ShapeBuilder<T extends Shape> {
     let shape = elem.shape, center = shape.getCenter();
     let items = [elem, elem.shadow, elem.connector, ...elem.discs];
     if (elem.editing) items.push(...this.rotateArr);
-    items.forEach(el => el?.node.setAttribute('transform', `rotate(${shape.phi},${center[0]},${center[1]})`));
+    items.forEach(el => el?.setAttribute('transform', `rotate(${shape.phi},${center[0]},${center[1]})`));
   }
 
   abstract ofType<S extends Shape>(shape: S): boolean;
@@ -72,15 +72,15 @@ export abstract class ShapeBuilder<T extends Shape> {
     if (labeled) {
       let pos = element.shape.labelPosition();
       let categoriesPlain = categories.join(', ');
-      element.categoriesPlain = this.svg.plain(categoriesPlain).font({ size: 12, weight: 'bold' });
-      let width = element.categoriesPlain.bbox().width;
-      let height = element.categoriesPlain.bbox().height;
+      element.categoriesPlain = this.svg.plain(categoriesPlain).font(12, 'bold');
+      let width = element.categoriesPlain.getBBox().width;
+      let height = element.categoriesPlain.getBBox().height;
       element.categoriesRect = this.svg.rect(width, height).radius(2).move(pos[0] - width / 2, pos[1] + height / 4).fill('#ffffff80');
       element.categoriesPlain.remove();
       element.categoriesPlain = this.svg
         .plain(categoriesPlain)
         .move(pos[0], pos[1])
-        .font({ fill: '#3a4620', size: 12, anchor: 'middle', weight: 'bold' })
+        .font(12, 'bold', '#3a4620','middle')
         .addClass('class-names');
     }
   }
@@ -100,7 +100,7 @@ export abstract class ShapeBuilder<T extends Shape> {
       .mousedown((ev: MouseEvent) => this.drag_md(ev))
       .on('contextmenu', (ev: any) => {
         ev.preventDefault();
-        this.element!.node.dispatchEvent!(new Event('contextmenu', ev));
+        this.element!.dispatchEvent!(new Event('contextmenu', ev));
       })
   }
 
@@ -141,7 +141,7 @@ export abstract class ShapeBuilder<T extends Shape> {
       if (!this.element) return;
       let dx = e.offsetX - this.lastPoint.X, dy = e.offsetY - this.lastPoint.Y, center = this.element.shape.getCenter();
       [this.element, this.element.shadow, this.element.connector, ...this.element.discs].forEach(disc => {
-        disc?.cx(disc.cx() + dx).cy(disc.cy() + dy);
+        disc?.increment([dx, dy]);
       })
       this.element.shape.centerChanged([center[0] + dx, center[1] + dy]);
       this.rotate();
@@ -196,13 +196,13 @@ export abstract class ShapeBuilder<T extends Shape> {
   zoom(elem: ElementWithExtra, factor: number): void {
     elem.shape.zoom(factor);
     this.plot(elem);
-    elem.discs?.forEach(_disc => _disc.cx(_disc.cx() * factor).cy(_disc.cy() * factor));
+    elem.discs?.forEach(_disc => _disc.x(_disc.x() * factor).y(_disc.y() * factor));
     elem.connector?.plot(elem.connector.array().map(p => [p[0] * factor, p[1] * factor] as ArrayXY));
     if (elem.editing) {
       if (this.rotateArr.length > 0) {
         let position = elem.shape.rotatePosition();
         let [path, bg] = this.rotateArr;
-        (path as Path).plot(this.rotateIcon(position));
+        (path as SVGPathElement).plot(this.rotateIcon(position));
         bg.move(position[0] - 12, position[1] - 12);
       }
       this.movePath?.plot(this.moveIcon(elem.shape.getCenter()));
@@ -223,7 +223,7 @@ export abstract class ShapeBuilder<T extends Shape> {
   stopEditShape(elem: ElementWithExtra): void {
     let shape = elem.shape;
     elem.discs?.forEach(_disc =>
-      _disc.fill(Color.BlackDisc).size(4).removeClass('seg-point').off('click').off('mousedown').off('mouseup')
+      _disc.fill(Color.BlackDisc).radius(2).removeClass('seg-point').off('click').off('mousedown').off('mouseup')
     );
     this.setOptions(elem, shape.categories, shape.color);
   }
@@ -231,7 +231,7 @@ export abstract class ShapeBuilder<T extends Shape> {
   edit(): void {
     let elem = this.element!;
     elem.editing = true;
-    if (elem.categoriesPlain) elem.categoriesPlain.clear();
+    if (elem.categoriesPlain) elem.categoriesPlain.innerHTML = '';
     if (elem.categoriesRect) elem.categoriesRect.remove();
     if (this.canHB) {
       [elem.shadow, ...elem.discs].forEach(el => el.removeClass('il-hid'));

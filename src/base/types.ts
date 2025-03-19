@@ -75,16 +75,16 @@ export class Dot extends Shape {
 }
 
 export interface IlElementExtra {
-  categoriesPlain?: Text;
-  categoriesRect?: Rect;
+  categoriesPlain?: SVGTextElement;
+  categoriesRect?: SVGRectElement;
   shape: Shape;
-  shadow: Element;
-  discs: Circ[];
+  shadow: SVGElement;
+  discs: SVGCircleElement[];
   editing: boolean;
-  connector?: Polyline;
+  connector?: SVGPolylineElement;
 }
 
-export type ElementWithExtra = Element & IlElementExtra;
+export type ElementWithExtra = SVGElement & IlElementExtra;
 
 export abstract class AngledShape extends Shape {
   constructor(public points: ArrayXY[] | PointArray = [], public categories: string[] = [], public color?: string) {

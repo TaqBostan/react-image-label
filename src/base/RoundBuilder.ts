@@ -5,14 +5,14 @@ import { ShapeBuilder } from "./ShapeBuilder";
 import { ArrayXY } from '@svgdotjs/svg.js';
 import Util from "./util";
 
-class IlEllipse extends Elp implements IlElementExtra {
-  discs!: Circ[];
-  classNames?: Text;
-  classNamesWrapper?: Rect;
+class IlEllipse extends SVGEllipseElement implements IlElementExtra {
+  discs!: SVGCircleElement[];
+  classNames?: SVGTextElement;
+  classNamesWrapper?: SVGRectElement;
   shape!: RoundShape;
-  shadow!: Elp;
+  shadow!: SVGEllipseElement;
   editing: boolean = false;
-  connector?: Polyline;
+  connector?: SVGPolylineElement;
 }
 
 export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T> {
@@ -24,16 +24,16 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
   abstract calculateDifferent(offset: ArrayXY): ArrayXY;
 
   createElement(shape: RoundShape): void {
-    this.element = Object.assign(this.svg.ellipse(shape.width, shape.height),
+    this.element = Object.assign(this.svg.ellipse(shape.width / 2, shape.height / 2),
       {
         shape,
-        shadow: this.svg.ellipse(shape.width, shape.height),
+        shadow: this.svg.ellipse(shape.width/ 2, shape.height / 2),
         discs: [],
         editing: false
       });
-    this.element.fill(Color.ShapeFill).move(shape.centre[0] - shape.width / 2, shape.centre[1] - shape.height / 2);
+    this.element.fill(Color.ShapeFill).move(shape.centre[0], shape.centre[1]);
     this.element.stroke({ color: Color.RedLine, width: 2, opacity: 0.7 });
-    this.element.shadow.fill('none').move(shape.centre[0] - shape.width / 2, shape.centre[1] - shape.height / 2);
+    this.element.shadow.fill('none').move(shape.centre[0], shape.centre[1]);
     this.element.shadow.stroke({ color: Color.BlackLine, width: 4, opacity: 0.4 });
   }
 
@@ -56,7 +56,7 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
       if (e.buttons !== 1) return this.draw_mu(e);
       let centre: ArrayXY = [(this.origin.X + e.offsetX) / 2, (this.origin.Y + e.offsetY) / 2];
       let radius = this.calculateRadius([e.offsetX, e.offsetY]);
-      [this.element!, this.element!.shadow].forEach(el => el.size(2 * radius[0], 2 * radius[1]).move(centre[0] - radius[0], centre[1] - radius[1]));
+      [this.element!, this.element!.shadow].forEach(el => el.radius(radius[0], radius[1]).move(centre[0] - radius[0], centre[1] - radius[1]));
     }
   }
 
@@ -85,8 +85,8 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
 
   plot(ellipse: IlEllipse): void {
     [ellipse, ellipse.shadow].forEach(el => el
-      .size(ellipse.shape.width, ellipse.shape.height)
-      .move(ellipse.shape.centre[0] - ellipse.shape.width / 2, ellipse.shape.centre[1] - ellipse.shape.height / 2)
+      .radius(ellipse.shape.width / 2, ellipse.shape.height / 2)
+      .move(ellipse.shape.centre[0], ellipse.shape.centre[1])
     );
   }
 

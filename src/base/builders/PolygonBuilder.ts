@@ -25,7 +25,7 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
       let origin = elem.shape.points[0];
       elem.discs[0] = this.drawDisc(origin[0], origin[1], 4, Color.BlackDisc);
       elem.discs.forEach(_circle => {
-        _circle.fill(Color.BlackDisc).size(4);
+        _circle.fill(Color.BlackDisc).radius(2);
       });
       this.startClicked = false;
       this.svg.off('mousemove');
@@ -61,10 +61,10 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
         elem.discs = [disc];
         disc.mouseover(() => {
           if (this.element!.shape.points.length > 2)
-            disc.animate().attr({ fill: Color.LightGreenLine });
+            disc.attr('fill', Color.LightGreenLine);
         })
         disc.mouseout(() => {
-          disc.animate().attr({ fill: Color.GreenDisc });
+          disc.attr('fill', Color.GreenDisc);
         })
         disc.attr('class', 'seg-point');
       }

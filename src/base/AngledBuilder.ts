@@ -2,12 +2,12 @@ import { Polyline, Circle as Circ, Rect, Text } from "@svgdotjs/svg.js";
 import { AngledShape, IlElementExtra, Color } from "./types";
 import { ShapeBuilder } from "./ShapeBuilder";
 
-export class IlPolyline extends Polyline implements IlElementExtra {
-	categoriesPlain?: Text;
-	categoriesRect?: Rect;
+export class IlPolyline extends SVGPolylineElement implements IlElementExtra {
+	categoriesPlain?: SVGTextElement;
+	categoriesRect?: SVGRectElement;
 	shape!: AngledShape;
-	shadow!: Polyline;
-	discs!: Circ[];
+	shadow!: SVGPolylineElement;
+	discs!: SVGCircleElement[];
 	hasConnector: boolean = false;
 	editing: boolean = false;
 }

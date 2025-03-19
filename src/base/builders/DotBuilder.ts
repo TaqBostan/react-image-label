@@ -3,14 +3,14 @@ import { Text, Rect, Circle as Circ, Polyline } from "@svgdotjs/svg.js";
 import { ShapeBuilder } from "./../ShapeBuilder";
 import { ArrayXY } from '@svgdotjs/svg.js';
 
-class IDot extends Polyline implements IlElementExtra {
-  discs!: Circ[];
+class IDot extends SVGPolylineElement implements IlElementExtra {
+  discs!: SVGCircleElement[];
   classNames?: Text;
   classNamesWrapper?: Rect;
   shape!: Dot;
-  shadow!: Circ;
+  shadow!: SVGCircleElement;
   editing: boolean = false;
-  connector?: Polyline;
+  connector?: SVGPolylineElement;
 }
 
 export class DotBuilder extends ShapeBuilder<Dot> {
