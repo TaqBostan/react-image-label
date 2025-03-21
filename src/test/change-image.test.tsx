@@ -50,7 +50,7 @@ it('change image', () => {
   let container = svg.parentElement as HTMLDivElement
   let imgs = svg.querySelectorAll('image')
   let _img1 = imgs[0] as SVGImageElement
-  _img1.getBBox = () => ({width: 800, height: 700}) as any//new DOMRect(0, 0, 800, 700)
+  _img1.getBBox = () => ({width: 800, height: 700}) as any
   fireEvent(_img1, new CustomEvent('testEvent', { detail: { testTarget: _img1 } }));
 
   //#region container, svg, and image
@@ -85,7 +85,7 @@ it('change image', () => {
 
   expect(rect1).toHaveAttribute('fill', '#27f17640');
   expect(rect1).toHaveAttribute('points', '131.25,43.75 131.25,87.5 175,87.5 175,43.75 131.25,43.75');
-  expect(rect1).toHaveAttribute('stroke', '#27f176');
+  expect(rect1).toHaveAttribute('stroke', 'rgb(39,241,118)');
   expect(rect1).toHaveAttribute('stroke-opacity', '0.7');
   expect(rect1).toHaveAttribute('stroke-width', '2');
   expect(rect1).toHaveAttribute('transform', 'rotate(0,153.125,65.625)');
@@ -93,7 +93,7 @@ it('change image', () => {
 
   expect(rect1Shadow).toHaveAttribute('fill', 'none');
   expect(rect1Shadow).toHaveAttribute('points', '131.25,43.75 131.25,87.5 175,87.5 175,43.75 131.25,43.75');
-  expect(rect1Shadow).toHaveAttribute('stroke', '#000000');
+  expect(rect1Shadow).toHaveAttribute('stroke', '#000');
   expect(rect1Shadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(rect1Shadow).toHaveAttribute('stroke-width', '4');
   expect(rect1Shadow).toHaveAttribute('transform', 'rotate(0,153.125,65.625)');
@@ -106,14 +106,14 @@ it('change image', () => {
 
   expect(polyline).toHaveAttribute('fill', '#ffffff00');
   expect(polyline).toHaveAttribute('points', '43.75,43.75 43.75,87.5 65.625,87.5 65.625,105 78.75,105 78.75,131.25 105,131.25 105,43.75 43.75,43.75');
-  expect(polyline).toHaveAttribute('stroke', '#ff0000');
+  expect(polyline).toHaveAttribute('stroke', '#f00');
   expect(polyline).toHaveAttribute('stroke-opacity', '0.7');
   expect(polyline).toHaveAttribute('stroke-width', '2');
   expect(polyline).not.toHaveAttribute('transform');
   
   expect(polylineShadow).toHaveAttribute('fill', 'none');
   expect(polylineShadow).toHaveAttribute('points', '43.75,43.75 43.75,87.5 65.625,87.5 65.625,105 78.75,105 78.75,131.25 105,131.25 105,43.75 43.75,43.75');
-  expect(polylineShadow).toHaveAttribute('stroke', '#000000');
+  expect(polylineShadow).toHaveAttribute('stroke', '#000');
   expect(polylineShadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(polylineShadow).toHaveAttribute('stroke-width', '4');
   expect(polylineShadow).not.toHaveAttribute('transform');
@@ -157,14 +157,14 @@ it('change image', () => {
 
   expect(rect2).toHaveAttribute('fill', '#ffffff00');
   expect(rect2).toHaveAttribute('points', '125,75 125,100 150,100 150,75 125,75');
-  expect(rect2).toHaveAttribute('stroke', '#ffffff');
+  expect(rect2).toHaveAttribute('stroke', '#fff');
   expect(rect2).toHaveAttribute('stroke-opacity', '0.7');
   expect(rect2).toHaveAttribute('stroke-width', '2');
   expect(rect2).toHaveAttribute('transform', 'rotate(0,137.5,87.5)');
 
   expect(rect2Shadow).toHaveAttribute('fill', 'none');
   expect(rect2Shadow).toHaveAttribute('points', '125,75 125,100 150,100 150,75 125,75');
-  expect(rect2Shadow).toHaveAttribute('stroke', '#000000');
+  expect(rect2Shadow).toHaveAttribute('stroke', '#000');
   expect(rect2Shadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(rect2Shadow).toHaveAttribute('stroke-width', '4');
   expect(rect2Shadow).toHaveAttribute('transform', 'rotate(0,137.5,87.5)');
@@ -179,7 +179,7 @@ it('change image', () => {
   expect(circle).toHaveAttribute('cy', '50');
   expect(circle).toHaveAttribute('rx', '20');
   expect(circle).toHaveAttribute('ry', '20');
-  expect(circle).toHaveAttribute('stroke', '#ffffff');
+  expect(circle).toHaveAttribute('stroke', '#fff');
   expect(circle).toHaveAttribute('stroke-opacity', '0.7');
   expect(circle).toHaveAttribute('stroke-width', '2');
   expect(circle).not.toHaveAttribute('transform');
@@ -189,7 +189,7 @@ it('change image', () => {
   expect(circleShadow).toHaveAttribute('cy', '50');
   expect(circleShadow).toHaveAttribute('rx', '20');
   expect(circleShadow).toHaveAttribute('ry', '20');
-  expect(circleShadow).toHaveAttribute('stroke', '#000000');
+  expect(circleShadow).toHaveAttribute('stroke', '#000');
   expect(circleShadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(circleShadow).toHaveAttribute('stroke-width', '4');
   expect(circleShadow).not.toHaveAttribute('transform');
@@ -204,7 +204,7 @@ it('change image', () => {
   expect(ellipse).toHaveAttribute('cy', '75');
   expect(ellipse).toHaveAttribute('rx', '30');
   expect(ellipse).toHaveAttribute('ry', '20');
-  expect(ellipse).toHaveAttribute('stroke', '#ffffff');
+  expect(ellipse).toHaveAttribute('stroke', '#fff');
   expect(ellipse).toHaveAttribute('stroke-opacity', '0.7');
   expect(ellipse).toHaveAttribute('stroke-width', '2');
   expect(ellipse).toHaveAttribute('transform', 'rotate(0,150,75)');
@@ -214,7 +214,7 @@ it('change image', () => {
   expect(ellipseShadow).toHaveAttribute('cy', '75');
   expect(ellipseShadow).toHaveAttribute('rx', '30');
   expect(ellipseShadow).toHaveAttribute('ry', '20');
-  expect(ellipseShadow).toHaveAttribute('stroke', '#000000');
+  expect(ellipseShadow).toHaveAttribute('stroke', '#000');
   expect(ellipseShadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(ellipseShadow).toHaveAttribute('stroke-width', '4');
   expect(ellipseShadow).toHaveAttribute('transform', 'rotate(0,150,75)');

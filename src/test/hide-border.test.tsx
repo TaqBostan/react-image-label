@@ -8,15 +8,15 @@ import { FakeMouseEvent } from './helper/MouseEventWithOffsets';
 
 export const ns = "http://www.w3.org/2000/svg";
 
-Object.defineProperty(global.SVGElement.prototype, 'getBBox', {
+Object.defineProperty(global.SVGTextElement.prototype, 'getBBox', {
     writable: true,
     value: jest.fn().mockReturnValue({
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
     }),
-});
+  });
 
 it('hidden border', () => {
     let imageUrl = 'https://raw.githubusercontent.com/TaqBostan/content/main/Fruit.jpeg';
@@ -40,7 +40,8 @@ it('hidden border', () => {
             onReady={onReady} />
     );
     let _img = _annotator.container.querySelector('svg')!.children[0] as SVGImageElement
-    fireEvent(_img, new CustomEvent('testEvent', { detail: { testRil: { naturalWidth: 600, naturalHeight: 700 } } }));
+    _img.getBBox = () => ({width: 600, height: 700}) as any
+    fireEvent(_img, new CustomEvent('testEvent', { detail: { testTarget: _img } }));
 
     let container = _annotator.container.children[0] as HTMLDivElement;
     let svg = _annotator.container.querySelector('svg')!;
@@ -59,14 +60,14 @@ it('hidden border', () => {
 
     expect(rect1).toHaveAttribute('fill', '#27f17640');
     expect(rect1).toHaveAttribute('points', '150,50 150,100 200,100 200,50 150,50');
-    expect(rect1).toHaveAttribute('stroke', '#27f176');
+    expect(rect1).toHaveAttribute('stroke', 'rgb(39,241,118)');
     expect(rect1).toHaveAttribute('stroke-opacity', '0.7');
     expect(rect1).toHaveAttribute('stroke-width', '0');
     expect(rect1).toHaveAttribute('transform', 'rotate(0,175,75)');
 
     expect(rect1Shadow).toHaveAttribute('fill', 'none');
     expect(rect1Shadow).toHaveAttribute('points', '150,50 150,100 200,100 200,50 150,50');
-    expect(rect1Shadow).toHaveAttribute('stroke', '#000000');
+    expect(rect1Shadow).toHaveAttribute('stroke', '#000');
     expect(rect1Shadow).toHaveAttribute('stroke-opacity', '0.4');
     expect(rect1Shadow).toHaveAttribute('stroke-width', '4');
     expect(rect1Shadow).toHaveAttribute('transform', 'rotate(0,175,75)');
@@ -76,7 +77,7 @@ it('hidden border', () => {
     //#region discs
     let _points = [[150, 50], [150, 100], [200, 100], [200, 50]];
     discs.forEach((disc, index) => {
-        expect(disc).toHaveAttribute('fill', '#000000');
+        expect(disc).toHaveAttribute('fill', '#000');
         expect(disc).toHaveAttribute('cx', _points[index][0].toString());
         expect(disc).toHaveAttribute('cy', _points[index][1].toString());
         expect(disc).toHaveAttribute('r', '2');
@@ -101,7 +102,7 @@ it('hidden border', () => {
     rect1Shadow = polylines[1];
     expect(rect1).toHaveAttribute('fill', '#27f17640');
     expect(rect1).toHaveAttribute('points', '150,50 150,100 200,100 200,50 150,50');
-    expect(rect1).toHaveAttribute('stroke', '#27f176');
+    expect(rect1).toHaveAttribute('stroke', 'rgb(39,241,118)');
     expect(rect1).toHaveAttribute('stroke-opacity', '0.7');
     expect(rect1).toHaveAttribute('stroke-width', '2');
     expect(rect1).toHaveAttribute('transform', 'rotate(0,175,75)');
@@ -109,7 +110,7 @@ it('hidden border', () => {
 
     expect(rect1Shadow).toHaveAttribute('fill', 'none');
     expect(rect1Shadow).toHaveAttribute('points', '150,50 150,100 200,100 200,50 150,50');
-    expect(rect1Shadow).toHaveAttribute('stroke', '#000000');
+    expect(rect1Shadow).toHaveAttribute('stroke', '#000');
     expect(rect1Shadow).toHaveAttribute('stroke-opacity', '0.4');
     expect(rect1Shadow).toHaveAttribute('stroke-width', '4');
     expect(rect1Shadow).toHaveAttribute('transform', 'rotate(0,175,75)');
@@ -143,14 +144,14 @@ it('hidden border', () => {
 
     expect(rect1).toHaveAttribute('fill', '#27f17640');
     expect(rect1).toHaveAttribute('points', '150,50 150,100 200,100 200,50 150,50');
-    expect(rect1).toHaveAttribute('stroke', '#27f176');
+    expect(rect1).toHaveAttribute('stroke', 'rgb(39,241,118)');
     expect(rect1).toHaveAttribute('stroke-opacity', '0.7');
     expect(rect1).toHaveAttribute('stroke-width', '0');
     expect(rect1).toHaveAttribute('transform', 'rotate(0,175,75)');
 
     expect(rect1Shadow).toHaveAttribute('fill', 'none');
     expect(rect1Shadow).toHaveAttribute('points', '150,50 150,100 200,100 200,50 150,50');
-    expect(rect1Shadow).toHaveAttribute('stroke', '#000000');
+    expect(rect1Shadow).toHaveAttribute('stroke', '#000');
     expect(rect1Shadow).toHaveAttribute('stroke-opacity', '0.4');
     expect(rect1Shadow).toHaveAttribute('stroke-width', '4');
     expect(rect1Shadow).toHaveAttribute('transform', 'rotate(0,175,75)');
@@ -160,7 +161,7 @@ it('hidden border', () => {
     //#region discs
     _points = [[150, 50], [150, 100], [200, 100], [200, 50]];
     discs.forEach((disc, index) => {
-        expect(disc).toHaveAttribute('fill', '#000000');
+        expect(disc).toHaveAttribute('fill', '#000');
         expect(disc).toHaveAttribute('cx', _points[index][0].toString());
         expect(disc).toHaveAttribute('cy', _points[index][1].toString());
         expect(disc).toHaveAttribute('r', '2');
@@ -188,7 +189,7 @@ it('hidden border', () => {
 
     expect(rect2).toHaveAttribute('fill', '#ffffff00');
     expect(rect2).toHaveAttribute('points', '100,100 100,200 150,200 150,100 100,100');
-    expect(rect2).toHaveAttribute('stroke', '#ff0000');
+    expect(rect2).toHaveAttribute('stroke', '#f00');
     expect(rect2).toHaveAttribute('stroke-opacity', '0.7');
     expect(rect2).toHaveAttribute('stroke-width', '2');
     expect(rect2).toHaveAttribute('transform', 'rotate(0,125,150)');
@@ -196,7 +197,7 @@ it('hidden border', () => {
 
     expect(rect2Shadow).toHaveAttribute('fill', 'none');
     expect(rect2Shadow).toHaveAttribute('points', '100,100 100,200 150,200 150,100 100,100');
-    expect(rect2Shadow).toHaveAttribute('stroke', '#000000');
+    expect(rect2Shadow).toHaveAttribute('stroke', '#000');
     expect(rect2Shadow).toHaveAttribute('stroke-opacity', '0.4');
     expect(rect2Shadow).toHaveAttribute('stroke-width', '4');
     expect(rect2Shadow).toHaveAttribute('transform', 'rotate(0,125,150)');

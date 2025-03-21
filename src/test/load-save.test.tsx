@@ -7,7 +7,7 @@ import { Circle, Ellipse, Polygon, Rectangle } from '../base/types';
 
 export const ns = "http://www.w3.org/2000/svg";
 
-Object.defineProperty(global.SVGElement.prototype, 'getBBox', {
+Object.defineProperty(global.SVGTextElement.prototype, 'getBBox', {
   writable: true,
   value: jest.fn().mockReturnValue({
     x: 0,
@@ -41,7 +41,8 @@ it('load container, svg, image in natural size', () => {
     onReady={onReady} />
   );
   let _img = _annotator.container.querySelector('svg')!.children[0] as SVGImageElement
-  fireEvent(_img, new CustomEvent('testEvent', { detail: {testRil: {naturalWidth: 800, naturalHeight: 500}} }));
+  _img.getBBox = () => ({width: 800, height: 500}) as any
+  fireEvent(_img, new CustomEvent('testEvent', { detail: { testTarget: _img } }));
 
   let container =_annotator.container.children[0] as HTMLDivElement;
   expect(container.style.height).toBe('400px');
@@ -88,7 +89,8 @@ it('load container, svg, image 1', () => {
     onReady={onReady} />
   );
   let _img = _annotator.container.querySelector('svg')!.children[0] as SVGImageElement
-  fireEvent(_img, new CustomEvent('testEvent', { detail: {testRil: {naturalWidth: 800, naturalHeight: 400}} }));
+  _img.getBBox = () => ({width: 800, height: 400}) as any
+  fireEvent(_img, new CustomEvent('testEvent', { detail: { testTarget: _img } }));
 
   let container =_annotator.container.children[0] as HTMLDivElement;
   expect(container.style.height).toBe('300px');
@@ -132,7 +134,8 @@ it('load container, svg, image 2', () => {
     onReady={onReady} />
   );
   let _img = _annotator.container.querySelector('svg')!.children[0] as SVGImageElement
-  fireEvent(_img, new CustomEvent('testEvent', { detail: {testRil: {naturalWidth: 400, naturalHeight: 800}} }));
+  _img.getBBox = () => ({width: 400, height: 800}) as any
+  fireEvent(_img, new CustomEvent('testEvent', { detail: { testTarget: _img } }));
 
   let container =_annotator.container.children[0] as HTMLDivElement;
   expect(container.style.height).toBe('800px');
@@ -176,7 +179,8 @@ it('load container, svg, image 3', () => {
     onReady={onReady} />
   );
   let _img = _annotator.container.querySelector('svg')!.children[0] as SVGImageElement
-  fireEvent(_img, new CustomEvent('testEvent', { detail: {testRil: {naturalWidth: 600, naturalHeight: 700}} }));
+  _img.getBBox = () => ({width: 600, height: 700}) as any
+  fireEvent(_img, new CustomEvent('testEvent', { detail: { testTarget: _img } }));
 
   let container =_annotator.container.children[0] as HTMLDivElement;
   expect(container.style.height).toBe('800px');
@@ -221,7 +225,8 @@ it('load shapes', () => {
     onReady={onReady} />
   );
   let _img = _annotator.container.querySelector('svg')!.children[0] as SVGImageElement
-  fireEvent(_img, new CustomEvent('testEvent', { detail: {testRil: {naturalWidth: 600, naturalHeight: 700}} }));
+  _img.getBBox = () => ({width: 600, height: 700}) as any
+  fireEvent(_img, new CustomEvent('testEvent', { detail: { testTarget: _img } }));
 
   let container =_annotator.container.children[0] as HTMLDivElement;
   let svg = _annotator.container.querySelector('svg')!;
@@ -242,7 +247,7 @@ it('load shapes', () => {
 
   expect(rect1).toHaveAttribute('fill', '#27f17640');
   expect(rect1).toHaveAttribute('points', '150,50 150,100 200,100 200,50 150,50');
-  expect(rect1).toHaveAttribute('stroke', '#27f176');
+  expect(rect1).toHaveAttribute('stroke', 'rgb(39,241,118)');
   expect(rect1).toHaveAttribute('stroke-opacity', '0.7');
   expect(rect1).toHaveAttribute('stroke-width', '2');
   expect(rect1).toHaveAttribute('transform', 'rotate(0,175,75)');  
@@ -251,7 +256,7 @@ it('load shapes', () => {
 
   expect(rect1Shadow).toHaveAttribute('fill', 'none');
   expect(rect1Shadow).toHaveAttribute('points', '150,50 150,100 200,100 200,50 150,50');
-  expect(rect1Shadow).toHaveAttribute('stroke', '#000000');
+  expect(rect1Shadow).toHaveAttribute('stroke', '#000');
   expect(rect1Shadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(rect1Shadow).toHaveAttribute('stroke-width', '4');
   expect(rect1Shadow).toHaveAttribute('transform', 'rotate(0,175,75)');
@@ -272,7 +277,7 @@ it('load shapes', () => {
 
   expect(rect2Shadow).toHaveAttribute('fill', 'none');
   expect(rect2Shadow).toHaveAttribute('points', '250,150 250,200 300,200 300,150 250,150');
-  expect(rect2Shadow).toHaveAttribute('stroke', '#000000');
+  expect(rect2Shadow).toHaveAttribute('stroke', '#000');
   expect(rect2Shadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(rect2Shadow).toHaveAttribute('stroke-width', '4');
   expect(rect2Shadow).toHaveAttribute('transform', 'rotate(0,275,175)');
@@ -284,14 +289,14 @@ it('load shapes', () => {
 
   expect(polyline).toHaveAttribute('fill', '#27f17640');
   expect(polyline).toHaveAttribute('points', '50,50 50,100 75,100 75,120 90,120 90,150 120,150 120,50 50,50');
-  expect(polyline).toHaveAttribute('stroke', '#27f176');
+  expect(polyline).toHaveAttribute('stroke', 'rgb(39,241,118)');
   expect(polyline).toHaveAttribute('stroke-opacity', '0.7');
   expect(polyline).toHaveAttribute('stroke-width', '2');
   expect(polyline).not.toHaveAttribute('transform');
   
   expect(polylineShadow).toHaveAttribute('fill', 'none');
   expect(polylineShadow).toHaveAttribute('points', '50,50 50,100 75,100 75,120 90,120 90,150 120,150 120,50 50,50');
-  expect(polylineShadow).toHaveAttribute('stroke', '#000000');
+  expect(polylineShadow).toHaveAttribute('stroke', '#000');
   expect(polylineShadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(polylineShadow).toHaveAttribute('stroke-width', '4');
   expect(polylineShadow).not.toHaveAttribute('transform');
@@ -306,7 +311,7 @@ it('load shapes', () => {
   expect(circle).toHaveAttribute('cy', '100');
   expect(circle).toHaveAttribute('rx', '40');
   expect(circle).toHaveAttribute('ry', '40');
-  expect(circle).toHaveAttribute('stroke', '#ffffff');
+  expect(circle).toHaveAttribute('stroke', '#fff');
   expect(circle).toHaveAttribute('stroke-opacity', '0.7');
   expect(circle).toHaveAttribute('stroke-width', '2');
   expect(circle).not.toHaveAttribute('transform');
@@ -316,7 +321,7 @@ it('load shapes', () => {
   expect(circleShadow).toHaveAttribute('cy', '100');
   expect(circleShadow).toHaveAttribute('rx', '40');
   expect(circleShadow).toHaveAttribute('ry', '40');
-  expect(circleShadow).toHaveAttribute('stroke', '#000000');
+  expect(circleShadow).toHaveAttribute('stroke', '#000');
   expect(circleShadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(circleShadow).toHaveAttribute('stroke-width', '4');
   expect(circleShadow).not.toHaveAttribute('transform');
@@ -331,7 +336,7 @@ it('load shapes', () => {
   expect(ellipse).toHaveAttribute('cy', '150');
   expect(ellipse).toHaveAttribute('rx', '60');
   expect(ellipse).toHaveAttribute('ry', '40');
-  expect(ellipse).toHaveAttribute('stroke', '#27f176');
+  expect(ellipse).toHaveAttribute('stroke', 'rgb(39,241,118)');
   expect(ellipse).toHaveAttribute('stroke-opacity', '0.7');
   expect(ellipse).toHaveAttribute('stroke-width', '2');
   expect(ellipse).toHaveAttribute('transform', 'rotate(0,350,150)');
@@ -341,7 +346,7 @@ it('load shapes', () => {
   expect(ellipseShadow).toHaveAttribute('cy', '150');
   expect(ellipseShadow).toHaveAttribute('rx', '60');
   expect(ellipseShadow).toHaveAttribute('ry', '40');
-  expect(ellipseShadow).toHaveAttribute('stroke', '#000000');
+  expect(ellipseShadow).toHaveAttribute('stroke', '#000');
   expect(ellipseShadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(ellipseShadow).toHaveAttribute('stroke-width', '4');
   expect(ellipseShadow).toHaveAttribute('transform', 'rotate(0,350,150)');
@@ -373,7 +378,8 @@ it('getShapes', () => {
     onReady={onReady} />
   );
   let _img = _annotator.container.querySelector('svg')!.children[0] as SVGImageElement
-  fireEvent(_img, new CustomEvent('testEvent', { detail: {testRil: {naturalWidth: 600, naturalHeight: 700}} }));
+  _img.getBBox = () => ({width: 600, height: 700}) as any
+  fireEvent(_img, new CustomEvent('testEvent', { detail: { testTarget: _img } }));
 
   let container =_annotator.container.children[0] as HTMLDivElement;
   let shapes = res.result.current.annotator!.getShapes();

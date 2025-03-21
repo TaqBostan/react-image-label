@@ -10,7 +10,7 @@ import Util from '../base/util';
 
 export const ns = "http://www.w3.org/2000/svg";
 
-Object.defineProperty(global.SVGElement.prototype, 'getBBox', {
+Object.defineProperty(global.SVGTextElement.prototype, 'getBBox', {
   writable: true,
   value: jest.fn().mockReturnValue({
     x: 0,
@@ -43,7 +43,8 @@ it('draw rectangle', () => {
       onReady={onReady} />
   );
   let _img = _annotator.container.querySelector('svg')!.children[0] as SVGImageElement
-  fireEvent(_img, new CustomEvent('testEvent', { detail: { testRil: { naturalWidth: 1400, naturalHeight: 800 } } }));
+  _img.getBBox = () => ({width: 1400, height: 800}) as any
+  fireEvent(_img, new CustomEvent('testEvent', { detail: { testTarget: _img } }));
 
   let container = _annotator.container.children[0] as HTMLDivElement;
   let svg = _annotator.container.querySelector('svg')!;
@@ -94,7 +95,8 @@ it('draw rectangle with categories', () => {
       onAdded={onAdded} />
   );
   let _img = _annotator.container.querySelector('svg')!.children[0] as SVGImageElement
-  fireEvent(_img, new CustomEvent('testEvent', { detail: { testRil: { naturalWidth: 1400, naturalHeight: 800 } } }));
+  _img.getBBox = () => ({width: 1400, height: 800}) as any
+  fireEvent(_img, new CustomEvent('testEvent', { detail: { testTarget: _img } }));
 
   let container = _annotator.container.children[0] as HTMLDivElement;
   let svg = _annotator.container.querySelector('svg')!;
@@ -195,14 +197,14 @@ it('draw rectangle with categories', () => {
   expect(_rect).toHaveClass('grabbable');
   expect(_rect).toHaveAttribute('fill', Color.ShapeFill);
   expect(_rect).toHaveAttribute('points', _points);
-  expect(_rect).toHaveAttribute('stroke', '#ff0000');
+  expect(_rect).toHaveAttribute('stroke', '#f00');
   expect(_rect).toHaveAttribute('stroke-opacity', '0.7');
   expect(_rect).toHaveAttribute('stroke-width', '2');
   expect(_rect).toHaveAttribute('transform', `rotate(0,${_center[0]},${_center[1]})`);
 
   expect(rectShadow).toHaveAttribute('fill', 'none');
   expect(rectShadow).toHaveAttribute('points', _points);
-  expect(rectShadow).toHaveAttribute('stroke', '#000000');
+  expect(rectShadow).toHaveAttribute('stroke', '#000');
   expect(rectShadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(rectShadow).toHaveAttribute('stroke-width', '4');
   expect(rectShadow).toHaveAttribute('transform', `rotate(0,${_center[0]},${_center[1]})`);
@@ -211,7 +213,7 @@ it('draw rectangle with categories', () => {
 
   expect(_rect).not.toHaveClass('grabbable');
   expect(_rect).toHaveAttribute('fill', "rgba(250,250,250,0.4)");
-  expect(_rect).toHaveAttribute('stroke', "#fafafa");
+  expect(_rect).toHaveAttribute('stroke', "rgb(250,250,250)");
   //#endregion
 
   //#region rotate
@@ -252,14 +254,14 @@ it('draw rectangle with categories', () => {
   expect(_rect).toHaveClass('grabbable');
   expect(_rect).toHaveAttribute('fill', 'rgba(250,250,250,0.4)');
   expect(_rect).toHaveAttribute('points', _points);
-  expect(_rect).toHaveAttribute('stroke', '#fafafa');
+  expect(_rect).toHaveAttribute('stroke', 'rgb(250,250,250)');
   expect(_rect).toHaveAttribute('stroke-opacity', '0.7');
   expect(_rect).toHaveAttribute('stroke-width', '2');
   expect(_rect).toHaveAttribute('transform', `rotate(29.999999999999993,${_center[0]},${_center[1]})`);
 
   expect(rectShadow).toHaveAttribute('fill', 'none');
   expect(rectShadow).toHaveAttribute('points', _points);
-  expect(rectShadow).toHaveAttribute('stroke', '#000000');
+  expect(rectShadow).toHaveAttribute('stroke', '#000');
   expect(rectShadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(rectShadow).toHaveAttribute('stroke-width', '4');
   expect(rectShadow).toHaveAttribute('transform', `rotate(29.999999999999993,${_center[0]},${_center[1]})`);
