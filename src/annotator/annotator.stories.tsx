@@ -81,7 +81,7 @@ export const ImageAnnotatorPrimary: FC = () => {
         shapes={shapes}
         width={700}
         height={400}
-        hideBorder={true}
+        hideBorder={false}
         shortcut={{del: true, bksp: true }}
         onAdded={shape => setDialog({ show: true, shape })}
         onContextMenu={shape => setDialog({ show: true, shape })}

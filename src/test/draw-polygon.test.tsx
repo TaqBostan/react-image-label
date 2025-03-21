@@ -9,7 +9,7 @@ import { FakeMouseEvent } from './helper/MouseEventWithOffsets';
 
 export const ns = "http://www.w3.org/2000/svg";
 
-Object.defineProperty(global.SVGElement.prototype, 'getBBox', {
+Object.defineProperty(global.SVGTextElement.prototype, 'getBBox', {
   writable: true,
   value: jest.fn().mockReturnValue({
     x: 0,
@@ -46,7 +46,8 @@ it('draw polygon', () => {
       onAdded={onAdded} />
   );
   let _img = _annotator.container.querySelector('svg')!.children[0] as SVGImageElement
-  fireEvent(_img, new CustomEvent('testEvent', { detail: { testRil: { naturalWidth: 1400, naturalHeight: 800 } } }));
+  _img.getBBox = () => ({width: 1400, height: 800}) as any
+  fireEvent(_img, new CustomEvent('testEvent', { detail: { testTarget: _img } }));
 
   let container = _annotator.container.children[0] as HTMLDivElement;
   let svg = _annotator.container.querySelector('svg')!;
@@ -148,14 +149,14 @@ it('draw polygon', () => {
   expect(polyline).toHaveClass('grabbable');
   expect(polyline).toHaveAttribute('fill', Color.ShapeFill);
   expect(polyline).toHaveAttribute('points', _points);
-  expect(polyline).toHaveAttribute('stroke', '#ff0000');
+  expect(polyline).toHaveAttribute('stroke', '#f00');
   expect(polyline).toHaveAttribute('stroke-opacity', '0.7');
   expect(polyline).toHaveAttribute('stroke-width', '2');
   expect(polyline).not.toHaveAttribute('transform');
 
   expect(polylineShadow).toHaveAttribute('fill', 'none');
   expect(polylineShadow).toHaveAttribute('points', _points);
-  expect(polylineShadow).toHaveAttribute('stroke', '#000000');
+  expect(polylineShadow).toHaveAttribute('stroke', '#000');
   expect(polylineShadow).toHaveAttribute('stroke-opacity', '0.4');
   expect(polylineShadow).toHaveAttribute('stroke-width', '4');
   expect(polylineShadow).not.toHaveAttribute('transform');

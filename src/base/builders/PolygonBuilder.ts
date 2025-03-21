@@ -25,7 +25,7 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
       let origin = elem.shape.points[0];
       elem.discs[0] = this.drawDisc(origin[0], origin[1], 4, Color.BlackDisc);
       elem.discs.forEach(_circle => {
-        _circle.fill(Color.BlackDisc).size(4);
+        _circle.fill(Color.BlackDisc).radius(2);
       });
       this.startClicked = false;
       this.svg.off('mousemove');
@@ -61,10 +61,10 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
         elem.discs = [disc];
         disc.mouseover(() => {
           if (this.element!.shape.points.length > 2)
-            disc.animate().attr({ fill: Color.LightGreenLine });
+            disc.attr('fill', Color.LightGreenLine);
         })
         disc.mouseout(() => {
-          disc.animate().attr({ fill: Color.GreenDisc });
+          disc.attr('fill', Color.GreenDisc);
         })
         disc.attr('class', 'seg-point');
       }
@@ -98,7 +98,7 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
       if (e.buttons !== 1) return this.editShape_mu();
       let discRadius = this.sd.discRadius;
       this.element!.shape.points[this.dragIndex] = [e.offsetX, e.offsetY];
-      this.element!.discs[this.dragIndex].move(e.offsetX - discRadius, e.offsetY - discRadius);
+      this.element!.discs[this.dragIndex].move(e.offsetX, e.offsetY);
       if (this.dragIndex === 0)
         this.element!.shape.points[this.element!.shape.points.length - 1] = [e.offsetX, e.offsetY];
       this.plotAngledShape();

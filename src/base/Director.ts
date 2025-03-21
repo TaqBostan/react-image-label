@@ -1,4 +1,3 @@
-import { Svg } from "react-svgdotjs";
 import { Shape, ElementWithExtra, StaticData, Point, ActType } from "./types";
 import PolygonBuilder from "./builders/PolygonBuilder";
 import { ShapeBuilder } from "./ShapeBuilder";
@@ -15,7 +14,7 @@ export class Director {
   elements: ElementWithExtra[] = [];
   origin?: Point;
 
-  constructor(public svg: Svg, public container: HTMLDivElement) {
+  constructor(public svg: SVGSVGElement, public container: HTMLDivElement) {
     let onEdited = (shape: Shape) => this.raise(ActType.Edited, shape), enlist = (shape: Shape) => this.enlist(shape, true);
     let params: [(shape: Shape) => void, (shape: Shape) => void] = [onEdited, enlist]
     this.builders = [
@@ -90,13 +89,13 @@ export class Director {
     }
     let id = builder.element.shape.id;
     this.elements.push(builder.element);
-    builder.element.node.addEventListener('contextmenu', (ev: MouseEvent) => {
+    builder.element.addEventListener('contextmenu', (ev: MouseEvent) => {
       ev.preventDefault();
       let elem = this.elements.find(p => p.shape.id === id)!;
       this.raise(ActType.CtxMenu, elem.shape);
       return false;
     }, false);
-    builder.element.node.onclick = (e: MouseEvent) => {
+    builder.element.onclick = (e: MouseEvent) => {
       let elem = this.elements.find(p => p.shape.id === id)!;
       if (!e.ctrlKey && !elem.editing) {
         this.edit(id);
@@ -162,10 +161,10 @@ export class Director {
     }
   }
 
-  getShapes = () => this.elements.map(el => el.shape.getOutput(ShapeBuilder._sd.ratio, this.svg.node));
+  getShapes = () => this.elements.map(el => el.shape.getOutput(ShapeBuilder._sd.ratio, this.svg));
   findShape = (id: number) => this.elements.find(el => el.shape.id === id)!.shape;
 
-  static init(svg: Svg, sd: StaticData, container: HTMLDivElement) {
+  static init(svg: SVGSVGElement, sd: StaticData, container: HTMLDivElement) {
     svg.size(sd.width * sd.ratio, sd.height * sd.ratio);
     ShapeBuilder._svg = svg;
     ShapeBuilder._sd = sd;
@@ -177,7 +176,7 @@ export class Director {
 
   static setActions(actions: { type: ActType; func: ((shape: Shape) => any) | undefined }[]) {
     let hof = (fun?: (shape: Shape) => any) => (shape: Shape) => 
-      fun?.(shape.getOutput(ShapeBuilder._sd.ratio, ShapeBuilder._svg.node))
+      fun?.(shape.getOutput(ShapeBuilder._sd.ratio, ShapeBuilder._svg))
     Director.actions = actions.map(act => ({ type: act.type, func: hof(act.func) }));
   }
 
@@ -186,7 +185,7 @@ export class Director {
       b.stopDraw();
       b.stopEdit();
     });
-    ShapeBuilder._svg?.clear();
+    if(ShapeBuilder._svg) ShapeBuilder._svg.innerHTML = '';
     this.elements = [];
     this.builders = [];
     Director.instance = undefined;

@@ -1,4 +1,4 @@
-import { ArrayXY } from '@svgdotjs/svg.js'
+import { ArrayXY } from "./types";
 
 export default class Util {
   static ArrayXYSum = (...array: ArrayXY[]): ArrayXY =>

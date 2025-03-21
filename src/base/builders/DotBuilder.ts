@@ -1,16 +1,14 @@
-import { IlElementExtra, Color, Dot, ElementWithExtra } from "./../types";
-import { Text, Rect, Circle as Circ, Polyline } from "@svgdotjs/svg.js";
+import { IlElementExtra, Color, Dot, ElementWithExtra, ArrayXY } from "./../types";
 import { ShapeBuilder } from "./../ShapeBuilder";
-import { ArrayXY } from '@svgdotjs/svg.js';
 
-class IDot extends Polyline implements IlElementExtra {
-  discs!: Circ[];
+class IDot extends SVGPolylineElement implements IlElementExtra {
+  discs!: SVGCircleElement[];
   classNames?: Text;
-  classNamesWrapper?: Rect;
+  classNamesWrapper?: SVGRectElement;
   shape!: Dot;
-  shadow!: Circ;
+  shadow!: SVGCircleElement;
   editing: boolean = false;
-  connector?: Polyline;
+  connector?: SVGPolylineElement;
 }
 
 export class DotBuilder extends ShapeBuilder<Dot> {
@@ -62,7 +60,7 @@ export class DotBuilder extends ShapeBuilder<Dot> {
     }
     else {
       elem.shape.position = [event.offsetX, event.offsetY];
-      elem.discs[0].move(event.offsetX - 4, event.offsetY - 4);
+      elem.discs[0].move(event.offsetX, event.offsetY);
       this.plot(elem);
       this.enlist(elem.shape);
     }
@@ -70,7 +68,7 @@ export class DotBuilder extends ShapeBuilder<Dot> {
 
   plot(elem: IDot): void {
     let [x, y] = elem.shape.position;
-    elem.shadow.move(x - 6, y - 6);
+    elem.shadow.move(x, y);
     elem.plot(this.vertices(x, y, 16, 13));
   }
 

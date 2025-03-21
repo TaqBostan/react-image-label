@@ -1,7 +1,17 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} **/
 module.exports = {
   preset: "ts-jest",
-  testEnvironment: "jsdom",
+  testEnvironment: "@happy-dom/jest-environment",
+  testEnvironmentOptions: {
+    url: "http://localhost",
+    width: 1920,
+    height: 1080,
+    settings: {
+      navigator: {
+         "userAgent": "Chrome/133.0.6943.143"
+      }
+    }
+  },
   transform: {
     "^.+.tsx?$": ["ts-jest", {}],
   },

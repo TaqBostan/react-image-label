@@ -1,14 +1,14 @@
-import React, { useEffect, FC } from 'react';
-import { SvgContainer, useSvgContainer, Svg } from 'react-svgdotjs';
+import React, { useEffect, FC, CSSProperties, useRef } from 'react';
 import { Director } from '../base/Director';
 import { Shape, Polygon, Rectangle, Circle, Ellipse, Dot, Shortcut, ActType } from '../base/types';
 import Util from '../base/util';
+import '../base/helper';
 import { AnnotatorHandles } from './hook';
 import './index.css';
 
 const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
-  const { setHandles, svgContainer } = useSvgContainer();
   const getDirector = () => Director.instance!;
+  const wrapper = useRef<SVGSVGElement>(null);
 
   const drawShapes = (shapes?: Shape[] | any[]) => {
     let director = getDirector();
@@ -73,18 +73,20 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     getShapes: getDirector().getShapes
   })
 
-  const onload = React.useCallback((svg: Svg, container: HTMLDivElement, imageUrl: string) => {
-    let onloaded = (ev: any) => {
-      if (!ev?.target || !svg.node.innerHTML) return;
-      let target = ev!.detail?.testRil || ev!.target, src1 = container.getAttribute('data-img')!, src2 = imageUrl;
+  const onload = React.useCallback((svg: SVGSVGElement, container: HTMLDivElement, imageUrl: string) => {
+    let onloaded = (ev: Event) => {
+      if (!ev?.currentTarget || !svg.innerHTML) return;
+      let target = (ev!.detail?.testTarget || ev!.currentTarget) as SVGImageElement, 
+        src1 = container.getAttribute('data-img')!, src2 = imageUrl;
       if (src1 !== Util.fileName(src2)) {
-        for (let i = 0; i < svg.node.children.length; i++) {
-          let child = svg.node.children[i], href = Util.fileName(child.getAttribute('href'));
+        for (let i = 0; i < svg.children.length; i++) {
+          let child = svg.children[i], href = Util.fileName(child.getAttribute('href'));
           if (href && src1 !== href) child.remove();
         }
         return;
       }
-      let naturalWidth = target.naturalWidth, naturalHeight = target.naturalHeight, maxWidth = props.width, maxHeight = props.height, ratio = 1;
+      let bb = target.getBBox();
+      let naturalWidth = bb.width, naturalHeight = bb.height, maxWidth = props.width, maxHeight = props.height, ratio = 1;
       svg.addClass('il-svg');
       Object.assign(container.style, {
         width: (props.width || naturalWidth) + 'px',
@@ -95,10 +97,11 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
       if (!props.naturalSize) {
         if (!maxWidth) maxWidth = container.scrollWidth;
         if (!maxHeight) maxHeight = container.scrollHeight;
-        if (maxWidth! / maxHeight! > target.naturalWidth / target.naturalHeight)
-          ratio = Math.min(maxHeight!, target.naturalHeight) / naturalHeight;
-        else ratio = Math.min(maxWidth!, target.naturalWidth) / naturalWidth;
+        if (maxWidth! / maxHeight! > bb.width / bb.height)
+          ratio = Math.min(maxHeight!, bb.height) / naturalHeight;
+        else ratio = Math.min(maxWidth!, bb.width) / naturalWidth;
       }
+      target.size('100%', '100%');
       let statics = { width: naturalWidth, height: naturalHeight, ratio, discRadius: props.discRadius || 5, hb: props.hideBorder }
       Director.init(svg, statics, container);
       drawShapes(props.shapes);
@@ -106,8 +109,8 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
       props.onReady?.({ ...getHandles(), container });
     }
     container.setAttribute('data-img', Util.fileName(imageUrl))
-    var image = svg.image(imageUrl, onloaded).size('100%', '100%').attr('onmousedown', 'return false').attr('oncontextmenu', 'return false');
-    image.node.addEventListener('testEvent', onloaded)
+    var image = svg.image(imageUrl, onloaded).size('', '').attr('onmousedown', 'return false').attr('oncontextmenu', 'return false');
+    image.addEventListener('testEvent', onloaded)
   }, [props.width, props.height, props.shapes]);
 
   useEffect(() => {
@@ -122,15 +125,16 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   }, [props.onAdded,props.onEdited, props.onContextMenu, props.onSelected]);
 
   useEffect(() => {
-    const onblur = () => svgContainer!.container.classList.remove('grabbable');
-    const onkeydown = (e: KeyboardEvent) => e.key === 'Control' && svgContainer!.container.classList.add('grabbable');
+    const onblur = () => wrapper.current!.parentElement!.classList.remove('grabbable');
+    const onkeydown = (e: KeyboardEvent) => e.key === 'Control' && wrapper.current!.parentElement!.classList.add('grabbable');
     const keyup = (e: KeyboardEvent) => {
       if (e.key === 'Control') onblur();
       if ((props.shortcut?.del && e.key === 'Delete') || (props.shortcut?.bksp && e.key === 'Backspace')) Director.instance?.remove();
       if (e.key === 'Escape') Director.instance?.stopEdit();
     }
-    if (svgContainer && props.imageUrl) {
-      onload(svgContainer.svg, svgContainer.container, props.imageUrl);
+    if (wrapper.current && props.imageUrl) {
+      var container = wrapper.current.parentElement! as HTMLDivElement;
+      onload(wrapper.current!, container, props.imageUrl);
       window.addEventListener('keydown', onkeydown);
       window.addEventListener('keyup', keyup);
       window.addEventListener('blur', onblur);
@@ -141,9 +145,14 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
       window.removeEventListener('keyup', keyup);
       window.removeEventListener('blur', onblur);
     }
-  }, [svgContainer, props.imageUrl, props.shapes]);
+  }, [wrapper, props.imageUrl, props.shapes]);
 
-  return (<SvgContainer setHandles={setHandles} />);
+  return (
+    <div>
+      <svg ref={wrapper}>
+      </svg>
+    </div>
+  );
 }
 
 export { ImageAnnotator };

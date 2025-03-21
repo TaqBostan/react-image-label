@@ -1,6 +1,6 @@
 {
   "name": "react-image-label",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "description": "A comprehensive package for tagging images.",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -9,10 +9,11 @@
   "license": "MIT",
   "scripts": {
     "ladle": "ladle serve",
-    "build": "tsup --dts --external @svgdotjs/svg.js",
-    "test": "jest --verbose"
+    "build": "tsup --dts",
+    "test": "jest --verbose --env=@happy-dom/jest-environment"
   },
   "devDependencies": {
+    "@happy-dom/jest-environment": "^17.4.4",
     "@ladle/react": "^4.0.2",
     "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^16.0.0",
@@ -22,7 +23,6 @@
     "@types/react-dom": "^18.2.22",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "ts-jest": "^29.2.3",
@@ -47,7 +47,7 @@
   "files": [
     "dist"
   ],
-  "dependencies": {
-    "react-svgdotjs": "^2.1.0"
+  "bugs": {
+    "url": "https://github.com/TaqBostan/react-image-label/issues"
   }
 }

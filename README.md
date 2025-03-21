@@ -156,7 +156,7 @@ Below is a list of shortcuts that are configured through `shortcut` prop:
 
 ## Dependencies
 
-The package is dependent on [SVG.js](https://svgjs.dev/docs/3.1/) through [react-svgdotjs](https://www.npmjs.com/package/react-svgdotjs) package. The following peer dependencies must be specified by your project in order to avoid version conflicts:
+The package has no dependency. However the following peer dependencies must be specified by your project in order to avoid version conflicts:
 [`react`](https://www.npmjs.com/package/react),
 [`react-dom`](https://www.npmjs.com/package/react-dom).
 NPM will not automatically install these for you but it will show you a warning message with instructions on how to install them.

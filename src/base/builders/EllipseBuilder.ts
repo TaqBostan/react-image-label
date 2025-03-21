@@ -1,5 +1,4 @@
-import { Ellipse } from "../types";
-import { ArrayXY } from '@svgdotjs/svg.js';
+import { ArrayXY, Ellipse } from "../types";
 import { RoundBuilder } from "../RoundBuilder";
 
 export default class EllipseBuilder extends RoundBuilder<Ellipse> {
