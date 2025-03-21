@@ -311,7 +311,7 @@ SVGPolylineElement.prototype.array = function() {
 }
 
 SVGPolylineElement.prototype.plot = function(points: [number, number][]) {
-    this.setAttribute('points', points.reduce((str, point) => `${str} ${point[0]},${point[1]}`, ''));
+    this.setAttribute('points', points.reduce((str, point) => `${str} ${point[0]},${point[1]}`, '').trimStart());
 }
 
 SVGCircleElement.prototype.x = RoundElX;

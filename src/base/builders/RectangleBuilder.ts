@@ -90,7 +90,7 @@ export default class RectangleBuilder extends AngledBuilder<Rectangle> {
       }
       elem.shape.points[elem.shape.points.length - 1] = [...elem.shape.points[0]];
       elem.shape.centerChanged(Util.rotate(elem.shape.getCenter(), oldCenter, phi));
-      elem.discs.forEach((disc, i) => disc.move(elem.shape.points[i][0] - discRadius, elem.shape.points[i][1] - discRadius));
+      elem.discs.forEach((disc, i) => disc.move(elem.shape.points[i][0], elem.shape.points[i][1]));
       this.plotAngledShape();
       this.rotate();
     }

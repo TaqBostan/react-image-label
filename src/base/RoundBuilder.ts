@@ -54,7 +54,7 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
       if (e.buttons !== 1) return this.draw_mu(e);
       let centre: ArrayXY = [(this.origin.X + e.offsetX) / 2, (this.origin.Y + e.offsetY) / 2];
       let radius = this.calculateRadius([e.offsetX, e.offsetY]);
-      [this.element!, this.element!.shadow].forEach(el => el.radius(radius[0], radius[1]).move(centre[0] - radius[0], centre[1] - radius[1]));
+      [this.element!, this.element!.shadow].forEach(el => el.radius(radius[0], radius[1]).move(centre[0], centre[1]));
     }
   }
 
@@ -155,7 +155,7 @@ export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T>
       elem.shape.height = Math.abs(diff[1]);
       elem.shape.centerChanged(Util.rotate([this.origin.X + diff[0] / 2, this.origin.Y + diff[1] / 2], oldCenter, phi));
       this.setPoints();
-      elem.discs.forEach((disc, i) => disc.move(this.points[i][0] - discRadius, this.points[i][1] - discRadius));
+      elem.discs.forEach((disc, i) => disc.move(this.points[i][0], this.points[i][1]));
       elem.connector!.plot([...this.points, this.points[0]]);
       this.plot(elem);
       this.rotate();

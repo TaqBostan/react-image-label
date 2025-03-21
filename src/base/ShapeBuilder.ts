@@ -107,7 +107,7 @@ export abstract class ShapeBuilder<T extends Shape> {
     let position = this.element!.shape.rotatePosition();
     let str = this.rotateIcon(position);
     let path = this.svg.path(str);
-    let bg = this.svg.circle(24).move(position[0] - 12, position[1] - 12).fill(Color.ShapeFill);
+    let bg = this.svg.circle(12).move(position[0], position[1]).fill(Color.ShapeFill);
     this.rotateArr = [path, bg];
     path.attr('class', 'rot-icon grabbable');
     bg.attr('class', 'grabbable').after(path);

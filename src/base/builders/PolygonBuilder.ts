@@ -98,7 +98,7 @@ export default class PolygonBuilder extends AngledBuilder<Polygon> {
       if (e.buttons !== 1) return this.editShape_mu();
       let discRadius = this.sd.discRadius;
       this.element!.shape.points[this.dragIndex] = [e.offsetX, e.offsetY];
-      this.element!.discs[this.dragIndex].move(e.offsetX - discRadius, e.offsetY - discRadius);
+      this.element!.discs[this.dragIndex].move(e.offsetX, e.offsetY);
       if (this.dragIndex === 0)
         this.element!.shape.points[this.element!.shape.points.length - 1] = [e.offsetX, e.offsetY];
       this.plotAngledShape();
