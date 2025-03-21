@@ -10,9 +10,10 @@
   "scripts": {
     "ladle": "ladle serve",
     "build": "tsup --dts",
-    "test": "jest --verbose"
+    "test": "jest --verbose --env=@happy-dom/jest-environment"
   },
   "devDependencies": {
+    "@happy-dom/jest-environment": "^17.4.4",
     "@ladle/react": "^4.0.2",
     "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^16.0.0",
@@ -22,7 +23,6 @@
     "@types/react-dom": "^18.2.22",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "ts-jest": "^29.2.3",
