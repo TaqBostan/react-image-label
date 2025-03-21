@@ -1,7 +1,7 @@
-import { ArrayXY, PointArray, Rect, Text, Element, Circle as Circ, Polyline } from '@svgdotjs/svg.js'
 import Util from './util';
 
 export type Point = { X: number, Y: number }
+export type ArrayXY = [number, number];
 
 export type StaticData = {
   width: number,
@@ -87,7 +87,7 @@ export interface IlElementExtra {
 export type ElementWithExtra = SVGElement & IlElementExtra;
 
 export abstract class AngledShape extends Shape {
-  constructor(public points: ArrayXY[] | PointArray = [], public categories: string[] = [], public color?: string) {
+  constructor(public points: ArrayXY[] = [], public categories: string[] = [], public color?: string) {
     super(categories, 0, color);
   }
 

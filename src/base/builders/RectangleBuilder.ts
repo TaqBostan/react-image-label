@@ -1,6 +1,5 @@
-import { ArrayXY, PointArray } from '@svgdotjs/svg.js'
 import { AngledBuilder } from "../AngledBuilder";
-import { Rectangle, Point } from "../types";
+import { Rectangle, Point, ArrayXY } from "../types";
 import Util from '../util';
 
 export default class RectangleBuilder extends AngledBuilder<Rectangle> {
@@ -52,7 +51,7 @@ export default class RectangleBuilder extends AngledBuilder<Rectangle> {
   newRect_mm(e: MouseEvent) {
     if (this.rectOrigin) {
       if (e.buttons !== 1) return this.rect_mu(e);
-      let points: ArrayXY[] | PointArray = [] = [];
+      let points: ArrayXY[] = [];
       points.push([this.rectOrigin.X, this.rectOrigin.Y]);
       if (e.shiftKey) {
         let diff = Math.min(Math.abs(this.rectOrigin.X - e.offsetX), Math.abs(this.rectOrigin.Y - e.offsetY));

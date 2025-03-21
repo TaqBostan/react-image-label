@@ -1,4 +1,3 @@
-import { Svg } from "react-svgdotjs";
 import { Shape, ElementWithExtra, StaticData, Point, ActType } from "./types";
 import PolygonBuilder from "./builders/PolygonBuilder";
 import { ShapeBuilder } from "./ShapeBuilder";

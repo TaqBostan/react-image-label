@@ -1,8 +1,6 @@
 
-import { RoundShape, IlElementExtra, Point, Color } from "./types";
-import { Text, Rect, Circle as Circ, Ellipse as Elp, Polyline } from "@svgdotjs/svg.js";
+import { RoundShape, IlElementExtra, Point, Color, ArrayXY } from "./types";
 import { ShapeBuilder } from "./ShapeBuilder";
-import { ArrayXY } from '@svgdotjs/svg.js';
 import Util from "./util";
 
 class IlEllipse extends SVGEllipseElement implements IlElementExtra {

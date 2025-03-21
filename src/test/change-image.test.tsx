@@ -7,7 +7,7 @@ import { Circle, Ellipse, Polygon, Rectangle, Shape } from '../base/types';
 
 export const ns = "http://www.w3.org/2000/svg";
 
-Object.defineProperty(global.SVGElement.prototype, 'getBBox', {
+Object.defineProperty(global.SVGTextElement.prototype, 'getBBox', {
   writable: true,
   value: jest.fn().mockReturnValue({
     x: 0,
@@ -50,7 +50,8 @@ it('change image', () => {
   let container = svg.parentElement as HTMLDivElement
   let imgs = svg.querySelectorAll('image')
   let _img1 = imgs[0] as SVGImageElement
-  fireEvent(_img1, new CustomEvent('testEvent', { detail: { testRil: { naturalWidth: 800, naturalHeight: 700 } } }));
+  _img1.getBBox = () => ({width: 800, height: 700}) as any//new DOMRect(0, 0, 800, 700)
+  fireEvent(_img1, new CustomEvent('testEvent', { detail: { testTarget: _img1 } }));
 
   //#region container, svg, and image
   expect(container.style.width).toBe('700px');
@@ -121,7 +122,8 @@ it('change image', () => {
   fireEvent(_annotator.container.querySelector('#change-img')!, new MouseEvent('click', { bubbles: true, cancelable: true }));
   imgs = svg.querySelectorAll('image')
   let _img2 = imgs[imgs.length - 1] as SVGImageElement
-  fireEvent(_img2, new CustomEvent('testEvent', { detail: { testRil: { naturalWidth: 1400, naturalHeight: 900 } } }));
+  _img2.getBBox = () => new DOMRect(0, 0, 1400, 900)
+  fireEvent(_img2, new CustomEvent('testEvent', { detail: { testTarget: _img2 } }));
   
   //#region container, svg, and image
   expect(container.style.width).toBe('700px');

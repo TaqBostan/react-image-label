@@ -1,11 +1,10 @@
 import { cleanup, fireEvent, render, prettyDOM, renderHook, waitFor, createEvent } from '@testing-library/react';
-import { ArrayXY } from '@svgdotjs/svg.js'
 import React from 'react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event'
 import { ImageAnnotator } from '../annotator/index';
 import { AnnotatorHandles, useImageAnnotator } from '../annotator/hook';
-import { Circle, Color, Ellipse, Polygon, Rectangle, Shape } from '../base/types';
+import { ArrayXY, Circle, Color, Ellipse, Polygon, Rectangle, Shape } from '../base/types';
 import { FakeMouseEvent } from './helper/MouseEventWithOffsets';
 import Util from '../base/util';
 

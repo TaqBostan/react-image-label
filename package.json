@@ -9,7 +9,7 @@
   "license": "MIT",
   "scripts": {
     "ladle": "ladle serve",
-    "build": "tsup --dts --external @svgdotjs/svg.js",
+    "build": "tsup --dts",
     "test": "jest --verbose"
   },
   "devDependencies": {
@@ -47,7 +47,7 @@
   "files": [
     "dist"
   ],
-  "dependencies": {
-    "react-svgdotjs": "^2.1.0"
+  "bugs": {
+    "url": "https://github.com/TaqBostan/react-image-label/issues"
   }
 }

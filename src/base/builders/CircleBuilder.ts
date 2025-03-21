@@ -1,5 +1,4 @@
-import { Circle} from "../types";
-import { ArrayXY } from '@svgdotjs/svg.js';
+import { ArrayXY, Circle} from "../types";
 import { RoundBuilder } from "../RoundBuilder";
 
 export default class CircleBuilder extends RoundBuilder<Circle> {

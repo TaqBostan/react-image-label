@@ -1,5 +1,6 @@
 const ns = "http://www.w3.org/2000/svg";
 
+interface Event { detail: any }
 interface SVGSVGElement {
     circle(r: number): SVGCircleElement;
     ellipse(rx: number, ry: number): SVGEllipseElement;
@@ -130,8 +131,10 @@ SVGSVGElement.prototype.rect = function (w: number, h: number) {
 }
 
 function size(el: SVGElement, w: string, h: string) {
-    el.setAttribute('width', w);
-    el.setAttribute('height', h);
+    if(w) el.setAttribute('width', w);
+    else el.removeAttribute('width');
+    if(h) el.setAttribute('height', h);
+    else el.removeAttribute('height');
 }
 
 SVGSVGElement.prototype.size = function(w: number, h: number) { size(this, w.toString(), h.toString()); };
@@ -235,6 +238,18 @@ SVGElement.prototype.move = function (x: number, y: number) {
     return this;
 }
 
+SVGRectElement.prototype.move = function (x: number, y: number) {
+    this.setAttribute('x', x.toString());
+    this.setAttribute('y', y.toString());
+    return this;
+}
+
+SVGTextElement.prototype.move = function (x: number, y: number) {
+    this.setAttribute('x', x.toString());
+    this.setAttribute('y', y.toString());
+    return this;
+}
+
 SVGElement.prototype.fill = function (color: string) {
     this.setAttribute('fill', color);
     return this;
@@ -263,13 +278,13 @@ SVGEllipseElement.prototype.radius = function (rx: number, ry: number) {
 }
 
 function RoundElX(this: SVGElement,x?: number): any {
-    if(x === undefined) return parseInt(this.getAttribute('cx') || '0');
+    if(x === undefined) return parseFloat(this.getAttribute('cx') || '0');
     this.setAttribute('cx', x.toString());
     return this;
 }
 
 function RoundElY(this: SVGElement, y?: number): any {
-    if(y === undefined) return parseInt(this.getAttribute('cy') || '0');
+    if(y === undefined) return parseFloat(this.getAttribute('cy') || '0');
     this.setAttribute('cy', y.toString());
     return this;
 }
@@ -290,7 +305,7 @@ SVGPolylineElement.prototype.array = function() {
     .map(z => 
         {
             var locs = z.split(',');
-            return [parseInt(locs[0]), parseInt(locs[1])];
+            return [parseFloat(locs[0]), parseFloat(locs[1])];
         }
     );
 }

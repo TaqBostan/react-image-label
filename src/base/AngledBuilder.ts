@@ -1,4 +1,3 @@
-import { Polyline, Circle as Circ, Rect, Text } from "@svgdotjs/svg.js";
 import { AngledShape, IlElementExtra, Color } from "./types";
 import { ShapeBuilder } from "./ShapeBuilder";
 

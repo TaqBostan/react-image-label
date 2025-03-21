@@ -1,6 +1,4 @@
-import { Svg } from "react-svgdotjs";
-import { Shape, ElementWithExtra, Color, Point, StaticData } from "./types";
-import { ArrayXY, Path, Element } from '@svgdotjs/svg.js'
+import { Shape, ElementWithExtra, Color, Point, StaticData, ArrayXY } from "./types";
 import Util from "./util";
 
 export abstract class ShapeBuilder<T extends Shape> {
@@ -79,7 +77,7 @@ export abstract class ShapeBuilder<T extends Shape> {
       element.categoriesPlain.remove();
       element.categoriesPlain = this.svg
         .plain(categoriesPlain)
-        .move(pos[0], pos[1])
+        .move(pos[0], pos[1] + height)
         .font(12, 'bold', '#3a4620','middle')
         .addClass('class-names');
     }
