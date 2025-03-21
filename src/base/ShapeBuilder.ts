@@ -201,7 +201,7 @@ export abstract class ShapeBuilder<T extends Shape> {
         let position = elem.shape.rotatePosition();
         let [path, bg] = this.rotateArr;
         (path as SVGPathElement).plot(this.rotateIcon(position));
-        bg.move(position[0] - 12, position[1] - 12);
+        bg.move(position[0], position[1]);
       }
       this.movePath?.plot(this.moveIcon(elem.shape.getCenter()));
     }
