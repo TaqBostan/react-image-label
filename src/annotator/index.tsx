@@ -86,7 +86,6 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
       }
       let bb = target.getBBox();
       let naturalWidth = bb.width, naturalHeight = bb.height, maxWidth = props.width, maxHeight = props.height, ratio = 1;
-      svg.addClass('il-svg');
       Object.assign(container.style, {
         width: (props.width || naturalWidth) + 'px',
         height: (props.height || naturalHeight) + 'px',

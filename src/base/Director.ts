@@ -167,6 +167,7 @@ export class Director {
   findShape = (id: number) => this.elements.find(el => el.shape.id === id)!.shape;
 
   static init(svg: SVGSVGElement, sd: StaticData, container: HTMLDivElement) {
+    svg.addClass('il-svg');
     svg.size(sd.width * sd.ratio, sd.height * sd.ratio);
     ShapeBuilder._svg = svg;
     ShapeBuilder._sd = sd;
