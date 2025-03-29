@@ -1,8 +1,7 @@
-import React, { useEffect, FC, CSSProperties, useRef } from 'react';
+import React, { useEffect, FC, useRef } from 'react';
 import { Director } from '../base/Director';
 import { Shape, Polygon, Rectangle, Circle, Ellipse, Dot, Shortcut, ActType } from '../base/types';
 import Util from '../base/util';
-import '../base/helper';
 import { AnnotatorHandles } from './hook';
 import './index.css';
 
@@ -102,7 +101,16 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
         else ratio = Math.min(maxWidth!, bb.width) / naturalWidth;
       }
       target.size('100%', '100%');
-      let statics = { width: naturalWidth, height: naturalHeight, ratio, discRadius: props.discRadius || 5, hb: props.hideBorder }
+      
+      let statics = { 
+        width: naturalWidth, 
+        height: naturalHeight, 
+        ratio, 
+        discRadius: props.discRadius || 5, 
+        hb: props.hideBorder,
+        shortcut: props.shortcut
+      }
+
       Director.init(svg, statics, container);
       drawShapes(props.shapes);
       props.setHandles({ ...getHandles(), container });
@@ -125,25 +133,12 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   }, [props.onAdded,props.onEdited, props.onContextMenu, props.onSelected]);
 
   useEffect(() => {
-    const onblur = () => wrapper.current!.parentElement!.classList.remove('grabbable');
-    const onkeydown = (e: KeyboardEvent) => e.key === 'Control' && wrapper.current!.parentElement!.classList.add('grabbable');
-    const keyup = (e: KeyboardEvent) => {
-      if (e.key === 'Control') onblur();
-      if ((props.shortcut?.del && e.key === 'Delete') || (props.shortcut?.bksp && e.key === 'Backspace')) Director.instance?.remove();
-      if (e.key === 'Escape') Director.instance?.stopEdit();
-    }
     if (wrapper.current && props.imageUrl) {
       var container = wrapper.current.parentElement! as HTMLDivElement;
       onload(wrapper.current!, container, props.imageUrl);
-      window.addEventListener('keydown', onkeydown);
-      window.addEventListener('keyup', keyup);
-      window.addEventListener('blur', onblur);
     }
     return () => {
       Director.instance?.clear();
-      window.removeEventListener('keydown', onkeydown);
-      window.removeEventListener('keyup', keyup);
-      window.removeEventListener('blur', onblur);
     }
   }, [wrapper, props.imageUrl, props.shapes]);
 

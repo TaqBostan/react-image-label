@@ -9,7 +9,8 @@ export type StaticData = {
   ratio: number,
   discRadius: number,
   /** Stroke and discs can be hidden when not in edit/draw mode */
-  hb: boolean | undefined
+  hb: boolean | undefined,
+  shortcut: Shortcut | undefined
 }
 
 export type Shortcut = {

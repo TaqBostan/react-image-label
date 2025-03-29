@@ -5,6 +5,7 @@ import RectangleBuilder from "./builders/RectangleBuilder";
 import CircleBuilder from "./builders/CircleBuilder";
 import EllipseBuilder from "./builders/EllipseBuilder";
 import { DotBuilder } from "./builders/DotBuilder";
+import '../base/helper';
 
 export class Director {
   static instance?: Director;
@@ -13,6 +14,7 @@ export class Director {
   builders: ShapeBuilder<Shape>[];
   elements: ElementWithExtra[] = [];
   origin?: Point;
+  winEv!: { keydown: (e: KeyboardEvent) => false | void; keyup: (e: KeyboardEvent) => void; blur: () => void; };
 
   constructor(public svg: SVGSVGElement, public container: HTMLDivElement) {
     let onEdited = (shape: Shape) => this.raise(ActType.Edited, shape), enlist = (shape: Shape) => this.enlist(shape, true);
@@ -169,9 +171,21 @@ export class Director {
     ShapeBuilder._svg = svg;
     ShapeBuilder._sd = sd;
     let instance = Director.instance = new Director(svg, container);
+
     container.onmousedown = (event: MouseEvent) => instance.drag_md(container, event);
     container.onwheel = (event: WheelEvent) => instance.mousewheel(event);
     container.onclick = (e: MouseEvent) => !instance.builders.some(b => b.drawing) && !e.ctrlKey && instance.stopEdit();
+
+    instance.winEv = {
+      keydown: (e: KeyboardEvent) => e.key === 'Control' && instance.container.classList.add('grabbable'),
+      keyup: (e: KeyboardEvent) => {
+        if (e.key === 'Control') instance.winEv.blur();
+        if ((ShapeBuilder._sd.shortcut?.del && e.key === 'Delete') || (ShapeBuilder._sd.shortcut?.bksp && e.key === 'Backspace')) instance.remove();
+        if (e.key === 'Escape') instance?.stopEdit();
+      },
+      blur: () => instance.container.classList.remove('grabbable')
+    }
+    Object.keys(instance.winEv).forEach(key => window.addEventListener(key, instance.winEv[key as "keydown" | "keyup" | "blur"] as EventListenerOrEventListenerObject))
   }
 
   static setActions(actions: { type: ActType; func: ((shape: Shape) => any) | undefined }[]) {
@@ -188,6 +202,7 @@ export class Director {
     if(ShapeBuilder._svg) ShapeBuilder._svg.innerHTML = '';
     this.elements = [];
     this.builders = [];
+    Object.keys(this.winEv).forEach(key => window.removeEventListener(key, this.winEv[key as "keydown" | "keyup" | "blur"] as EventListenerOrEventListenerObject))
     Director.instance = undefined;
   }
 
