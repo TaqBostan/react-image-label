@@ -54,41 +54,44 @@ export const ImageAnnotatorPrimary: FC = () => {
 
 
   return (
-    <div>
-      <button onClick={() => { changeImage(); }}>Change image</button>
-      <button onClick={() => { annotator!.drawRectangle() }}>Add Rectangle</button>
-      <button onClick={() => { annotator!.drawPolygon() }}>Add Polygon</button>
-      <button onClick={() => { annotator!.drawCircle() }}>Add Circle</button>
-      <button onClick={() => { annotator!.drawEllipse() }}>Add Ellipse</button>
-      <button onClick={() => { annotator!.drawDot() }}>Add Dot</button>
-      <button onClick={() => { annotator!.stop() }}>Stop</button>
-      <button onClick={() => { annotator!.stopEdit() }}>Edit Done</button>
-      <button onClick={() => { annotator!.zoom(1.25) }}>Zoom in</button>
-      <button onClick={() => { annotator!.zoom(0.8) }}>Zoom out</button>
-      <button onClick={() => { setShapes(annotator!.getShapes()) }}>Get shapes</button>
-      <button onClick={() => { setShapes([p]) }}>change shapes</button>
-      {dialog.show &&
-        <Dialog items={dialog.shape!.categories} itemsChanged={selectedCategoriesChanged}
-          onEdit={() => { annotator!.edit(dialog.shape!.id); hideDialog(); }}
-          onDelete={() => { annotator!.delete(dialog.shape!.id); hideDialog(); }}
-          onClose={hideAndUpdateCategories}
-          offset={dialog.shape!.getCenterWithOffset()} />
-      }
-      <ImageAnnotator
-        setHandles={setHandles}
-        naturalSize={true}
-        imageUrl={img}
-        shapes={shapes}
-        width={700}
-        height={400}
-        hideBorder={false}
-        shortcut={{del: true, bksp: true }}
-        onAdded={shape => setDialog({ show: true, shape })}
-        onContextMenu={shape => setDialog({ show: true, shape })}
-        onEdited={shape =>console.log(shape)}
-        onReady={annotator => { }} />
-      <div>{JSON.stringify(shapes, null, 2)}</div>      
-    </div>
+    <React.StrictMode>
+      <div>
+        <button onClick={() => { changeImage(); }}>Change image</button>
+        <button onClick={() => { annotator!.drawRectangle() }}>Add Rectangle</button>
+        <button onClick={() => { annotator!.drawPolygon() }}>Add Polygon</button>
+        <button onClick={() => { annotator!.drawCircle() }}>Add Circle</button>
+        <button onClick={() => { annotator!.drawEllipse() }}>Add Ellipse</button>
+        <button onClick={() => { annotator!.drawDot() }}>Add Dot</button>
+        <button onClick={() => { annotator!.stop() }}>Stop</button>
+        <button onClick={() => { annotator!.stopEdit() }}>Edit Done</button>
+        <button onClick={() => { annotator!.zoom(1.25) }}>Zoom in</button>
+        <button onClick={() => { annotator!.zoom(0.8) }}>Zoom out</button>
+        <button onClick={() => { setShapes(annotator!.getShapes()) }}>Get shapes</button>
+        <button onClick={() => { setShapes([p]) }}>change shapes</button>
+        {dialog.show &&
+          <Dialog items={dialog.shape!.categories} itemsChanged={selectedCategoriesChanged}
+            onEdit={() => { annotator!.edit(dialog.shape!.id); hideDialog(); }}
+            onDelete={() => { annotator!.delete(dialog.shape!.id); hideDialog(); }}
+            onClose={hideAndUpdateCategories}
+            offset={dialog.shape!.getCenterWithOffset()} />
+        }
+        <ImageAnnotator
+          setHandles={setHandles}
+          naturalSize={true}
+          imageUrl={img}
+          shapes={shapes}
+          width={700}
+          height={400}
+          hideBorder={false}
+          shortcut={{ del: true, bksp: true }}
+          onAdded={shape => setDialog({ show: true, shape })}
+          onContextMenu={shape => setDialog({ show: true, shape })}
+          onEdited={shape => console.log(shape)}
+          onReady={annotator => { annotator.drawRectangle() }} />
+        <div>{JSON.stringify(shapes, null, 2)}</div>
+      </div>
+    </React.StrictMode>
+
   );
 }
 

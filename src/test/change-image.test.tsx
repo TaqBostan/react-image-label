@@ -56,7 +56,7 @@ it('change image', () => {
   //#region container, svg, and image
   expect(container.style.width).toBe('700px');
   expect(container.style.height).toBe('800px');
-  expect(container).toHaveAttribute('data-img', 'Fruit.jpeg');
+  expect(container).toHaveAttribute('data-img', imageUrl);
   
   expect(svg).toHaveClass('il-svg');
   expect(svg).toHaveAttribute('height', '612.5');
@@ -128,7 +128,7 @@ it('change image', () => {
   //#region container, svg, and image
   expect(container.style.width).toBe('700px');
   expect(container.style.height).toBe('800px');
-  expect(container).toHaveAttribute('data-img', 'logo-svg-js-01d-128.png');
+  expect(container).toHaveAttribute('data-img', imageUrl2);
   
   expect(svg).toHaveClass('il-svg');
   expect(svg).toHaveAttribute('height', '450');

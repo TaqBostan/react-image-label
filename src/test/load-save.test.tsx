@@ -47,7 +47,7 @@ it('load container, svg, image in natural size', () => {
   let container =_annotator.container.children[0] as HTMLDivElement;
   expect(container.style.height).toBe('400px');
   expect(container.style.width).toBe('700px');
-  expect(container).toHaveAttribute('data-img', 'Fruit.jpeg');
+  expect(container).toHaveAttribute('data-img', imageUrl);
 
   let svg = _annotator.container.querySelector('svg')!;
   expect(svg).toHaveClass('il-svg');
@@ -95,7 +95,7 @@ it('load container, svg, image 1', () => {
   let container =_annotator.container.children[0] as HTMLDivElement;
   expect(container.style.height).toBe('300px');
   expect(container.style.width).toBe('800px');
-  expect(container).toHaveAttribute('data-img', 'Fruit.jpeg');
+  expect(container).toHaveAttribute('data-img', imageUrl);
 
   let svg = _annotator.container.querySelector('svg')!;
   expect(svg).toHaveClass('il-svg');
@@ -140,7 +140,7 @@ it('load container, svg, image 2', () => {
   let container =_annotator.container.children[0] as HTMLDivElement;
   expect(container.style.height).toBe('800px');
   expect(container.style.width).toBe('300px');
-  expect(container).toHaveAttribute('data-img', 'Fruit.jpeg');
+  expect(container).toHaveAttribute('data-img', imageUrl);
 
   let svg = _annotator.container.querySelector('svg')!;
   expect(svg).toHaveClass('il-svg');
@@ -185,7 +185,7 @@ it('load container, svg, image 3', () => {
   let container =_annotator.container.children[0] as HTMLDivElement;
   expect(container.style.height).toBe('800px');
   expect(container.style.width).toBe('700px');
-  expect(container).toHaveAttribute('data-img', 'Fruit.jpeg');
+  expect(container).toHaveAttribute('data-img', imageUrl);
 
   let svg = _annotator.container.querySelector('svg')!;
   expect(svg).toHaveClass('il-svg');

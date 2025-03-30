@@ -74,12 +74,13 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   })
 
   const onload = React.useCallback((svg: SVGSVGEl, container: HTMLDivElement, imageUrl: string) => {
+    if(imageUrl === container.getAttribute('data-img')) return;
     let onloaded = (target: ImageEl) => {
       let src1 = container.getAttribute('data-img')!, src2 = imageUrl;
-      if (src1 !== Util.fileName(src2)) {
+      if (src1 !== src2) {
         for (let i = 0; i < svg.node.children.length; i++) {
-          let child = svg.node.children[i], href = Util.fileName(child.getAttribute('href'));
-          if (href && src1 !== href) child.remove();
+          let child = svg.node.children[i], href = child.getAttribute('href');
+          if (href && Util.fileName(src1) !== Util.fileName(href)) child.remove();
         }
         return;
       }
@@ -114,7 +115,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
       props.setHandles({ ...getHandles(), container });
       props.onReady?.({ ...getHandles(), container });
     }
-    container.setAttribute('data-img', Util.fileName(imageUrl))
+    container.setAttribute('data-img', imageUrl)
     var image = svg.image(imageUrl, onloaded).size('', '').attr('onmousedown', 'return false').attr('oncontextmenu', 'return false');
     image.on('testEvent', (ev: CustomEvent) => onloaded(new ImageEl(ev.detail.testTarget)))
   }, [props.width, props.height, props.shapes]);
