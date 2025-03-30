@@ -1,14 +1,15 @@
 import { IlElementExtra, Color, Dot, ElementWithExtra, ArrayXY } from "./../types";
 import { ShapeBuilder } from "./../ShapeBuilder";
+import { CircleEl, PolylineEl } from "../svg-elems";
 
-class IDot extends SVGPolylineElement implements IlElementExtra {
-  discs!: SVGCircleElement[];
+class IDot extends PolylineEl implements IlElementExtra {
+  discs!: CircleEl[];
   classNames?: Text;
   classNamesWrapper?: SVGRectElement;
   shape!: Dot;
-  shadow!: SVGCircleElement;
+  shadow!: CircleEl;
   editing: boolean = false;
-  connector?: SVGPolylineElement;
+  connector?: PolylineEl;
 }
 
 export class DotBuilder extends ShapeBuilder<Dot> {

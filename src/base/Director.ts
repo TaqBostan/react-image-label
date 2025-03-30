@@ -5,7 +5,8 @@ import RectangleBuilder from "./builders/RectangleBuilder";
 import CircleBuilder from "./builders/CircleBuilder";
 import EllipseBuilder from "./builders/EllipseBuilder";
 import { DotBuilder } from "./builders/DotBuilder";
-import '../base/helper';
+import './svg-elems';
+import { SVGSVGEl } from "./svg-elems";
 
 export class Director {
   static instance?: Director;
@@ -16,7 +17,7 @@ export class Director {
   origin?: Point;
   winEv!: { keydown: (e: KeyboardEvent) => false | void; keyup: (e: KeyboardEvent) => void; blur: () => void; };
 
-  constructor(public svg: SVGSVGElement, public container: HTMLDivElement) {
+  constructor(public svg: SVGSVGEl, public container: HTMLDivElement) {
     let onEdited = (shape: Shape) => this.raise(ActType.Edited, shape), enlist = (shape: Shape) => this.enlist(shape, true);
     let params: [(shape: Shape) => void, (shape: Shape) => void] = [onEdited, enlist]
     this.builders = [
@@ -91,13 +92,13 @@ export class Director {
     }
     let id = builder.element.shape.id;
     this.elements.push(builder.element);
-    builder.element.addEventListener('contextmenu', (ev: MouseEvent) => {
+    builder.element.node.addEventListener('contextmenu', (ev: MouseEvent) => {
       ev.preventDefault();
       let elem = this.elements.find(p => p.shape.id === id)!;
       this.raise(ActType.CtxMenu, elem.shape);
       return false;
     }, false);
-    builder.element.onclick = (e: MouseEvent) => {
+    builder.element.node.onclick = (e: MouseEvent) => {
       let elem = this.elements.find(p => p.shape.id === id)!;
       if (!e.ctrlKey && !elem.editing) {
         this.edit(id);
@@ -166,7 +167,7 @@ export class Director {
   getShapes = () => this.elements.map(el => el.shape.getOutput(ShapeBuilder._sd.ratio, this.svg));
   findShape = (id: number) => this.elements.find(el => el.shape.id === id)!.shape;
 
-  static init(svg: SVGSVGElement, sd: StaticData, container: HTMLDivElement) {
+  static init(svg: SVGSVGEl, sd: StaticData, container: HTMLDivElement) {
     svg.addClass('il-svg');
     svg.size(sd.width * sd.ratio, sd.height * sd.ratio);
     ShapeBuilder._svg = svg;
@@ -200,7 +201,7 @@ export class Director {
       b.stopDraw();
       b.stopEdit();
     });
-    if(ShapeBuilder._svg) ShapeBuilder._svg.innerHTML = '';
+    if(ShapeBuilder._svg) ShapeBuilder._svg.node.innerHTML = '';
     this.elements = [];
     this.builders = [];
     Object.keys(this.winEv).forEach(key => window.removeEventListener(key, this.winEv[key as "keydown" | "keyup" | "blur"] as EventListenerOrEventListenerObject))

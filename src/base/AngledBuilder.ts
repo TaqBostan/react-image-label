@@ -1,12 +1,13 @@
 import { AngledShape, IlElementExtra, Color } from "./types";
 import { ShapeBuilder } from "./ShapeBuilder";
+import { CircleEl, PolylineEl, RectEl, TextEl } from "./svg-elems";
 
-export class IlPolyline extends SVGPolylineElement implements IlElementExtra {
-	categoriesPlain?: SVGTextElement;
-	categoriesRect?: SVGRectElement;
+export class IlPolyline extends PolylineEl implements IlElementExtra {
+	categoriesPlain?: TextEl;
+	categoriesRect?: RectEl;
 	shape!: AngledShape;
-	shadow!: SVGPolylineElement;
-	discs!: SVGCircleElement[];
+	shadow!: PolylineEl;
+	discs!: CircleEl[];
 	hasConnector: boolean = false;
 	editing: boolean = false;
 }

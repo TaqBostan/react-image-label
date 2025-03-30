@@ -1,3 +1,4 @@
+import { CircleEl, PolylineEl, RectEl, SVGEl, SVGSVGEl, TextEl } from './svg-elems';
 import Util from './util';
 
 export type Point = { X: number, Y: number }
@@ -32,10 +33,10 @@ export abstract class Shape {
     this.id = 0;
   }
 
-  getOutput(ratio: number, svg: SVGSVGElement): Shape {
+  getOutput(ratio: number, svg: SVGSVGEl): Shape {
     let obj = this.output(ratio);
     let center = this.getCenter()
-    let svgBox = svg.getBoundingClientRect();
+    let svgBox = svg.node.getBoundingClientRect();
     obj.id = this.id;
     if (this.color) obj.color = this.color;
     obj.phi = Math.round(this.phi);
@@ -76,16 +77,16 @@ export class Dot extends Shape {
 }
 
 export interface IlElementExtra {
-  categoriesPlain?: SVGTextElement;
-  categoriesRect?: SVGRectElement;
+  categoriesPlain?: TextEl;
+  categoriesRect?: RectEl;
   shape: Shape;
-  shadow: SVGElement;
-  discs: SVGCircleElement[];
+  shadow: SVGEl;
+  discs: CircleEl[];
   editing: boolean;
-  connector?: SVGPolylineElement;
+  connector?: PolylineEl;
 }
 
-export type ElementWithExtra = SVGElement & IlElementExtra;
+export type ElementWithExtra = SVGEl & IlElementExtra;
 
 export abstract class AngledShape extends Shape {
   constructor(public points: ArrayXY[] = [], public categories: string[] = [], public color?: string) {

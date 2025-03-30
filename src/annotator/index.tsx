@@ -4,6 +4,7 @@ import { Shape, Polygon, Rectangle, Circle, Ellipse, Dot, Shortcut, ActType } fr
 import Util from '../base/util';
 import { AnnotatorHandles } from './hook';
 import './index.css';
+import { ImageEl, SVGSVGEl } from '../base/svg-elems';
 
 const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   const getDirector = () => Director.instance!;
@@ -72,19 +73,17 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     getShapes: getDirector().getShapes
   })
 
-  const onload = React.useCallback((svg: SVGSVGElement, container: HTMLDivElement, imageUrl: string) => {
-    let onloaded = (ev: Event) => {
-      if (!ev?.currentTarget || !svg.innerHTML) return;
-      let target = (ev!.detail?.testTarget || ev!.currentTarget) as SVGImageElement, 
-        src1 = container.getAttribute('data-img')!, src2 = imageUrl;
+  const onload = React.useCallback((svg: SVGSVGEl, container: HTMLDivElement, imageUrl: string) => {
+    let onloaded = (target: ImageEl) => {
+      let src1 = container.getAttribute('data-img')!, src2 = imageUrl;
       if (src1 !== Util.fileName(src2)) {
-        for (let i = 0; i < svg.children.length; i++) {
-          let child = svg.children[i], href = Util.fileName(child.getAttribute('href'));
+        for (let i = 0; i < svg.node.children.length; i++) {
+          let child = svg.node.children[i], href = Util.fileName(child.getAttribute('href'));
           if (href && src1 !== href) child.remove();
         }
         return;
       }
-      let bb = target.getBBox();
+      let bb = target.bbox();
       let naturalWidth = bb.width, naturalHeight = bb.height, maxWidth = props.width, maxHeight = props.height, ratio = 1;
       Object.assign(container.style, {
         width: (props.width || naturalWidth) + 'px',
@@ -117,7 +116,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     }
     container.setAttribute('data-img', Util.fileName(imageUrl))
     var image = svg.image(imageUrl, onloaded).size('', '').attr('onmousedown', 'return false').attr('oncontextmenu', 'return false');
-    image.addEventListener('testEvent', onloaded)
+    image.on('testEvent', (ev: CustomEvent) => onloaded(new ImageEl(ev.detail.testTarget)))
   }, [props.width, props.height, props.shapes]);
 
   useEffect(() => {
@@ -134,7 +133,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   useEffect(() => {
     if (wrapper.current && props.imageUrl) {
       var container = wrapper.current.parentElement! as HTMLDivElement;
-      onload(wrapper.current!, container, props.imageUrl);
+      onload(new SVGSVGEl(wrapper.current!), container, props.imageUrl);
     }
     return () => {
       Director.instance?.clear();

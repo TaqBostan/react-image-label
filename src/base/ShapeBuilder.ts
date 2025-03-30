@@ -1,11 +1,12 @@
+import { PathEl, SVGEl, SVGSVGEl } from "./svg-elems";
 import { Shape, ElementWithExtra, Color, Point, StaticData, ArrayXY } from "./types";
 import Util from "./util";
 
 export abstract class ShapeBuilder<T extends Shape> {
   constructor(public onEdited: (shape: Shape) => void, public enlist: (shape: Shape) => void){}
-  static _svg: SVGSVGElement;
+  static _svg: SVGSVGEl;
   static _sd: StaticData;
-  svg: SVGSVGElement = ShapeBuilder._svg;
+  svg: SVGSVGEl = ShapeBuilder._svg;
   sd: StaticData = ShapeBuilder._sd;
   abstract element?: ElementWithExtra;
   abstract shape?: T;
@@ -15,10 +16,10 @@ export abstract class ShapeBuilder<T extends Shape> {
   private lastPoint?: Point;
   private moveIcon = (center: ArrayXY) => `M${center[0] + 11.3},${center[1]}l-4.6-4.6v2.4h-4.5v-4.5h2.4l-4.6,-4.6l-4.6,4.6h2.4v4.5h-4.5v-2.4l-4.6,4.6l4.6,4.6v-2.4h4.5v4.5h-2.4l4.6,4.6
   l4.6-4.6h-2.4v-4.5h4.5v2.4l4.6-4.6z`;
-  protected movePath?: SVGPathElement;
+  protected movePath?: PathEl;
   //#endregion
   private rotateIcon = (center: ArrayXY) => `M${center[0] + 5.2},${center[1] + 4.5}a7,7,0,1,1,0-8l-3,3h9v-9l-3,3a11+11,0,1,0,0+14z`;
-  protected rotateArr: SVGElement[] = [];
+  protected rotateArr: SVGEl[] = [];
   protected canRotate = true;
   drawing: boolean = false;
   abstract plotShape(): void;
@@ -39,7 +40,7 @@ export abstract class ShapeBuilder<T extends Shape> {
     let shape = elem.shape, center = shape.getCenter();
     let items = [elem, elem.shadow, elem.connector, ...elem.discs];
     if (elem.editing) items.push(...this.rotateArr);
-    items.forEach(el => el?.setAttribute('transform', `rotate(${shape.phi},${center[0]},${center[1]})`));
+    items.forEach(el => el?.attr('transform', `rotate(${shape.phi},${center[0]},${center[1]})`));
   }
 
   abstract ofType<S extends Shape>(shape: S): boolean;
@@ -71,8 +72,8 @@ export abstract class ShapeBuilder<T extends Shape> {
       let pos = element.shape.labelPosition();
       let categoriesPlain = categories.join(', ');
       element.categoriesPlain = this.svg.plain(categoriesPlain).font(12, 'bold');
-      let width = element.categoriesPlain.getBBox().width;
-      let height = element.categoriesPlain.getBBox().height;
+      let width = element.categoriesPlain.bbox().width;
+      let height = element.categoriesPlain.bbox().height;
       element.categoriesRect = this.svg.rect(width, height).radius(2).move(pos[0] - width / 2, pos[1] + height / 4).fill('#ffffff80');
       element.categoriesPlain.remove();
       element.categoriesPlain = this.svg
@@ -98,7 +99,7 @@ export abstract class ShapeBuilder<T extends Shape> {
       .mousedown((ev: MouseEvent) => this.drag_md(ev))
       .on('contextmenu', (ev: any) => {
         ev.preventDefault();
-        this.element!.dispatchEvent!(new Event('contextmenu', ev));
+        this.element!.node.dispatchEvent!(new Event('contextmenu', ev));
       })
   }
 
@@ -200,7 +201,7 @@ export abstract class ShapeBuilder<T extends Shape> {
       if (this.rotateArr.length > 0) {
         let position = elem.shape.rotatePosition();
         let [path, bg] = this.rotateArr;
-        (path as SVGPathElement).plot(this.rotateIcon(position));
+        (path as PathEl).plot(this.rotateIcon(position));
         bg.move(position[0], position[1]);
       }
       this.movePath?.plot(this.moveIcon(elem.shape.getCenter()));
@@ -229,7 +230,7 @@ export abstract class ShapeBuilder<T extends Shape> {
   edit(): void {
     let elem = this.element!;
     elem.editing = true;
-    if (elem.categoriesPlain) elem.categoriesPlain.innerHTML = '';
+    if (elem.categoriesPlain) elem.categoriesPlain.node.innerHTML = '';
     if (elem.categoriesRect) elem.categoriesRect.remove();
     if (this.canHB) {
       [elem.shadow, ...elem.discs].forEach(el => el.removeClass('il-hid'));

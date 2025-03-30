@@ -2,15 +2,16 @@
 import { RoundShape, IlElementExtra, Point, Color, ArrayXY } from "./types";
 import { ShapeBuilder } from "./ShapeBuilder";
 import Util from "./util";
+import { CircleEl, EllipseEl, PolylineEl, RectEl, TextEl } from "./svg-elems";
 
-class IlEllipse extends SVGEllipseElement implements IlElementExtra {
-  discs!: SVGCircleElement[];
-  classNames?: SVGTextElement;
-  classNamesWrapper?: SVGRectElement;
+class IlEllipse extends EllipseEl implements IlElementExtra {
+  discs!: CircleEl[];
+  classNames?: TextEl;
+  classNamesWrapper?: RectEl;
   shape!: RoundShape;
-  shadow!: SVGEllipseElement;
+  shadow!: EllipseEl;
   editing: boolean = false;
-  connector?: SVGPolylineElement;
+  connector?: PolylineEl;
 }
 
 export abstract class RoundBuilder<T extends RoundShape> extends ShapeBuilder<T> {
