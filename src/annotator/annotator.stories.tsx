@@ -54,7 +54,7 @@ export const ImageAnnotatorPrimary: FC = () => {
 
 
   return (
-    <React.StrictMode>
+    // <React.StrictMode>
       <div>
         <button onClick={() => { changeImage(); }}>Change image</button>
         <button onClick={() => { annotator!.drawRectangle() }}>Add Rectangle</button>
@@ -90,7 +90,7 @@ export const ImageAnnotatorPrimary: FC = () => {
           onReady={annotator => { annotator.drawRectangle() }} />
         <div>{JSON.stringify(shapes, null, 2)}</div>
       </div>
-    </React.StrictMode>
+    // </React.StrictMode>
 
   );
 }

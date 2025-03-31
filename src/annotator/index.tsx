@@ -9,7 +9,6 @@ import { ImageEl, SVGSVGEl } from '../base/svg-elems';
 const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   const getDirector = () => Director.instance!;
   const wrapper = useRef<SVGSVGElement>(null);
-  const hdnShapes = useRef<HTMLInputElement>(null);
 
   const drawShapes = (shapes?: Shape[] | any[]) => {
     let director = getDirector();
@@ -75,7 +74,6 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   })
 
   const onload = React.useCallback((svg: SVGSVGEl, container: HTMLDivElement, imageUrl: string) => {
-    if(imageUrl === container.getAttribute('data-img') && hdnShapes.current!.value === JSON.stringify(props.shapes)) return;
     let onloaded = (target: ImageEl) => {
       let src1 = container.getAttribute('data-img')!, src2 = imageUrl;
       if (src1 !== src2) {
@@ -117,7 +115,6 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
       props.onReady?.({ ...getHandles(), container });
     }
     container.setAttribute('data-img', imageUrl)
-    hdnShapes.current!.value = JSON.stringify(props.shapes);
     var image = svg.image(imageUrl, onloaded).size('', '').attr('onmousedown', 'return false').attr('oncontextmenu', 'return false');
     image.on('testEvent', (ev: CustomEvent) => onloaded(new ImageEl(ev.detail.testTarget)))
   }, [props.width, props.height, props.shapes]);
@@ -147,7 +144,6 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     <div>
       <svg ref={wrapper}>
       </svg>
-      <input ref={hdnShapes} type='hidden'/>
     </div>
   );
 }
