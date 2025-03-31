@@ -75,14 +75,6 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
 
   const onload = React.useCallback((svg: SVGSVGEl, container: HTMLDivElement, imageUrl: string) => {
     let onloaded = (target: ImageEl) => {
-      let src1 = container.getAttribute('data-img')!, src2 = imageUrl;
-      if (src1 !== src2) {
-        for (let i = 0; i < svg.node.children.length; i++) {
-          let child = svg.node.children[i], href = child.getAttribute('href');
-          if (href && Util.fileName(src1) !== Util.fileName(href)) child.remove();
-        }
-        return;
-      }
       let bb = target.bbox();
       let naturalWidth = bb.width, naturalHeight = bb.height, maxWidth = props.width, maxHeight = props.height, ratio = 1;
       Object.assign(container.style, {
@@ -99,12 +91,12 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
         else ratio = Math.min(maxWidth!, bb.width) / naturalWidth;
       }
       target.size('100%', '100%');
-      
-      let statics = { 
-        width: naturalWidth, 
-        height: naturalHeight, 
-        ratio, 
-        discRadius: props.discRadius || 5, 
+
+      let statics = {
+        width: naturalWidth,
+        height: naturalHeight,
+        ratio,
+        discRadius: props.discRadius || 5,
         hb: props.hideBorder,
         shortcut: props.shortcut
       }
@@ -114,7 +106,6 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
       props.setHandles({ ...getHandles(), container });
       props.onReady?.({ ...getHandles(), container });
     }
-    container.setAttribute('data-img', imageUrl)
     var image = svg.image(imageUrl, onloaded).size('', '').attr('onmousedown', 'return false').attr('oncontextmenu', 'return false');
     image.on('testEvent', (ev: CustomEvent) => onloaded(new ImageEl(ev.detail.testTarget)))
   }, [props.width, props.height, props.shapes]);
@@ -128,7 +119,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     ]
     Director.setActions(actions);
     return () => Director.setActions([]);
-  }, [props.onAdded,props.onEdited, props.onContextMenu, props.onSelected]);
+  }, [props.onAdded, props.onEdited, props.onContextMenu, props.onSelected]);
 
   useEffect(() => {
     if (wrapper.current && props.imageUrl) {
@@ -137,6 +128,11 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
     }
     return () => {
       Director.instance?.clear();
+      if(wrapper.current?.children.length) {
+        let img = wrapper.current.children[0] as SVGImageElement;
+        img.setAttribute('href', '');
+        wrapper.current.innerHTML = '';
+      }
     }
   }, [wrapper, props.imageUrl, props.shapes]);
 
@@ -153,7 +149,7 @@ export { ImageAnnotator };
 export interface ImageAnnotatorProps {
   onReady?: (annotator: AnnotatorHandles) => any;
   onAdded?: (shape: Shape) => any;
-  onEdited?: (shape: Shape)=> any;
+  onEdited?: (shape: Shape) => any;
   onSelected?: (shape: Shape) => any;
   onContextMenu?: (shape: Shape) => any;
   imageUrl?: string;

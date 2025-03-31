@@ -201,7 +201,6 @@ export class Director {
       b.stopDraw();
       b.stopEdit();
     });
-    if(ShapeBuilder._svg) ShapeBuilder._svg.node.innerHTML = '';
     this.elements = [];
     this.builders = [];
     Object.keys(this.winEv).forEach(key => window.removeEventListener(key, this.winEv[key as "keydown" | "keyup" | "blur"] as EventListenerOrEventListenerObject))

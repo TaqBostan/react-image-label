@@ -10,6 +10,8 @@ const imgUrl = '/Fruit.jpeg';
 // const img2 = '/ic.png';
 // const img1 = 'https://svgjs.dev/docs/3.0/assets/images/logo-svg-js-01d-128.png';
 // const img2 = 'https://en.systemgroup.net/wp-content/themes/sg/dist/images/logo.png';
+// const img3 = 'https://github.com/TaqBostan/content/blob/main/Fruit.jpeg?raw=true';
+// const img4 = 'https://www.diagnosisdiet.com/assets/images/c/fruit-og-d176ef00.jpg';
 const categories = ['blueberry', 'strawberry', 'raspberry', 'apple', 'benana'];
 let p = new Polygon([[550, 224], [519, 222], [474, 261], [430, 341], [416, 383], [427, 399], [446, 414], [528, 396], [604, 372], [633, 325], [654, 313], [648, 282], [638, 231], [596, 208], [562, 208]], ['strawberry'], "#27fe7640");
 let r = new Rectangle([[734, 292], [680, 377], [781, 440], [835, 355]], ['blueberry'], "rgba(255,255,255,0.4)");
@@ -54,7 +56,7 @@ export const ImageAnnotatorPrimary: FC = () => {
 
 
   return (
-    // <React.StrictMode>
+    <React.StrictMode>
       <div>
         <button onClick={() => { changeImage(); }}>Change image</button>
         <button onClick={() => { annotator!.drawRectangle() }}>Add Rectangle</button>
@@ -90,7 +92,7 @@ export const ImageAnnotatorPrimary: FC = () => {
           onReady={annotator => { annotator.drawRectangle() }} />
         <div>{JSON.stringify(shapes, null, 2)}</div>
       </div>
-    // </React.StrictMode>
+    </React.StrictMode>
 
   );
 }
