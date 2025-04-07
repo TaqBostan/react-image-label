@@ -127,12 +127,7 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
       onload(new SVGSVGEl(wrapper.current!), container, props.imageUrl);
     }
     return () => {
-      Director.instance?.clear();
-      if(wrapper.current?.children.length) {
-        let img = wrapper.current.children[0] as SVGImageElement;
-        img.setAttribute('href', '');
-        wrapper.current.innerHTML = '';
-      }
+      Director.clear(wrapper.current || undefined);
     }
   }, [wrapper, props.imageUrl, props.shapes]);
 

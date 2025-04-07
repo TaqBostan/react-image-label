@@ -61,8 +61,8 @@ The following props can be defined on `ImageAnnotator`:
 | `imageUrl` \* | `string` | Use a state for image url if you want to change it on the fly |   |
 | `shapes` | `Shape[] \| any[]` | Annotations being displayed on load (see [shapes](#shapes)) |   |
 | `naturalSize` | `boolean` | To show image in its natural size | `false` |
-| `width` | `number` | `container` width | `image.naturalWidth` |
-| `height` | `number` | `container` height | `image.naturalHeight` |
+| `width` | `number` | `container` width | `image.getBBox().width` |
+| `height` | `number` | `container` height | `image.getBBox().height` |
 | `discRadius` | `number` | The radius of the green discs in edit mode | 5 |
 | `hideBorder` | `boolean` | To hide annotation border | `false` |
 | `shortcut` | `Shortcut` | To configure shortcuts (see [Shortcut Settings](#shortcut-settings)) |  |

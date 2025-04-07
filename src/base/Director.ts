@@ -196,7 +196,16 @@ export class Director {
     Director.actions = actions.map(act => ({ type: act.type, func: hof(act.func) }));
   }
 
-  clear() {
+  static clear(svgEl?: SVGSVGElement) {
+    Director.instance?._clear();
+    if(svgEl?.children.length) {
+      let img = svgEl.children[0] as SVGImageElement;
+      img.setAttribute('href', '');
+      svgEl.innerHTML = '';
+    }
+  }
+
+  _clear() {
     this.builders.forEach(b => {
       b.stopDraw();
       b.stopEdit();
