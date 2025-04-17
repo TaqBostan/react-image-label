@@ -18,3 +18,10 @@ _Dec 05, 2024_
 
 ### New Features
 * Use `onEdited` prop to get an up-to-date copy of a shape that has been reshaped, stretched, or rotated.
+
+## 2.0.6
+
+_Apr 17, 2025_
+
+### Bug Fixes
+* Fixed an problem in drawing polygons that overlap

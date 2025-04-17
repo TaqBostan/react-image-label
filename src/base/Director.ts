@@ -99,12 +99,14 @@ export class Director {
       return false;
     }, false);
     builder.element.node.onclick = (e: MouseEvent) => {
-      let elem = this.elements.find(p => p.shape.id === id)!;
-      if (!e.ctrlKey && !elem.editing) {
-        this.edit(id);
-        this.raise(ActType.Selected, builder.element!.shape);
+      if(!this.builders.some(b => b.drawing)) {
+        let elem = this.elements.find(p => p.shape.id === id)!;
+        if (!e.ctrlKey && !elem.editing) {
+          this.edit(id);
+          this.raise(ActType.Selected, builder.element!.shape);
+        }
+        e.stopPropagation();
       }
-      e.stopPropagation();
     };
     if (isNew) {
       if (!builder.element!.editing) builder.edit();
