@@ -198,6 +198,8 @@ export class Director {
     Director.actions = actions.map(act => ({ type: act.type, func: hof(act.func) }));
   }
 
+  static get = () => Director.instance
+
   static clear(svgEl?: SVGSVGElement) {
     Director.instance?._clear();
     if(svgEl?.children.length) {
