@@ -1,5 +1,12 @@
 # Versions
 
+## 2.0.7
+
+_Apr 20, 2025_
+
+### New Features
+* Three modes for vertical positioning of categories (top, middle, bottom)
+
 ## 2.0.6
 
 _Apr 17, 2025_

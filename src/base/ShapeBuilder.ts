@@ -3,7 +3,7 @@ import { Shape, ElementWithExtra, Color, Point, StaticData, ArrayXY } from "./ty
 import Util from "./util";
 
 export abstract class ShapeBuilder<T extends Shape> {
-  constructor(public onEdited: (shape: Shape) => void, public enlist: (shape: Shape) => void){}
+  constructor(public onEdited: (shape: Shape) => void, public enlist: (shape: Shape) => void) { }
   static _svg: SVGSVGEl;
   static _sd: StaticData;
   svg: SVGSVGEl = ShapeBuilder._svg;
@@ -69,18 +69,22 @@ export abstract class ShapeBuilder<T extends Shape> {
     if (element.categoriesPlain) element.categoriesPlain.remove();
     if (element.categoriesRect) element.categoriesRect.remove();
     if (labeled) {
-      let pos = element.shape.labelPosition();
+      let pos = element.shape.labelPosition(this.sd.categoryOpt.vertical);
       let categoriesPlain = categories.join(', ');
       element.categoriesPlain = this.svg.plain(categoriesPlain).font(12, 'bold');
       let width = element.categoriesPlain.bbox().width;
       let height = element.categoriesPlain.bbox().height;
-      element.categoriesRect = this.svg.rect(width, height).radius(2).move(pos[0] - width / 2, pos[1] + height / 4).fill('#ffffff80');
+      element.categoriesRect = this.svg.rect(width, height).radius(2).move(pos[0] - width / 2, pos[1] - height / 2).fill('#ffffff80');
       element.categoriesPlain.remove();
       element.categoriesPlain = this.svg
         .plain(categoriesPlain)
-        .move(pos[0], pos[1] + height)
-        .font(12, 'bold', '#3a4620','middle')
-        .addClass('class-names');
+        .move(pos[0], pos[1] + height / 4)
+        .font(12, 'bold', '#3a4620', 'middle')
+        .addClass('class-names')
+        .on('contextmenu', (ev: any) => {
+          ev.preventDefault();
+          element.node.dispatchEvent!(new Event('contextmenu', ev));
+        });
     }
   }
 

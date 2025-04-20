@@ -66,6 +66,7 @@ The following props can be defined on `ImageAnnotator`:
 | `discRadius` | `number` | The radius of the green discs in edit mode | 5 |
 | `hideBorder` | `boolean` | To hide annotation border | `false` |
 | `shortcut` | `Shortcut` | To configure shortcuts (see [Shortcut Settings](#shortcut-settings)) |  |
+| `categoryOpt` | `{ vertical: string }` | Vertical positioning of categories (`top`, `middle`, `bottom`) | `{ vertical: 'top' }` |
 | `onAdded` | `Shape => any` | When an annotation is drawn (see [Annotations with Categories](#annotations-with-categories)) |  |
 | `onEdited` | `Shape => any` | When an annotation is reshaped, dragged, or rotated |  |
 | `onSelected` | `Shape => any` | When an annotation goes into edit mode by double-clicking |  |

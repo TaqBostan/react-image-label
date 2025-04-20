@@ -11,7 +11,8 @@ export type StaticData = {
   discRadius: number,
   /** Stroke and discs can be hidden when not in edit/draw mode */
   hb: boolean | undefined,
-  shortcut: Shortcut | undefined
+  shortcut: Shortcut | undefined,
+  categoryOpt: { vertical: 'top' | 'middle' | 'bottom' }
 }
 
 export type Shortcut = {
@@ -23,7 +24,7 @@ export abstract class Shape {
   id: number;
   getCenterWithOffset = (): Point => ({ X: 0, Y: 0 });
   abstract type: string;
-  abstract labelPosition(): ArrayXY;
+  abstract labelPosition(vertical: 'top' | 'middle' | 'bottom'): ArrayXY;
   abstract getCenter(): ArrayXY;
   abstract zoom(factor: number): void;
   abstract output(ratio: number): Shape;
@@ -45,9 +46,8 @@ export abstract class Shape {
   }
 
   rotatePosition(): ArrayXY {
-    let c = this.getCenter();
-    let p = this.labelPosition();
-    return [2 * c[0] - p[0], 2 * c[1] - p[1]];
+    let p = this.labelPosition('bottom');
+    return [p[0], p[1] + 10];
   }
 
 }
@@ -59,8 +59,13 @@ export class Dot extends Shape {
     super(categories, 0, color);
   }
 
-  labelPosition(): ArrayXY {
-    return [this.position[0], this.position[1] - 40];
+  labelPosition(vertical: 'top' | 'middle' | 'bottom'): ArrayXY {
+    let pos: ArrayXY;
+    if (vertical === 'bottom')
+      pos = [this.position[0], this.position[1] + 30];
+    else
+      pos = [this.position[0], this.position[1] - 30];
+    return pos;
   }
   getCenter(): ArrayXY {
     return this.position;
@@ -93,12 +98,18 @@ export abstract class AngledShape extends Shape {
     super(categories, 0, color);
   }
 
-  labelPosition(): ArrayXY {
+  labelPosition(vertical: 'top' | 'middle' | 'bottom'): ArrayXY {
     let x = this.points
       .map(p => p[0])
       .filter((x, i) => i < this.points.length - 1)
       .reduce((sum: number, num) => sum + num, 0) / (this.points.length - 1);
-    let y = Math.min(...this.points.map(p => p[1])) - 24;
+    let y;
+    if (vertical === 'bottom')
+      y = Math.max(...this.points.map(p => p[1])) + 14;
+    else if (vertical === 'middle')
+      y = this.getCenter()[1];
+    else
+      y = Math.min(...this.points.map(p => p[1])) - 14;
     return [x, y];
   }
   outPoints(ratio: number): ArrayXY[] {
@@ -144,7 +155,7 @@ export enum Color {
   ShapeFill = "#ffffff00"
 }
 
-export enum ActType{
+export enum ActType {
   Added,
   Edited,
   Selected,
@@ -191,8 +202,15 @@ export class Circle extends RoundShape {
   get height(): number { return 2 * this.radius; }
   set height(h: number) { this.radius = h / 2; }
 
-  labelPosition(): ArrayXY {
-    return [this.centre[0], this.centre[1] - this.radius - 24];
+  labelPosition(vertical: 'top' | 'middle' | 'bottom'): ArrayXY {
+    let y: number;
+    if (vertical === 'bottom')
+      y = this.centre[1] + this.radius + 14
+    else if (vertical === 'middle')
+      y = this.centre[1]
+    else
+      y = this.centre[1] - this.radius - 14;
+    return [this.centre[0], y];
   }
   zoom(factor: number): void {
     this.centre = [this.centre[0] * factor, this.centre[1] * factor];
@@ -212,8 +230,15 @@ export class Ellipse extends RoundShape {
   set width(w: number) { this.radiusX = w / 2; }
   get height(): number { return 2 * this.radiusY; }
   set height(h: number) { this.radiusY = h / 2; }
-  labelPosition(): ArrayXY {
-    return [this.centre[0], this.centre[1] - this.radiusY - 24];
+  labelPosition(vertical: 'top' | 'middle' | 'bottom'): ArrayXY {
+    let y: number;
+    if (vertical === 'bottom')
+      y = this.centre[1] + this.radiusY + 14
+    else if (vertical === 'middle')
+      y = this.centre[1]
+    else
+      y = this.centre[1] - this.radiusY - 14;
+    return [this.centre[0], y];
   }
   zoom(factor: number): void {
     this.centre = [this.centre[0] * factor, this.centre[1] * factor];

@@ -53,7 +53,7 @@ export const ImageAnnotatorPrimary: FC = () => {
       setShapes([r, p, c, e, d]);
     }
   }
-
+  
 
   return (
     <React.StrictMode>
@@ -85,6 +85,7 @@ export const ImageAnnotatorPrimary: FC = () => {
           width={700}
           height={400}
           hideBorder={false}
+          categoryOpt={{ vertical: 'top' }}
           shortcut={{ del: true, bksp: true }}
           onAdded={shape => setDialog({ show: true, shape })}
           onContextMenu={shape => setDialog({ show: true, shape })}

@@ -98,7 +98,8 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
         ratio,
         discRadius: props.discRadius || 5,
         hb: props.hideBorder,
-        shortcut: props.shortcut
+        shortcut: props.shortcut,
+        categoryOpt: props.categoryOpt || { vertical: 'top' }
       }
 
       Director.init(svg, statics, container);
@@ -155,5 +156,6 @@ export interface ImageAnnotatorProps {
   discRadius?: number;
   hideBorder?: boolean;
   shortcut?: Shortcut;
+  categoryOpt?: { vertical: 'top' | 'middle' | 'bottom' } | undefined;
   setHandles: (handles: AnnotatorHandles) => void;
 }
