@@ -1,5 +1,12 @@
 # Versions
 
+## 2.0.8
+
+_Jun 26, 2025_
+
+### Bug Fixes
+* Support for different versions of React
+
 ## 2.0.7
 
 _Apr 20, 2025_
