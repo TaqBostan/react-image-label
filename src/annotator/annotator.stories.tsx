@@ -82,7 +82,7 @@ export const ImageAnnotatorPrimary: FC = () => {
           naturalSize={true}
           imageUrl={img}
           shapes={shapes}
-          width={700}
+          width={'90%'}
           height={400}
           hideBorder={false}
           categoryOpt={{ vertical: 'top' }}

@@ -1,5 +1,13 @@
 # Versions
 
+## 2.0.9
+
+_Jul 4, 2025_
+
+### New Features
+* Accepting width and height in percentages
+
+
 ## 2.0.8
 
 _Jun 26, 2025_

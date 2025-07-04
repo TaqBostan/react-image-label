@@ -76,19 +76,22 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   const onload = React.useCallback((svg: SVGSVGEl, container: HTMLDivElement, imageUrl: string) => {
     let onloaded = (target: ImageEl) => {
       let bb = target.bbox();
-      let naturalWidth = bb.width, naturalHeight = bb.height, maxWidth = props.width, maxHeight = props.height, ratio = 1;
+      let naturalWidth = bb.width, naturalHeight = bb.height, ratio = 1, 
+        width = Util.toPx(container.scrollWidth, props.width), 
+        height = Util.toPx(container.scrollHeight, props.height);
+        
       Object.assign(container.style, {
-        width: (props.width || naturalWidth) + 'px',
-        height: (props.height || naturalHeight) + 'px',
+        width: (width || naturalWidth) + 'px',
+        height: (height || naturalHeight) + 'px',
         overflow: 'hidden',
         backgroundColor: '#e6e6e6'
       });
       if (!props.naturalSize) {
-        if (!maxWidth) maxWidth = container.scrollWidth;
-        if (!maxHeight) maxHeight = container.scrollHeight;
-        if (maxWidth! / maxHeight! > bb.width / bb.height)
-          ratio = Math.min(maxHeight!, bb.height) / naturalHeight;
-        else ratio = Math.min(maxWidth!, bb.width) / naturalWidth;
+        if (!width) width = container.scrollWidth;
+        if (!height) height = container.scrollHeight;
+        if (width! / height! > bb.width / bb.height)
+          ratio = Math.min(height!, bb.height) / naturalHeight;
+        else ratio = Math.min(width!, bb.width) / naturalWidth;
       }
       target.size('100%', '100%');
 
@@ -151,8 +154,8 @@ export interface ImageAnnotatorProps {
   imageUrl?: string;
   shapes?: Shape[] | any[];
   naturalSize?: boolean;
-  width?: number;
-  height?: number;
+  width?: number | string;
+  height?: number | string;
   discRadius?: number;
   hideBorder?: boolean;
   shortcut?: Shortcut;

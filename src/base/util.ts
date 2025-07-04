@@ -35,4 +35,12 @@ export default class Util {
     }
     else return color;
   }
+
+  static toPx = (scrollWidth: number, dim?: number | string) : number | undefined => {
+    if(typeof dim === 'string') {
+      if(dim.endsWith('%')) return parseInt(dim) / 100 * scrollWidth;
+      if(dim.match("^[0-9]*(\.[0-9]+)?(px)?$")) return parseInt(dim);
+    }
+    else return dim;
+  }
 }
