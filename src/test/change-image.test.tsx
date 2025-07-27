@@ -20,10 +20,10 @@ Object.defineProperty(global.SVGTextElement.prototype, 'getBBox', {
 it('change image', () => {
   let imageUrl = 'https://raw.githubusercontent.com/TaqBostan/content/main/Fruit.jpeg';
   let imageUrl2 = 'https://svgjs.dev/docs/3.0/assets/images/logo-svg-js-01d-128.png';
-  let _rect1 = new Rectangle([[150, 50], [200, 50], [200, 100], [150, 100]], ["class 3"], "#27f17640");
-  let _rect2 = new Rectangle([[250, 150], [300, 150], [300, 200], [250, 200]], ["class 1", "class 2"]);
+  let _rect1 = new Rectangle([[150, 50], [200, 50], [200, 100], [150, 100]], ["class 3"], "#27f17640", 100);
+  let _rect2 = new Rectangle([[250, 150], [300, 150], [300, 200], [250, 200]], ["class 1", "class 2"], undefined, 50);
   let _polygon = new Polygon([[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]]);
-  let _circle = new Circle([250, 100], 40, ["class 4"]);
+  let _circle = new Circle([250, 100], 40, ["class 4"], undefined, 5);
   let _ellipse = new Ellipse([300, 150], 60, 40, ["class 3"]);
   const res = renderHook(useImageAnnotator);
   let { setHandles } = res.result.current;
@@ -123,6 +123,12 @@ it('change image', () => {
   let _img2 = imgs[imgs.length - 1] as SVGImageElement
   _img2.getBBox = () => new DOMRect(0, 0, 1400, 900)
   fireEvent(_img2, new CustomEvent('testEvent', { detail: { testTarget: _img2 } }));
+
+  //#region shape id
+  let annotator = res.result.current.annotator!;
+  let shapes = annotator.getShapes();
+  expect(shapes.filter(s => [5, 50, 51].includes(s.id))).toHaveLength(3);
+  //#endregion
   
   //#region container, svg, and image
   expect(container.style.width).toBe('700px');

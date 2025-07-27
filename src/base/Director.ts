@@ -40,6 +40,7 @@ export class Director {
   }
 
   stopEdit = (): void => this.builders.filter(b => b.element?.editing).forEach(b => b.stopEdit());
+  setMaxId = (val: number) => this.maxId = Math.max(this.maxId, val);
 
   edit(id: number): void {
     this.stopEdit();
@@ -63,7 +64,7 @@ export class Director {
 
   plot(shapes: Shape[]): void {
     shapes.forEach(shape => {
-      shape.id = ++this.maxId;
+      if(shape.id === 0) shape.id = ++this.maxId;
       this.getBuilder(shape).basePlotShape();
       this.enlist(shape, false);
     });
@@ -87,9 +88,7 @@ export class Director {
   enlist(shape: Shape, isNew: boolean) {
     let builder = this.getBuilder(shape);
     if (!builder.element) return;
-    if (builder.element.shape.id === 0) {
-      builder.element.shape.id = ++this.maxId;
-    }
+    if (builder.element.shape.id === 0) builder.element.shape.id = ++this.maxId;
     let id = builder.element.shape.id;
     this.elements.push(builder.element);
     builder.element.node.addEventListener('contextmenu', (ev: MouseEvent) => {

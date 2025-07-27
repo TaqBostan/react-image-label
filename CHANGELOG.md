@@ -1,5 +1,14 @@
 # Versions
 
+## 2.0.10
+
+_Jul 27, 2025_
+
+### Bug Fixes
+* Fixed a problem with component width and height when specified as a percentage
+* Fixed a problem with shape `id` with initial value
+* LICENSE added
+
 ## 2.0.9
 
 _Jul 4, 2025_

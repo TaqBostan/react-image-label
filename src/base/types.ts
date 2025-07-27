@@ -21,7 +21,6 @@ export type Shortcut = {
 }
 
 export abstract class Shape {
-  id: number;
   getCenterWithOffset = (): Point => ({ X: 0, Y: 0 });
   abstract type: string;
   abstract labelPosition(vertical: 'top' | 'middle' | 'bottom'): ArrayXY;
@@ -30,8 +29,7 @@ export abstract class Shape {
   abstract output(ratio: number): Shape;
   abstract centerChanged(newCenter: ArrayXY): void;
 
-  constructor(public categories: string[] = [], public phi: number = 0, public color?: string) {
-    this.id = 0;
+  constructor(public categories: string[] = [], public phi: number = 0, public color?: string,  public id: number = 0) {
   }
 
   getOutput(ratio: number, svg: SVGSVGEl): Shape {
@@ -55,8 +53,8 @@ export abstract class Shape {
 export class Dot extends Shape {
   type: string = 'dot';
 
-  constructor(public position: ArrayXY = [-100, -100], public categories: string[] = [], public color?: string) {
-    super(categories, 0, color);
+  constructor(public position: ArrayXY = [-100, -100], public categories: string[] = [], public color?: string,  public id: number = 0) {
+    super(categories, 0, color, id);
   }
 
   labelPosition(vertical: 'top' | 'middle' | 'bottom'): ArrayXY {
@@ -94,8 +92,8 @@ export interface IlElementExtra {
 export type ElementWithExtra = SVGEl & IlElementExtra;
 
 export abstract class AngledShape extends Shape {
-  constructor(public points: ArrayXY[] = [], public categories: string[] = [], public color?: string) {
-    super(categories, 0, color);
+  constructor(public points: ArrayXY[] = [], public categories: string[] = [], public color?: string,  public id: number = 0) {
+    super(categories, 0, color, id);
   }
 
   labelPosition(vertical: 'top' | 'middle' | 'bottom'): ArrayXY {
@@ -177,8 +175,8 @@ export class Polygon extends AngledShape {
 }
 
 export abstract class RoundShape extends Shape {
-  constructor(public centre: ArrayXY = [0, 0], public categories: string[] = [], public phi: number = 0, public color?: string) {
-    super(categories, phi, color);
+  constructor(public centre: ArrayXY = [0, 0], public categories: string[] = [], public phi: number = 0, public color?: string,  public id: number = 0) {
+    super(categories, phi, color, id);
   }
   abstract get width(): number;
   abstract set width(w);
@@ -194,8 +192,8 @@ export abstract class RoundShape extends Shape {
 
 export class Circle extends RoundShape {
   type: string = 'circle';
-  constructor(public centre: ArrayXY = [0, 0], public radius: number = 0, public categories: string[] = [], public color?: string) {
-    super(centre, categories, 0, color);
+  constructor(public centre: ArrayXY = [0, 0], public radius: number = 0, public categories: string[] = [], public color?: string,  public id: number = 0) {
+    super(centre, categories, 0, color, id);
   }
   get width(): number { return 2 * this.radius; }
   set width(w: number) { this.radius = w / 2; }
@@ -223,8 +221,8 @@ export class Circle extends RoundShape {
 
 export class Ellipse extends RoundShape {
   type: string = 'ellipse';
-  constructor(public centre: ArrayXY = [0, 0], public radiusX: number = 0, public radiusY: number = 0, public categories: string[] = [], public phi: number = 0, public color?: string) {
-    super(centre, categories, phi, color);
+  constructor(public centre: ArrayXY = [0, 0], public radiusX: number = 0, public radiusY: number = 0, public categories: string[] = [], public phi: number = 0, public color?: string,  public id: number = 0) {
+    super(centre, categories, phi, color, id);
   }
   get width(): number { return 2 * this.radiusX; }
   set width(w: number) { this.radiusX = w / 2; }

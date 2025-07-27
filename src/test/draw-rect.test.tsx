@@ -23,8 +23,8 @@ Object.defineProperty(global.SVGTextElement.prototype, 'getBBox', {
 it('draw rectangle', () => {
   let imageUrl = 'https://raw.githubusercontent.com/TaqBostan/content/main/Fruit.jpeg';
   let rawShapes = [
-    { id: 1, type: 'rectangle', categories: ["class 3"], points: [[150, 50], [200, 50], [200, 100], [150, 100]], color: "#27f17640" },
-    { id: 2, type: 'polygon', categories: ["class 1", "class 2"], points: [[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]], color: "#27f17640" },
+    { id: 11, type: 'rectangle', categories: ["class 3"], points: [[150, 50], [200, 50], [200, 100], [150, 100]], color: "#27f17640" },
+    { type: 'polygon', categories: ["class 1", "class 2"], points: [[50, 50], [50, 100], [75, 100], [75, 120], [90, 120], [90, 150], [120, 150], [120, 50]], color: "#27f17640" },
   ]
 
   const onReady = (annotator: AnnotatorHandles) => {
@@ -58,8 +58,9 @@ it('draw rectangle', () => {
   let shapes = annotator.getShapes();
 
   expect(shapes).toHaveLength(3);
+  expect(shapes.filter(s => [11, 12].includes(s.id))).toHaveLength(2);
 
-  let rect = shapes.filter(s => ![1, 2].includes(s.id))[0] as Rectangle;
+  let rect = shapes.find(s => s.id === 13) as Rectangle;
 
   expect(JSON.stringify(rect.points)).toBe(JSON.stringify(points));
   expect(rect.type).toBe('rectangle')

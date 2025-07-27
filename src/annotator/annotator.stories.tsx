@@ -28,7 +28,7 @@ let rawShapes = [
 export const ImageAnnotatorPrimary: FC = () => {
   const { setHandles, annotator } = useImageAnnotator();
   const [img, setImg] = React.useState(imgUrl);
-  const [shapes, setShapes] = React.useState<Shape[]>([r, p, c, e, d]);
+  const [shapes, setShapes] = React.useState<Shape[]>([r, p]);
   const [dialog, setDialog] = React.useState<{ show: boolean, shape: Shape | undefined }>({ show: false, shape: undefined });
 
   const selectedCategoriesChanged = (items: string[]) => {

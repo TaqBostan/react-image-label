@@ -13,16 +13,17 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   const drawShapes = (shapes?: Shape[] | any[]) => {
     let director = getDirector();
     if (!shapes) return;
+    director.setMaxId(Math.max(...shapes.map(c => c.id ?? 0)));
     let rectangles = shapes.filter(s => s instanceof Rectangle || s.type === 'rectangle')
-      .map(s => new Rectangle([...s.points], s.categories, s.color));
+      .map(s => new Rectangle([...s.points], s.categories, s.color, s.id));
     let polygons = shapes.filter(s => s instanceof Polygon || s.type === 'polygon')
-      .map(s => new Polygon([...s.points], s.categories, s.color));
+      .map(s => new Polygon([...s.points], s.categories, s.color, s.id));
     let circles = shapes.filter(s => s instanceof Circle || s.type === 'circle')
-      .map(s => new Circle(s.centre, s.radius, s.categories, s.color));
+      .map(s => new Circle(s.centre, s.radius, s.categories, s.color, s.id));
     let ellipses = shapes.filter(s => s instanceof Ellipse || s.type === 'ellipse')
-      .map(s => new Ellipse(s.centre, s.radiusX, s.radiusY, s.categories, s.phi || 0, s.color));
+      .map(s => new Ellipse(s.centre, s.radiusX, s.radiusY, s.categories, s.phi || 0, s.color, s.id));
     let dots = shapes.filter(s => s instanceof Dot || s.type === 'dot')
-      .map(s => new Dot(s.position, s.categories, s.color));
+      .map(s => new Dot(s.position, s.categories, s.color, s.id));
     if (rectangles.length > 0) director.plot(rectangles);
     if (polygons.length > 0) director.plot(polygons);
     if (circles.length > 0) director.plot(circles);
@@ -76,9 +77,8 @@ const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   const onload = React.useCallback((svg: SVGSVGEl, container: HTMLDivElement, imageUrl: string) => {
     let onloaded = (target: ImageEl) => {
       let bb = target.bbox();
-      let naturalWidth = bb.width, naturalHeight = bb.height, ratio = 1, 
-        width = Util.toPx(container.scrollWidth, props.width), 
-        height = Util.toPx(container.scrollHeight, props.height);
+      let naturalWidth = bb.width, naturalHeight = bb.height, ratio = 1, sw = container.parentElement?.scrollWidth ?? 0,
+        width = Util.toPx(sw, props.width), height = Util.toPx(sw, props.height);
         
       Object.assign(container.style, {
         width: (width || naturalWidth) + 'px',
