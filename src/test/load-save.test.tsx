@@ -3,7 +3,7 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import { ImageAnnotator } from '../annotator/index';
 import { AnnotatorHandles, useImageAnnotator } from '../annotator/hook';
-import { Circle, Ellipse, Polygon, Rectangle } from '../base/types';
+import { Circle, Ellipse, Polygon, Rectangle } from 'image-labeling';
 
 export const ns = "http://www.w3.org/2000/svg";
 

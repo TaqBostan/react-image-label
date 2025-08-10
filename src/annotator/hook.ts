@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shape } from '../base/types';
+import { Shape } from 'image-labeling';
 
 export const useImageAnnotator = () => {
   const [handles, setHandles] = React.useState<AnnotatorHandles>();

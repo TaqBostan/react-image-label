@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { ImageAnnotator } from '.';
-import { Circle, Shape, Point, Polygon, Rectangle, Ellipse, Dot } from '../base/types';
+import { Circle, Shape, Point, Polygon, Rectangle, Ellipse, Dot } from 'image-labeling';
 import './annotator.stories.css';
 import { useImageAnnotator } from './hook';
 

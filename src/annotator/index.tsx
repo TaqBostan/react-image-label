@@ -1,10 +1,7 @@
 import React, { useEffect, FC, useRef } from 'react';
-import { Director } from '../base/Director';
-import { Shape, Polygon, Rectangle, Circle, Ellipse, Dot, Shortcut, ActType } from '../base/types';
-import Util from '../base/util';
+import { Director, Shape, Polygon, Rectangle, Circle, Ellipse, Dot, Shortcut, ActType, Util, ImageEl, SVGSVGEl } from 'image-labeling';
 import { AnnotatorHandles } from './hook';
 import './index.css';
-import { ImageEl, SVGSVGEl } from '../base/svg-elems';
 
 const ImageAnnotator: FC<ImageAnnotatorProps> = props => {
   const getDirector = () => Director.instance!;

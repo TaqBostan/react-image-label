@@ -3,7 +3,6 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import { ImageAnnotator } from '../annotator/index';
 import { AnnotatorHandles, useImageAnnotator } from '../annotator/hook';
-import { Rectangle } from '../base/types';
 import { FakeMouseEvent } from './helper/MouseEventWithOffsets';
 
 export const ns = "http://www.w3.org/2000/svg";

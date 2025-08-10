@@ -4,9 +4,8 @@ import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event'
 import { ImageAnnotator } from '../annotator/index';
 import { AnnotatorHandles, useImageAnnotator } from '../annotator/hook';
-import { ArrayXY, Circle, Color, Ellipse, Polygon, Rectangle, Shape } from '../base/types';
+import { ArrayXY, Circle, Color, Ellipse, Polygon, Rectangle, Shape, Util } from 'image-labeling';
 import { FakeMouseEvent } from './helper/MouseEventWithOffsets';
-import Util from '../base/util';
 
 export const ns = "http://www.w3.org/2000/svg";
 

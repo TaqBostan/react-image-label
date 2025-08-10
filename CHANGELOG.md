@@ -1,5 +1,19 @@
 # Versions
 
+## 3.0.0
+
+_Aug 10, 2025_
+
+### Changed
+* Replaced base classes with image-labeling library to improve code maintainability (no functional changes).
+
+## 2.0.9
+
+_Jul 4, 2025_
+
+### New Features
+* Accepting width and height in percentages
+
 ## 2.0.10
 
 _Jul 27, 2025_
@@ -15,7 +29,6 @@ _Jul 4, 2025_
 
 ### New Features
 * Accepting width and height in percentages
-
 
 ## 2.0.8
 
