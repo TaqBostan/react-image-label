@@ -87,6 +87,7 @@ export const ImageAnnotatorPrimary: FC = () => {
           hideBorder={false}
           categoryOpt={{ vertical: 'top' }}
           shortcut={{ del: true, bksp: true }}
+          touch={true}
           onAdded={shape => setDialog({ show: true, shape })}
           onContextMenu={shape => setDialog({ show: true, shape })}
           onEdited={shape => console.log(shape)}

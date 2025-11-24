@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "paths": {
+    },
     "target": "es2021",
     "jsx": "react",
     "module": "CommonJS",

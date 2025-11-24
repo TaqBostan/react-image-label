@@ -1,6 +1,6 @@
 {
   "name": "react-image-label",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "A comprehensive package for tagging images.",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -9,6 +9,7 @@
   "license": "MIT",
   "scripts": {
     "ladle": "ladle serve",
+    "start": "ladle serve",
     "build": "tsup --dts",
     "test": "jest --verbose --env=@happy-dom/jest-environment"
   },
@@ -51,6 +52,6 @@
     "url": "https://github.com/TaqBostan/react-image-label/issues"
   },
   "dependencies": {
-    "image-labeling": "^1.0.3"
+    "image-labeling": "1.1.0"
   }
 }

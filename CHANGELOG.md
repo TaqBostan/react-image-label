@@ -1,5 +1,12 @@
 # Versions
 
+## 3.1.0
+
+_Nov 24, 2025_
+
+### New Features
+* Touch events for drawing rectangles (alpha version).
+
 ## 3.0.0
 
 _Aug 10, 2025_
