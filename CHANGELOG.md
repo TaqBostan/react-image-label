@@ -1,5 +1,13 @@
 # Versions
 
+## 3.1.1
+
+_Nov 25, 2025_
+
+### New Features
+* Touch events for drawing ellipses and circles.
+* Touch events for dragging/rotating shapes.
+
 ## 3.1.0
 
 _Nov 24, 2025_

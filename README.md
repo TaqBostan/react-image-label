@@ -37,7 +37,7 @@ const { setHandles, annotator } = useImageAnnotator();
   naturalSize={true}
   imageUrl={'your-image-url'}  
   shortcut={{del: true, bksp: true }}
-  touch={true}
+  touch={'enabled'}
   onReady={annotator => { annotator.drawRectangle() }} />
 ```
 
@@ -68,7 +68,7 @@ The following props can be defined on `ImageAnnotator`:
 | `hideBorder` | `boolean` | To hide annotation border | `false` |
 | `shortcut` | `Shortcut` | To configure shortcuts (see [Shortcut Settings](#shortcut-settings)) |  |
 | `categoryOpt` | `{ vertical: string }` | Vertical positioning of categories (`top`, `middle`, `bottom`) | `{ vertical: 'top' }` |
-| `touch` | `boolean` | To enable touch events. This disables one-finger scrolling | `false`|
+| `touch` | `string` | Set to `enabled` to enable touch events. This disables one-finger scrolling | |
 | `onAdded` | `Shape => any` | When an annotation is drawn (see [Annotations with Categories](#annotations-with-categories)) |  |
 | `onEdited` | `Shape => any` | When an annotation is reshaped, dragged, or rotated |  |
 | `onSelected` | `Shape => any` | When an annotation goes into edit mode by double-clicking |  |

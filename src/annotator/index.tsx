@@ -158,6 +158,6 @@ export interface ImageAnnotatorProps {
   hideBorder?: boolean;
   shortcut?: Shortcut;
   categoryOpt?: { vertical: 'top' | 'middle' | 'bottom' } | undefined;
-  touch?: boolean;
+  touch?: 'enabled';
   setHandles: (handles: AnnotatorHandles) => void;
 }
